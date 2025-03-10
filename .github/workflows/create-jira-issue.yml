@@ -47,8 +47,8 @@ jobs:
         id: create
         uses: atlassian/gajira-create@v3
         with:
-          project: SKP
-          issuetype: Task
+          project: KAN
+          issuetype: Subtask
           summary: '${{ github.event.issue.title }}'
           description: '${{ steps.md2jira.outputs.output-text }}'
           fields: |
@@ -64,7 +64,7 @@ jobs:
       - name: Checkout develop code
         uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: main
 
       - name: Create branch with Ticket number
         run: |
