@@ -1,77 +1,40 @@
-name: Create Jira issue
-on:
-  issues:
-    types:
-      - opened
-jobs:
-  create-issue:
-    name: Create Jira issue
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login
-        uses: atlassian/gajira-login@v3
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+name: '이슈 생성'
+description: 'Repo에 이슈를 생성하며, 생성된 이슈는 Jira와 연동됩니다.'
+labels: [feat]
+title: '이슈 이름을 작성해주세요'
+body:
+  - type: input
+    id: parentKey
+    attributes:
+      label: '🎟️ 상위 작업 (Ticket Number)'
+      description: '상위 작업의 Ticket Number를 기입해주세요'
+      placeholder: 'PRJ-00'
+    validations:
+      required: true
 
-      - name: Checkout main code
-        uses: actions/checkout@v4
-        with:
-          ref: main
+  - type: input
+    id: branch
+    attributes:
+      label: '🌳 브랜치명 (Branch)'
+      description: '영어로 브랜치명을 작성해주세요'
+    validations:
+      required: true
+      
+  - type: input
+    id: description
+    attributes:
+      label: '📝 상세 내용(Description)'
+      description: '이슈에 대해서 간략히 설명해주세요'
+    validations:
+      required: true
 
-      - name: Issue Parser
-        uses: stefanbuck/github-issue-praser@v3
-        id: issue-parser
-        with:
-          template-path: .github/ISSUE_TEMPLATE/issue_form.yml
-
-      - name: Log Issue Parser
-        run: |
-          echo '${{ steps.issue-parser.outputs.jsonString }}'
-
-      - name: Convert markdown to Jira Syntax
-        uses: peter-evans/jira2md@v1
-        id: md2jira
-        with:
-          input-text: |
-            ### Github Issue Link
-            - ${{ github.event.issue.html_url }}
-
-            ${{ github.event.issue.body }}
-          mode: md2jira
-
-      - name: Create Issue
-        id: create
-        uses: atlassian/gajira-create@v3
-        with:
-          project: DIAR
-          issuetype: Subtask
-          summary: "${{ github.event.issue.title }}"
-          description: "${{ steps.md2jira.outputs.output-text }}"
-          fields: |
-            {
-              "parent": {
-                "key": "${{ steps.issue-parser.outputs.issueparser_parentKey }}"
-              }
-            }
-
-      - name: Log created issue
-        run: echo "Jira Issue ${{ steps.issue-parser.outputs.parentKey }}/${{ steps.create.outputs.issue }} was created"
-
-      - name: Checkout develop code
-        uses: actions/checkout@v4
-        with:
-          ref: develop
-
-      - name: Create branch with Ticket number
-        run: |
-          git checkout -b ${{ steps.create.outputs.issue }}
-          git push origin ${{ steps.create.outputs.issue }}
-
-      - name: Update issue title
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: "update-issue"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "${{ steps.create.outputs.issue }} ${{ github.event.issue.title }}"
+  - type: textarea
+    id: tasks
+    attributes:
+      label: '✅ 체크리스트(Tasks)'
+      description: '해당 이슈에 대해 필요한 작업목록을 작성해주세요'
+      value: |
+        - [ ] Task1
+        - [ ] Task2
+    validations:
+      required: true
