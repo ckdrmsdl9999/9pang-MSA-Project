@@ -11,19 +11,19 @@ import java.util.List;
 @Slf4j
 @Service
 public class HubService {
-    public List<HubDto> getAllPosts(int page, int size, String sortBy, boolean isAsc) {
+    public List<HubDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
     }
 
-    public HubDto createPost(HubCreateRequestDto requestDto) {
+    public HubDto createHub(HubCreateRequestDto requestDto) {
     }
 
-    public HubDto getPost(Long id) {
+    public HubDto getHub(Long id) {
     }
 
-    public HubDto updatePost(Long id, HubUpdateRequestDto requestDto) {
+    public HubDto updateHub(Long id, HubUpdateRequestDto requestDto) {
         return null;
     }
 
-    public void deletePost(Long id) {
+    public void deleteHub(Long id) {
     }
 }

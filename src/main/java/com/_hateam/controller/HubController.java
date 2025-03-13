@@ -23,68 +23,64 @@ public class HubController {
     private final HubService hubService;
 
     /**
-     * 새로운 허브 게시글 생성
-     * 예시: POST /hub/posts
+     * 새로운 허브 생성
      */
     @PostMapping
-    public ResponseEntity<ResponseDto<HubDto>> createPost(
+    public ResponseEntity<ResponseDto<HubDto>> createHub(
             @RequestBody @Valid HubCreateRequestDto requestDto) {
 
-        HubDto createdPost = hubService.createPost(requestDto);
+        HubDto hub = hubService.createHub(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(HttpStatus.CREATED, createdPost));
+                .body(ResponseDto.success(HttpStatus.CREATED, hub));
     }
 
     /**
-     * 전체 허브 게시글 목록 조회 (페이지네이션 지원)
-     * 예시: GET /hub/posts?page=0&size=10&sortBy=createdAt&isAsc=false
+     * 전체 허브 목록 조회 (페이지네이션 지원)
+     * 예시: GET /hub?page=0&size=10&sortBy=createdAt&isAsc=false
      */
     @GetMapping
-    public ResponseEntity<ResponseDto<List<HubDto>>> getAllPosts(
+    public ResponseEntity<ResponseDto<List<HubDto>>> getAllHubs(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
 
-        List<HubDto> posts = hubService.getAllPosts(page, size, sortBy, isAsc);
+        List<HubDto> hubs = hubService.getAllHubs(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, posts));
+                .body(ResponseDto.success(HttpStatus.OK, hubs));
     }
 
 
     /**
-     * 특정 게시글 상세 조회
-     * 예시: GET /hub/posts/{id}
+     * 특정 상세 조회
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<HubDto>> getPost(@PathVariable Long id) {
-        HubDto post = hubService.getPost(id);
+    public ResponseEntity<ResponseDto<HubDto>> getHub(@PathVariable Long id) {
+        HubDto hub = hubService.getHub(id);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, post));
+                .body(ResponseDto.success(HttpStatus.OK, hub));
     }
 
     /**
-     * 특정 게시글 수정
-     * 예시: PATCH /hub/posts/{id}
+     * 특정 수정
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto<HubDto>> updatePost(
+    public ResponseEntity<ResponseDto<HubDto>> updateHub(
             @PathVariable Long id,
             @RequestBody @Valid HubUpdateRequestDto requestDto) {
 
-        HubDto updatedPost = hubService.updatePost(id, requestDto);
+        HubDto updateHub = hubService.updateHub(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, updatedPost));
+                .body(ResponseDto.success(HttpStatus.OK, updateHub));
     }
 
     /**
-     * 특정 게시글 삭제
-     * 예시: DELETE /hub/posts/{id}
+     * 특정 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<String>> deletePost(@PathVariable Long id) {
-        hubService.deletePost(id);
+    public ResponseEntity<ResponseDto<String>> deleteHub(@PathVariable Long id) {
+        hubService.deleteHub(id);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, "Post deleted successfully"));
+                .body(ResponseDto.success(HttpStatus.OK, "Hub deleted successfully"));
     }
 }
