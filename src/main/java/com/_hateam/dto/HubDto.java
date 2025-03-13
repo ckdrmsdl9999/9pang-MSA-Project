@@ -37,7 +37,7 @@ public class HubDto {
     private String longitude;
 
     // Hub 엔티티를 HubDto로 변환하는 정적 팩토리 메소드
-    public static HubDto fromEntity(Hub hub) {
+    public static HubDto hubToHubDto(Hub hub) {
         return HubDto.builder()
                 .id(hub.getId())
                 .name(hub.getName())
@@ -46,4 +46,5 @@ public class HubDto {
                 .longitude(hub.getLongitude())
                 .build();
     }
+
 }

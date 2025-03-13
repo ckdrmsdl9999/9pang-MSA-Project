@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -51,33 +53,32 @@ public class HubController {
 
 
     /**
-     * 특정 상세 조회
+     * 특정 허브 허브상세 조회
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<HubDto>> getHub(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<HubDto>> getHub(@PathVariable UUID id) {
         HubDto hub = hubService.getHub(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, hub));
     }
 
     /**
-     * 특정 수정
+     * 특정 허브 수정
      */
     @PatchMapping("/{id}")
     public ResponseEntity<ResponseDto<HubDto>> updateHub(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody @Valid HubRequestDto requestDto) {
-
         HubDto updateHub = hubService.updateHub(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, updateHub));
     }
 
     /**
-     * 특정 삭제
+     * 특정 허브 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<String>> deleteHub(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<String>> deleteHub(@PathVariable UUID id) {
         hubService.deleteHub(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Hub deleted successfully"));
