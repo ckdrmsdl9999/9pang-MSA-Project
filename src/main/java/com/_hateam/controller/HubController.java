@@ -1,8 +1,7 @@
 package com._hateam.controller;
 
-import com._hateam.dto.HubCreateRequestDto;
+import com._hateam.dto.HubRequestDto;
 import com._hateam.dto.HubDto;
-import com._hateam.dto.HubUpdateRequestDto;
 import com._hateam.global.dto.ResponseDto;
 import com._hateam.service.HubService;
 import jakarta.validation.Valid;
@@ -27,7 +26,7 @@ public class HubController {
      */
     @PostMapping
     public ResponseEntity<ResponseDto<HubDto>> createHub(
-            @RequestBody @Valid HubCreateRequestDto requestDto) {
+            @RequestBody @Valid HubRequestDto requestDto) {
 
         HubDto hub = hubService.createHub(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -67,7 +66,7 @@ public class HubController {
     @PatchMapping("/{id}")
     public ResponseEntity<ResponseDto<HubDto>> updateHub(
             @PathVariable Long id,
-            @RequestBody @Valid HubUpdateRequestDto requestDto) {
+            @RequestBody @Valid HubRequestDto requestDto) {
 
         HubDto updateHub = hubService.updateHub(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
