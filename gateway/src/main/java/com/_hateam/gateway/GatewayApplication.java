@@ -1,13 +1,13 @@
-package com._hateam.deliver_user;
+package com._hateam.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DeliverUserApplication {
+public class GatewayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DeliverUserApplication.class, args);
+		SpringApplication.run(GatewayApplication.class, args);
 	}
 
 }
