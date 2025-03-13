@@ -2,6 +2,7 @@ package com._hateam.controller;
 
 import com._hateam.dto.HubCreateRequestDto;
 import com._hateam.dto.HubDto;
+import com._hateam.dto.HubUpdateRequestDto;
 import com._hateam.global.dto.ResponseDto;
 import com._hateam.service.HubService;
 import jakarta.validation.Valid;
@@ -35,16 +36,6 @@ public class HubController {
     }
 
     /**
-     * 특정 게시글 상세 조회
-     * 예시: GET /hub/posts/{id}
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<HubDto>> getPost(@PathVariable Long id) {
-        HubDto post = hubService.getPost(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, post));
-    }
-    /**
      * 전체 허브 게시글 목록 조회 (페이지네이션 지원)
      * 예시: GET /hub/posts?page=0&size=10&sortBy=createdAt&isAsc=false
      */
@@ -62,10 +53,21 @@ public class HubController {
 
 
     /**
+     * 특정 게시글 상세 조회
+     * 예시: GET /hub/posts/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDto<HubDto>> getPost(@PathVariable Long id) {
+        HubDto post = hubService.getPost(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, post));
+    }
+
+    /**
      * 특정 게시글 수정
      * 예시: PATCH /hub/posts/{id}
      */
-    @PatchMapping("/posts/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ResponseDto<HubDto>> updatePost(
             @PathVariable Long id,
             @RequestBody @Valid HubUpdateRequestDto requestDto) {
@@ -79,7 +81,7 @@ public class HubController {
      * 특정 게시글 삭제
      * 예시: DELETE /hub/posts/{id}
      */
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<String>> deletePost(@PathVariable Long id) {
         hubService.deletePost(id);
         return ResponseEntity.status(HttpStatus.OK)
