@@ -3,7 +3,6 @@ package com._hateam.service;
 import com._hateam.dto.HubRouteDto;
 import com._hateam.dto.HubRouteRequestDto;
 import com._hateam.entity.HubRoute;
-import com._hateam.global.dto.CreatedInfo;
 import com._hateam.repository.HubRouteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +70,11 @@ public class HubRouteService {
     private HubRoute createHubEntity(HubRouteRequestDto requestDto) {
         HubRoute hubRoute = HubRoute.builder().name(requestDto.getName()).address(requestDto.getAddress()).latitude(requestDto.getLatitude()).longitude(requestDto.getLongitude()).build();
 
-        // 시큐리티 컨텍스트에서 인증 정보를 가져와 createdBy 필드 설정
-        CreatedInfo createdInfo = new CreatedInfo();
-        hubRoute.setCreatedBy(createdInfo.getCreatedBy());
-        hubRoute.setCreatedAt(createdInfo.getCreatedAt());
+//        // 시큐리티 컨텍스트에서 인증 정보를 가져와 createdBy 필드 설정
+//            추후 시큐리티 적용시 수정
+//        CreatedInfo createdInfo = new CreatedInfo();
+//        hubRoute.setCreatedBy(createdInfo.getCreatedBy());
+//        hubRoute.setCreatedAt(createdInfo.getCreatedAt());
         return hubRoute;
     }
 

@@ -1,15 +1,14 @@
 package com._hateam.controller;
 
-import com._hateam.dto.HubRequestDto;
+import com._hateam.common.dto.ResponseDto;
 import com._hateam.dto.HubDto;
-import com._hateam.global.dto.ResponseDto;
+import com._hateam.dto.HubRequestDto;
 import com._hateam.service.HubService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
