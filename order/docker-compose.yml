@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/p_order
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+    depends_on:
+      - db
+      - eureka
+
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: p_order
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  eureka:
+    image: steeltoeoss/eureka-server:latest
+    ports:
+      - "8761:8761"
+
+volumes:
+  db-data:
