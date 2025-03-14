@@ -1,8 +1,8 @@
 package com._hateam.controller;
 
+import com._hateam.common.dto.ResponseDto;
 import com._hateam.dto.HubRouteDto;
 import com._hateam.dto.HubRouteRequestDto;
-import com._hateam.global.dto.ResponseDto;
 import com._hateam.service.HubRouteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
