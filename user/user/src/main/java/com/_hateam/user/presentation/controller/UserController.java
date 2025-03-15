@@ -22,7 +22,6 @@ public class UserController {
 
     @PostMapping("/signup")//회원가입
     public ResponseEntity<?> addUser(@RequestBody @Valid UserSignUpReqDto signUpReqDto, BindingResult bindingResult) {
-
         System.out.println(signUpReqDto.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(userService.saveUser(signUpReqDto));
     }

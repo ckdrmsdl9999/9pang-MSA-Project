@@ -2,6 +2,7 @@ package com._hateam.user.application.service;
 
 
 import com._hateam.user.application.dto.UserSignUpReqDto;
+import com._hateam.user.application.dto.UserUpdateReqDto;
 import com._hateam.user.domain.model.User;
 
 public interface UserService {
@@ -17,7 +18,7 @@ public interface UserService {
 
     public void getUser(String username);
 
-    public void updateUser(String username);
+    public void updateUser(UserUpdateReqDto userUpdateReqDto);
 
     public void deleteUser(String username);
 

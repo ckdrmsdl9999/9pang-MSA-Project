@@ -18,4 +18,6 @@ public interface UserRepository {
     Optional<User> findById(String userId);
 
     Collection<User> findAllByDeletedAtIsNull();
+
+
 }
