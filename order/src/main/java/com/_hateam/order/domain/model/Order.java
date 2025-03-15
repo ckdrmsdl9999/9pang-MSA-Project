@@ -43,7 +43,7 @@ public class Order extends Timestamped {
     @Column(name = "status", nullable = false)
     private OrderStatus status;
 
-    @Column(name = "totalprice", nullable = false)
+    @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -82,8 +82,16 @@ public class Order extends Timestamped {
 
     // 총 가격 계산 및 업데이트
     public void calculateTotalPrice() {
-        this.totalPrice = this.orderProducts.stream()
-                .mapToInt(OrderProduct::getTotalPrice)
-                .sum();
+        if (this.orderProducts == null || this.orderProducts.isEmpty()) {
+            this.totalPrice = 0; // 상품이 없는 경우 0으로 설정
+        } else {
+            this.totalPrice = this.orderProducts.stream()
+                    .mapToInt(OrderProduct::getTotalPrice)
+                    .sum();
+        }
+    }
+
+    public void setTotalPrice(Integer totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }
