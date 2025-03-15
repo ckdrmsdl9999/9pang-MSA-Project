@@ -1,12 +1,9 @@
 package com._hateam.user.domain.model;
 
-
 import com._hateam.common.entity.Timestamped;
 import com._hateam.user.domain.enums.UserRole;
 import jakarta.persistence.*;
-
 import lombok.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @Entity
 @Table(name="p_user")
@@ -18,7 +15,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 public class User extends Timestamped {
 
     @Id
-    String userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long userId;
+
+    @Column(nullable = false)
+    String username;
+
+    @Column(nullable = false)
+    String nickname;
 
     @Column(nullable = false)
     String password;
@@ -29,7 +33,7 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     UserRole userRoles;
 
-    @Column(nullable = false)
+    @Column
     boolean is_deliver;
 
 

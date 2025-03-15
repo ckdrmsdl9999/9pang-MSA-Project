@@ -1,22 +1,36 @@
 package com._hateam.user.presentation.controller;
 
-
-import com._hateam.user.domain.model.User;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import com._hateam.user.application.dto.UserSignInReqDto;
+import com._hateam.user.application.dto.UserSignUpReqDto;
+import com._hateam.user.application.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
+
 public class UserController {
 
+    @Autowired
+    private final UserService userService;
+
     @PostMapping("/signup")//회원가입
-    public void addUser(@RequestBody User user) {
-        System.out.println();
+    public ResponseEntity<?> addUser(@RequestBody @Valid UserSignUpReqDto signUpReqDto, BindingResult bindingResult) {
+
+        System.out.println(signUpReqDto.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.saveUser(signUpReqDto));
     }
 
     @PostMapping("/signin")//로그인
-    public void signin(@RequestBody User user) {
+    public void signIn(@RequestBody UserSignInReqDto user) {
+
+
 
     }
 
