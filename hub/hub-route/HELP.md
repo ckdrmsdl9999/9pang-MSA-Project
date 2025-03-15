@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.9hateam.hub-route' is invalid and this project uses 'com._hateam.hub_route' instead.
+* The original package name 'com.9hateam.hubRoute-route' is invalid and this project uses 'com._hateam.hub_route' instead.
 
 # Getting Started
 
