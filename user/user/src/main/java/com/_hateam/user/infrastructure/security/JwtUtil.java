@@ -65,8 +65,8 @@ public class JwtUtil {
         final Long userId = extractUserId(token);
 
         // UserDetails가 UserPrincipal 타입인지 확인하고 ID 일치 여부 검증
-        if (userDetails instanceof UserPrincipal) {
-            return (userId.equals(((UserPrincipal) userDetails).getId()) && !isTokenExpired(token));
+        if (userDetails instanceof UserPrincipals) {
+            return (userId.equals(((UserPrincipals) userDetails).getId()) && !isTokenExpired(token));
         }
         return false;
     }
@@ -82,7 +82,7 @@ public class JwtUtil {
 
     // 유저 아이디 추출
     public Long extractUserId(String token) {
-        System.out.println("추출완료창근"+extractAllClaims(token).get("userId", Long.class));
+      //  System.out.println("추출완료창근"+extractAllClaims(token).get("userId", Long.class));
         return extractAllClaims(token).get("userId", Long.class);
     }
 

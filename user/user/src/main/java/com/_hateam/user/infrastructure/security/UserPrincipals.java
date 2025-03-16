@@ -12,7 +12,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class UserPrincipal implements UserDetails {
+public class UserPrincipals implements UserDetails {
 
 
     private Long id;
@@ -20,13 +20,13 @@ public class UserPrincipal implements UserDetails {
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserPrincipal create(User user) {
+    public static UserPrincipals create(User user) {
 
         // 단일 역할을 가진 사용자를 처리
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getUserRoles().name()));
 
-        return new UserPrincipal(
+        return new UserPrincipals(
                 user.getUserId(),
                 user.getUsername(),
                 user.getPassword(),
