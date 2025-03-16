@@ -1,1 +1,7 @@
 rootProject.name = 'delivery'
+
+includeBuild('../common') {
+    dependencySubstitution {
+        substitute(module('com.9hateam:common')).using(project(':'))
+    }
+}
