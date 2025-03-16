@@ -1,6 +1,5 @@
 package com._hateam.deliver_user.domain.model;
 
-
 import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DeliveryUser extends Timestamped {
+public class DeliverUser extends Timestamped{
 
     @Id
     @Column(name = "deliver_id")
@@ -48,3 +47,5 @@ public class DeliveryUser extends Timestamped {
 
 
 }
+
+

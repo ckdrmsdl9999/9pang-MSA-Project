@@ -39,27 +39,25 @@ public class UserController {
 
     @GetMapping("/")//회원조회(자기자신만)
     public ResponseDto<?> getUser(@AuthenticationPrincipal UserPrincipals userPrincipals) {
-       // System.out.println(userPrincipals.getId()+"값 확인!!"+ userPrincipals.getAuthorities()+"체크!"+ userPrincipals.getPassword());
         return ResponseDto.success(HttpStatus.OK, userService.getUser(userPrincipals.getId()));
     }
 
-    @GetMapping("/admin/{userId}")//관리자단일조회(MASTER)
+    @GetMapping("/admin/{userId}")//관리자단일조회(MASTER), 스프링시큐리티로 권한 제어 예정
     public ResponseDto<?> getAdminUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
-        //관리자만 볼수있게아직적용x
-        System.out.println(userPrincipals.getUsername()+"유저이름확인창근");
+
         return ResponseDto.success(HttpStatus.OK, userService.getUser(userId));
     }
 
     @GetMapping("/admin/search")//관리자단일검색(MASTER)
     public ResponseDto<?> getAdminSearch(@RequestParam String username,@AuthenticationPrincipal UserPrincipals userPrincipals){
 
-        // 관리자 권한 체크 로직 (필요시 추가)
+
         return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
     }
 
     @PatchMapping("/roles/{userId}") // 권한 수정(MASTER)
     public ResponseDto<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,@AuthenticationPrincipal UserPrincipals userPrincipals) {
-        return ResponseDto.success(HttpStatus.OK, userService.updateUserRole(userId, roleUpdateDto.getRole()));
+        return ResponseDto.success(HttpStatus.OK, userService.updateUserRole(userId, roleUpdateDto.getRole(),userPrincipals));
     }
 
 
@@ -69,14 +67,10 @@ public class UserController {
         return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
     }
 
-//    @GetMapping("/approve/{userId}")//회원가입승인
-//    public ResponseDto<?> userApprove(){
-//
-//    }
-//
+
     @GetMapping("/getusers")//회원목록 조회(DELIVERY,HUB,MASTER)
-    public ResponseDto<?> getAllUser(){
-        return ResponseDto.success(HttpStatus.OK, userService.getAllUsers());
+    public ResponseDto<?> getAllUser(@AuthenticationPrincipal UserPrincipals userPrincipals){
+        return ResponseDto.success(HttpStatus.OK, userService.getAllUsers(userPrincipals));
     }
 
     @PatchMapping("/{userId}")  // 회원 수정(MASTER)

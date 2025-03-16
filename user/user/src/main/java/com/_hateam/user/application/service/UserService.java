@@ -13,11 +13,11 @@ public interface UserService {
 
     public User saveUser(UserSignUpReqDto userSignUpReqDto);
 
-   // public void authenUser(String username, String password);
+    // public void authenUser(String username, String password);
 
     public void signOut();
 
-    public List<User> getAllUsers();
+    public List<User> getAllUsers(UserPrincipals userPrincipals);
 
     public User getUser(Long userId);
 
@@ -29,9 +29,9 @@ public interface UserService {
 
     AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto);
 
-    public User updateUserRole(Long userId, UserRole role);
+    public User updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals);
 
-    public void approveUser(Long userId);
+    //public void approveUser(Long userId);
 
     // AuthResponseDto refreshToken(TokenRefreshRequestDto refreshRequestDto);
 

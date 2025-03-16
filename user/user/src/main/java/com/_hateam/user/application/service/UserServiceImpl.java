@@ -76,13 +76,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(UserPrincipals userPrincipals) {
+        // 권한검증
+        if(userPrincipals.getRole() == UserRole.COMPANY) {
+            throw new CustomAccessDeniedException("해당 권한으로는 사용할 수 없습니다.");
+        }
+
         return userRepository.findAllByDeletedAtIsNull();
     }
 
 
     @Override
     public User getUser(Long userId){
+
+
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다 " + userId));
     }
@@ -125,16 +132,17 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
 
-
     }
 
     @Override
     public User searchUser(String username,UserPrincipals userPrincipals) {
-
-//        // 본인 검색인지 확인
-//        if (!userPrincipals.getUsername().equals(username)) {
-//            return ResponseDto.failure(HttpStatus.FORBIDDEN, "본인 정보만 검색할 수 있습니다.");
-//        }
+        // 본인 검색인지 확인
+        if (!userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN) {
+            throw new CustomAccessDeniedException("본인의 아이디만 조회가능합니다.");
+        }else if(userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN){
+            return userRepository.findByUsername(username)
+                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        }
 
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
@@ -143,13 +151,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateUserRole(Long userId, UserRole role) {
+    public User updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals) {
+        // 권한검증
+        if(userPrincipals.getRole() != UserRole.ADMIN) {
+            throw new CustomAccessDeniedException("관리자 권한이 필요합니다.");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
         try {
-            // String을 Enum으로 변환
-          //  UserRole userRole = UserRole.valueOf(role.toUpperCase());
             user.setUserRoles(role);
             return userRepository.save(user);
         } catch (IllegalArgumentException e) {
@@ -157,60 +168,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
-    @Override
-    public void approveUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
-//
-//        // 승인 상태로 변경
-//        user.setApproved(true);
-//        userRepository.save(user);
-    }
-
-
-
-
-//    @Transactional
-//    @Override
-//    public AuthResponseDto refreshToken(TokenRefreshRequestDto refreshRequestDto) {
-//        String refreshToken = refreshRequestDto.getRefreshToken();
-//
-//        // 리프레시 토큰 유효성 검사
-//        if (refreshToken == null) {
-//            throw new RuntimeException("리프레시 토큰이 없습니다");
-//        }
-//
-//        try {
-//            // 리프레시 토큰에서 정보 추출
-//            String username = jwtUtil.extractUsername(refreshToken);
-//            String tokenType = jwtUtil.extractTokenType(refreshToken);
-//
-//            // 리프레시 토큰인지 확인
-//            if (!"refresh".equals(tokenType)) {
-//                throw new RuntimeException("유효하지 않은 토큰 타입입니다");
-//            }
-//
-//            // 사용자 정보 조회
-//            User user = userRepository.findByUsername(username)
-//                    .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다: " + username));
-//
-//            // 새 액세스 토큰 생성
-//            String newAccessToken = jwtUtil.generateAccessToken(user.getUsername(), user.getUserId(), user.getUserRoles().name());
-//
-//            // 새 토큰 응답 반환
-//            return AuthResponseDto.builder()
-//                    .accessToken(newAccessToken)
-//                    .refreshToken(refreshToken) // 동일한 리프레시 토큰 반환
-//                    .userId(user.getUserId())
-//                    .email(user.getUsername())
-//                    .role(user.getUserRoles().name())
-//                    .build();
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("토큰 갱신 오류: " + e.getMessage());
-//        }
-//    }
 
 
 }
