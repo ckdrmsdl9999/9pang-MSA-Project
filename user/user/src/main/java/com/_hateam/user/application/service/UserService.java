@@ -1,8 +1,7 @@
 package com._hateam.user.application.service;
 
 
-import com._hateam.user.application.dto.UserSignUpReqDto;
-import com._hateam.user.application.dto.UserUpdateReqDto;
+import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.model.User;
 
 public interface UserService {
@@ -16,11 +15,18 @@ public interface UserService {
 
     public void getAllUsers();
 
-    public void getUser(String username);
+    public User getUser(Long userId);
 
     public void updateUser(UserUpdateReqDto userUpdateReqDto);
 
     public void deleteUser(String username);
 
     public void searchUser(String username);
+
+    AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto);
+
+    // AuthResponseDto refreshToken(TokenRefreshRequestDto refreshRequestDto);
+
+
+
 }

@@ -15,7 +15,7 @@ public interface UserRepository {
 
    //Optional<User> findById(Long userId);
 
-    Optional<User> findById(String userId);
+    Optional<User> findById(Long userId);
 
     Collection<User> findAllByDeletedAtIsNull();
 

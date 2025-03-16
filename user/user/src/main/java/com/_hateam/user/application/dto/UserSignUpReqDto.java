@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Builder
@@ -30,18 +31,18 @@ public class UserSignUpReqDto {
     @NotBlank(message = "슬랙Id를 적어주세요")
     private String slackId;
 
-    @NotBlank(message = "역할을 선택해주세요")
+    @NotNull(message = "역할을 선택해주세요")
     private UserRole role;
 
-    @NotBlank(message = "배송담당자 여부를 선택해주세요")
+    @NotNull(message = "배송담당자 여부를 선택해주세요")
     private boolean isDeliver;
 
 
-    public static User toEntity(UserSignUpReqDto userSignUpReqDto) {
+    public static User toEntity(UserSignUpReqDto userSignUpReqDto, PasswordEncoder passwordEncoder) {
 
-        return User.builder().username(userSignUpReqDto.getUsername()).password(userSignUpReqDto.getPassword()).
-                userRoles(userSignUpReqDto.getRole()).slack_id(userSignUpReqDto.getSlackId()).
-                nickname(userSignUpReqDto.getNickname()).is_deliver(userSignUpReqDto.isDeliver()).build();
+        return User.builder().username(userSignUpReqDto.getUsername()).password(passwordEncoder.encode(userSignUpReqDto.getPassword())).
+                userRoles(userSignUpReqDto.getRole()).slackId(userSignUpReqDto.getSlackId()).
+                nickname(userSignUpReqDto.getNickname()).isDeliver(userSignUpReqDto.isDeliver()).build();
 
     }
 

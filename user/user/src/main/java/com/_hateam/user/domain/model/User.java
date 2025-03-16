@@ -15,6 +15,7 @@ import lombok.*;
 public class User extends Timestamped {
 
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
 
@@ -27,14 +28,14 @@ public class User extends Timestamped {
     @Column(nullable = false)
     String password;
 
-    @Column(nullable = false)
-    String slack_id;
+    @Column(name = "slack_id", nullable = false)
+    String slackId;
 
     @Enumerated(EnumType.STRING)
     UserRole userRoles;
 
-    @Column
-    boolean is_deliver;
+    @Column(name="is_deliver",nullable = false)
+    boolean isDeliver;
 
 
 
