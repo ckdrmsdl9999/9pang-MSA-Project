@@ -6,6 +6,7 @@ import com._hateam.order.application.dto.OrderResponseDto;
 import com._hateam.order.application.dto.OrderSearchDto;
 import com._hateam.order.application.dto.OrderUpdateDto;
 import com._hateam.order.application.service.OrderService;
+import com._hateam.order.domain.model.OrderStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,10 +59,48 @@ public class OrderController {
         return ResponseEntity.ok(ResponseDto.success(responseDtos));
     }
 
-    @Operation(summary = "주문 검색", description = "주문을 검색합니다.")
+    @Operation(summary = "주문 검색", description = "다양한 조건으로 주문을 검색합니다.")
     @GetMapping("/search")
     public ResponseEntity<ResponseDto<List<OrderResponseDto>>> searchOrders(
-            @ModelAttribute OrderSearchDto searchDto) {
+            @Parameter(description = "검색어 (주문 ID, 요청사항 등)")
+            @RequestParam(required = false) String searchTerm,
+
+            @Parameter(description = "주문 상태 (WAITING, IN_DELIVERY, DONE)")
+            @RequestParam(required = false) OrderStatus status,
+
+            @Parameter(description = "조회 시작일 (yyyy-MM-dd 형식)")
+            @RequestParam(required = false) String startDateStr,
+
+            @Parameter(description = "조회 종료일 (yyyy-MM-dd 형식)")
+            @RequestParam(required = false) String endDateStr,
+
+            @Parameter(description = "회사 ID (UUID 형식)")
+            @RequestParam(required = false) UUID companyId,
+
+            @Parameter(description = "허브 ID (UUID 형식)")
+            @RequestParam(required = false) UUID hubId,
+
+            @Parameter(description = "페이지 번호 (1부터 시작)")
+            @RequestParam(defaultValue = "1") Integer page,
+
+            @Parameter(description = "페이지 크기 (10, 30, 50 중 선택)")
+            @RequestParam(defaultValue = "10") Integer size,
+
+            @Parameter(description = "정렬 방향 (asc, desc)")
+            @RequestParam(defaultValue = "desc") String sort) {
+
+        OrderSearchDto searchDto = OrderSearchDto.builder()
+                .searchTerm(searchTerm)
+                .status(status)
+                .startDateStr(startDateStr)
+                .endDateStr(endDateStr)
+                .companyId(companyId)
+                .hubId(hubId)
+                .page(page)
+                .size(size)
+                .sort(sort)
+                .build();
+
         List<OrderResponseDto> responseDtos = orderService.searchOrders(searchDto);
         return ResponseEntity.ok(ResponseDto.success(responseDtos));
     }
