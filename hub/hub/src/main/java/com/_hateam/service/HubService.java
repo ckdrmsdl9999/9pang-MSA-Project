@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,10 +35,10 @@ public class HubService {
 
     @Transactional(readOnly = true)
     public List<HubDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
-        List<HubDto> hubDtoList = new ArrayList<>();
         List<Hub> hubList = hubInfoPaging(page, size, sortBy, isAsc);
-        hubDtoList = hubList.stream().map(HubDto::hubToHubDto).collect(Collectors.toList());
-        return hubDtoList;
+        return hubList.stream()
+                .map(HubDto::hubToHubDto)
+                .collect(Collectors.toList());
     }
 
 
@@ -69,7 +68,12 @@ public class HubService {
     }
 
     private Hub createHubEntity(HubRequestDto requestDto) {
-        Hub hub = Hub.builder().name(requestDto.getName()).address(requestDto.getAddress()).latitude(requestDto.getLatitude()).longitude(requestDto.getLongitude()).build();
+        Hub hub = Hub.builder().
+                name(requestDto.getName()).
+                address(requestDto.getAddress()).
+                latitude(requestDto.getLatitude()).
+                longitude(requestDto.getLongitude()).
+                build();
 
 //        // 시큐리티 컨텍스트에서 인증 정보를 가져와 createdBy 필드 설정
 //            추후 시큐리티 적용시 다시 수정
