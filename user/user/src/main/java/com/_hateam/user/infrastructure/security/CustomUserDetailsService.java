@@ -26,11 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     // 사용자 ID로도 로드할 수 있는 추가 메서드 (필요시 사용)
-    @Transactional(readOnly = true)
+    @Transactional//(readOnly = true)
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자 ID를 찾을 수 없습니다: " + id));
-
+        System.out.print("동근+로드된값"+user.getUserId());
         return UserPrincipal.create(user);
     }
 }

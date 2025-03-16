@@ -4,11 +4,13 @@ import com._hateam.common.dto.ResponseDto;
 import com._hateam.user.application.dto.UserSignInReqDto;
 import com._hateam.user.application.dto.UserSignUpReqDto;
 import com._hateam.user.application.service.UserService;
+import com._hateam.user.infrastructure.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +38,9 @@ public class UserController {
 
 
     @GetMapping("/")//회원조회(자기자신만)
-    public ResponseDto<?> getUser(){
-        Long userId = 3L;
-        return ResponseDto.success(HttpStatus.OK, userService.getUser(userId));
+    public ResponseDto<?> getUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        System.out.println(userPrincipal.getId()+"값 확인!!"+userPrincipal.getAuthorities()+"체크!"+userPrincipal.getPassword());
+        return ResponseDto.success(HttpStatus.OK, userService.getUser(userPrincipal.getId()));
     }
 
     @GetMapping("/admin/{userId}")//관리자단일조회

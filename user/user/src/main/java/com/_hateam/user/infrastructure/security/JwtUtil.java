@@ -56,11 +56,20 @@ public class JwtUtil {
     }
 
     // 토큰검증
+//    public Boolean validateToken(String token, UserDetails userDetails) {
+//        final String username = extractUsername(token);
+//        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//    }
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
+        // 토큰에서 userId 추출
+        final Long userId = extractUserId(token);
 
+        // UserDetails가 UserPrincipal 타입인지 확인하고 ID 일치 여부 검증
+        if (userDetails instanceof UserPrincipal) {
+            return (userId.equals(((UserPrincipal) userDetails).getId()) && !isTokenExpired(token));
+        }
+        return false;
+    }
     // 이름 추출
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -73,6 +82,7 @@ public class JwtUtil {
 
     // 유저 아이디 추출
     public Long extractUserId(String token) {
+        System.out.println("추출완료창근"+extractAllClaims(token).get("userId", Long.class));
         return extractAllClaims(token).get("userId", Long.class);
     }
 
