@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: ./eureka  # Eureka 서버 프로젝트 디렉토리
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  gateway-service:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"  # 외부 접속은 오직 Gateway를 통해서만 이루어짐
+    depends_on:
+      - eureka-server
+
+  hubs-service:
+    build:
+      context: ./hub/hub
+      dockerfile: Dockerfile
+    container_name: hubs-service
+    # 내부 포트만 노출, 외부에는 노출하지 않음
+    depends_on:
+      - eureka-server
+
+networks:
+  default:
+    driver: bridge
