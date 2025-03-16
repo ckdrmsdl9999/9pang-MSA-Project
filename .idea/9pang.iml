@@ -42,5 +42,6 @@
     <orderEntry type="library" name="Gradle: org.springframework.data:spring-data-commons:3.4.2" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:3.4.2" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot:3.4.2" level="project" />
+    <orderEntry type="module" module-name="common.main" />
   </component>
 </module>

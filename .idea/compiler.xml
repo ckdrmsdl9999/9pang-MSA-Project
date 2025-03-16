@@ -20,5 +20,9 @@
         <module name="hub.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="hub_main" target="17" />
+      <module name="hub_test" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
