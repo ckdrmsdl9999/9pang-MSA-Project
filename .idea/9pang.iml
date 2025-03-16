@@ -9,10 +9,6 @@
       <sourceFolder url="file://$MODULE_DIR$/company/product/src/test/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gateway/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gateway/src/test/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/hub/hub-route/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/hub/hub-route/src/test/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/hub/hub/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/hub/hub/src/test/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/message/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/message/src/test/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/order/src/main/java" isTestSource="false" />

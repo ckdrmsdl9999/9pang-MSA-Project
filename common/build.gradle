@@ -45,7 +45,11 @@ dependencies {
 
 	// ✅ OpenFeign (Spring Cloud)
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	
+
+	// ✅ eureka-client (Spring Cloud)
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
