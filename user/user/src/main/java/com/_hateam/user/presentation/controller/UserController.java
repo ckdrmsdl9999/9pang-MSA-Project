@@ -46,6 +46,7 @@ public class UserController {
     @GetMapping("/admin/{userId}")//관리자단일조회(MASTER)
     public ResponseDto<?> getAdminUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
         //관리자만 볼수있게아직적용x
+        System.out.println(userPrincipals.getUsername()+"유저이름확인창근");
         return ResponseDto.success(HttpStatus.OK, userService.getUser(userId));
     }
 
@@ -53,11 +54,11 @@ public class UserController {
     public ResponseDto<?> getAdminSearch(@RequestParam String username,@AuthenticationPrincipal UserPrincipals userPrincipals){
 
         // 관리자 권한 체크 로직 (필요시 추가)
-        return ResponseDto.success(HttpStatus.OK, userService.searchUser(username));
+        return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
     }
 
     @PatchMapping("/roles/{userId}") // 권한 수정(MASTER)
-    public ResponseDto<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto) {
+    public ResponseDto<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,@AuthenticationPrincipal UserPrincipals userPrincipals) {
         return ResponseDto.success(HttpStatus.OK, userService.updateUserRole(userId, roleUpdateDto.getRole()));
     }
 
@@ -65,7 +66,7 @@ public class UserController {
     @GetMapping("/search") // 유저 검색(자기자신만)
     public ResponseDto<?> userSearch(@RequestParam String username, @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
-        return ResponseDto.success(HttpStatus.OK, userService.searchUser(username));
+        return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
     }
 
 //    @GetMapping("/approve/{userId}")//회원가입승인
@@ -84,15 +85,14 @@ public class UserController {
 
 
         //userService.updateUser(userUpdateReqDto,Long.parseLong(userId));
-        return ResponseDto.success(HttpStatus.OK, userService.updateUser(userUpdateReqDto,Long.parseLong(userId)));
+        return ResponseDto.success(HttpStatus.OK, userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));
     }
 
     @DeleteMapping("/{userId}")  // 회원 탈퇴(MASTER)
     public ResponseDto<?> deleteUser(@PathVariable Long userId,
                                      @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
-
-        userService.deleteUser(userPrincipals.getId());  // 또는 username 대신 userId를 사용하도록 서비스 메소드 수정 필요
+        userService.deleteUser(userId,userPrincipals);  // 또는 username 대신 userId를 사용하도록 서비스 메소드 수정 필요
         return ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다.");
     }
 }

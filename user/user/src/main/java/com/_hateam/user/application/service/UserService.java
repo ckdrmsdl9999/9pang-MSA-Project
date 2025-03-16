@@ -4,6 +4,7 @@ package com._hateam.user.application.service;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
+import com._hateam.user.infrastructure.security.UserPrincipals;
 
 import java.util.List;
 
@@ -20,11 +21,11 @@ public interface UserService {
 
     public User getUser(Long userId);
 
-    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId);
+    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, UserPrincipals userPrincipals);
 
-    public void deleteUser(Long userId);
+    public void deleteUser(Long userId,UserPrincipals userPrincipals);
 
-    public User searchUser(String username);
+    public User searchUser(String username,UserPrincipals userPrincipals);
 
     AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto);
 

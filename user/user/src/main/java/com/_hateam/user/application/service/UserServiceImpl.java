@@ -1,6 +1,7 @@
 package com._hateam.user.application.service;
 
 import com._hateam.common.dto.ResponseDto;
+import com._hateam.common.exception.CustomAccessDeniedException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
@@ -88,7 +89,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateUser(UserUpdateReqDto userUpdateReqDto,Long userId){
+    public User updateUser(UserUpdateReqDto userUpdateReqDto,Long userId,UserPrincipals userPrincipals) {
+        // 권한검증
+        if(userPrincipals.getRole() != UserRole.ADMIN) {
+            throw new CustomAccessDeniedException("관리자 권한이 필요합니다.");
+        }
+
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -104,17 +110,26 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+    public void deleteUser(Long userId, UserPrincipals userPrincipals) {
+        // 권한검증
+        if(userPrincipals.getRole() != UserRole.ADMIN) {
+            throw new CustomAccessDeniedException("관리자 권한이 필요합니다.");
+        }
 
-        user.setDeletedAt(LocalDateTime.now());
-        user.setDeletedBy(user.getUsername());
-        userRepository.save(user);
+        // ADMIN 권한이 있을 때 실행할 코드
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+            user.setDeletedAt(LocalDateTime.now());
+            user.setDeletedBy(user.getUsername());
+            userRepository.save(user);
+
+
+
     }
 
     @Override
-    public User searchUser(String username) {
+    public User searchUser(String username,UserPrincipals userPrincipals) {
 
 //        // 본인 검색인지 확인
 //        if (!userPrincipals.getUsername().equals(username)) {
@@ -154,41 +169,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-
-
-
-//    @Transactional
-//    public AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto) {//로그인
-//
-//        try {//사용자인증
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(
-//                            signInReqDto.getUsername(),
-//                            signInReqDto.getPassword()
-//                    )
-//            );
-//        }catch (UsernameNotFoundException e) {
-//            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-//        } catch (BadCredentialsException e) {
-//            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-//        }
-//
-//        // 토큰에 값 담기위해 값 조회
-//        User user = userRepository.findByUsername(signInReqDto.getUsername())
-//                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다: " + signInReqDto.getUsername()));
-//
-//        String accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getUserRoles().name());
-//        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
-//
-//        // Return authentication response with tokens and user info
-//        return AuthResponseDto.builder()
-//                .accessToken("bearer " + accessToken)
-//                .refreshToken(refreshToken)
-//                .userId(user.getUserId())
-//                .role(user.getUserRoles().name())
-//                .build();
-//    }
 
 
 //    @Transactional

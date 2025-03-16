@@ -49,16 +49,11 @@ public class Timestamped {
         this.deletedAt = LocalDateTime.now();
     }
 
-//    public Timestamped() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null && authentication.isAuthenticated()) {
-//            createdBy = authentication.getName();
-//        }
-//    }
     public Timestamped() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             createdBy = authentication.getName();
         }
     }
+
 }
