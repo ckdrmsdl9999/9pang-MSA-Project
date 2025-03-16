@@ -20,9 +20,21 @@ public interface OrderRepository {
             OrderStatus status,
             LocalDateTime startDate,
             LocalDateTime endDate,
+            UUID companyId,
+            UUID hubId,
             int page,
             int size,
             String sort
+    );
+
+    // 검색 결과 개수 조회 메서드
+    long countSearchResults(
+            String searchTerm,
+            OrderStatus status,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            UUID companyId,
+            UUID hubId
     );
 
     void delete(Order order);
