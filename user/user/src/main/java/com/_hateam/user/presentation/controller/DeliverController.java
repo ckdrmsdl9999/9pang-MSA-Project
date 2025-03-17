@@ -5,6 +5,7 @@ import com._hateam.user.application.dto.DeliverUserResponseDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
 import com._hateam.user.application.service.DeliverUserService;
 import com._hateam.user.application.service.UserService;
+import com._hateam.user.domain.model.User;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/delivery-users")
 @RequiredArgsConstructor
-public class DeliverUserController {
+public class DeliverController {
     private final DeliverUserService deliverUserService;
     private final UserService userService;
 
@@ -52,7 +53,7 @@ public class DeliverUserController {
     }
 
     // 배송담당자 단일 조회
-    @GetMapping("/{deliverId}")
+    @GetMapping("/")
     public ResponseEntity<?> getDeliverUser(
             @PathVariable UUID deliverId,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
@@ -61,46 +62,17 @@ public class DeliverUserController {
         return ResponseEntity.ok(deliverUser);
     }
 
-//    // 허브담당자 목록조회
-//    @GetMapping("")
-//    public ResponseEntity<?> getAllDeliverUsers(
-//            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-//
-//        List<DeliverUserResponseDto> deliverUsers = deliverUserService.getAllDeliverUsers(userPrincipals);
-//        return ResponseEntity.ok(deliverUsers);
+
+    // 배송담당자 수정
+    @PostMapping("/{deliverId}")
+    public ResponseEntity<?> updateDeliverUser(
+            @PathVariable UUID deliverId,
+            @RequestBody DeliverUserUpdateReqDto updateDto,
+            @AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        DeliverUserResponseDto updatedDeliverUser = deliverUserService.updateDeliverUser(deliverId, updateDto, userPrincipals);
+        return ResponseEntity.ok(updatedDeliverUser);
     }
-
-//    // 배송담당자 목록 조회(
-//    @GetMapping("/hub/")
-//    public ResponseEntity<?> getDeliverUsersByHub(
-//            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-//
-//        List<DeliverUserResponseDto> deliverUsers = deliverUserService.getDeliverUsersByHubId(hubId, userPrincipals);
-//        return ResponseEntity.ok(deliverUsers);
-//    }
-
-//    // 배송담당자 수정
-//    @PutMapping("/{deliverId}")
-//    public ResponseEntity<?> updateDeliverUser(
-//            @PathVariable UUID deliverId,
-//            @RequestBody DeliverUserUpdateReqDto updateDto,
-//            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-//
-//        DeliverUserResponseDto updatedDeliverUser = deliverUserService.updateDeliverUser(deliverId, updateDto, userPrincipals);
-//        return ResponseEntity.ok(updatedDeliverUser);
-//    }
-//
-//    // 배송담당자 삭제
-//    @DeleteMapping("/{deliverId}")
-//    public ResponseEntity<?> deleteDeliverUser(
-//            @PathVariable UUID deliverId,
-//            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-//
-//        deliverUserService.deleteDeliverUser(deliverId, userPrincipals);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-
 
 
 }
