@@ -1,10 +1,10 @@
-package com._hateam.server;
+package com._hateam.eureka;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ServerApplicationTests {
+class EurekaApplicationTests {
 
 	@Test
 	void contextLoads() {
