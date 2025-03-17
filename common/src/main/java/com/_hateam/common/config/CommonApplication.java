@@ -16,6 +16,5 @@ import java.lang.annotation.*;
 @EnableScheduling       // 스케줄링 활성화
 @EnableFeignClients     // Feign Clients 활성화
 @EnableCaching          // 캐싱 활성화
-
 public @interface CommonApplication {
 }
