@@ -1,11 +1,11 @@
 package com._hateam.common.aistudio;
 
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.CreatedGeminiResponseDto;
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.GeminiRequestDto;
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.GeminiResponseDto;
-import com.ana29.deliverymanagement.externalApi.aistudio.entity.Gemini;
-import com.ana29.deliverymanagement.externalApi.aistudio.feign.GeminiClient;
-import com.ana29.deliverymanagement.externalApi.aistudio.repository.GeminiRepository;
+import com._hateam.common.aistudio.dto.CreatedGeminiResponseDto;
+import com._hateam.common.aistudio.dto.GeminiRequestDto;
+import com._hateam.common.aistudio.dto.GeminiResponseDto;
+import com._hateam.common.aistudio.entity.Gemini;
+import com._hateam.common.aistudio.feign.GeminiClient;
+import com._hateam.common.aistudio.repository.GeminiRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

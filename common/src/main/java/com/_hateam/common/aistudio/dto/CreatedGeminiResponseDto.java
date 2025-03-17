@@ -1,6 +1,7 @@
 package com._hateam.common.aistudio.dto;
 
-import com.ana29.deliverymanagement.externalApi.aistudio.entity.Gemini;
+
+import com._hateam.common.aistudio.entity.Gemini;
 
 import java.util.UUID;
 

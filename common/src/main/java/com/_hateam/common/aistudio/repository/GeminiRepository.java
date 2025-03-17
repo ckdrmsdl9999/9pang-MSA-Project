@@ -1,6 +1,7 @@
 package com._hateam.common.aistudio.repository;
 
-import com.ana29.deliverymanagement.externalApi.aistudio.entity.Gemini;
+
+import com._hateam.common.aistudio.entity.Gemini;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,8 +1,9 @@
 package com._hateam.common.aistudio.feign;
 
-import com.ana29.deliverymanagement.externalApi.aistudio.config.GeminiClientConfig;
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.GeminiRequestDto;
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.GeminiResponseDto;
+
+import com._hateam.common.aistudio.config.GeminiClientConfig;
+import com._hateam.common.aistudio.dto.GeminiRequestDto;
+import com._hateam.common.aistudio.dto.GeminiResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

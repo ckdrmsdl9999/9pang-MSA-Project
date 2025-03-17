@@ -1,9 +1,9 @@
 package com._hateam.common.aistudio.controller;
 
-import com.ana29.deliverymanagement.externalApi.aistudio.GeminiService;
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.CreatedGeminiResponseDto;
-import com.ana29.deliverymanagement.externalApi.aistudio.dto.GeminiRequestDto;
-import com.ana29.deliverymanagement.global.dto.ResponseDto;
+import com._hateam.common.aistudio.GeminiService;
+import com._hateam.common.aistudio.dto.CreatedGeminiResponseDto;
+import com._hateam.common.aistudio.dto.GeminiRequestDto;
+import com._hateam.common.dto.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,7 @@ public class GeminiController {
 
     @PostMapping("/question")
     public ResponseEntity<ResponseDto<CreatedGeminiResponseDto>> geminiGetAnswer(@RequestBody @Valid GeminiRequestDto requestDto){
-        CreatedGeminiResponseDto response = geminiService.generateContent(
-            requestDto);
+        CreatedGeminiResponseDto response = geminiService.generateContent(requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ResponseDto.success(HttpStatus.CREATED, response));

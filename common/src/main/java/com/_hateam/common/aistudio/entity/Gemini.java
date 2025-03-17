@@ -1,6 +1,6 @@
 package com._hateam.common.aistudio.entity;
 
-import com.ana29.deliverymanagement.global.entity.Timestamped;
+import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
