@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/hubs/routes")
+@RequestMapping("/companies/products")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -26,10 +26,10 @@ public class ProductController {
      * 새로운 허브 루트 생성
      */
     @PostMapping
-    public ResponseEntity<ResponseDto<ProductDto>> createHubRoute(
+    public ResponseEntity<ResponseDto<ProductDto>> createProduct(
             @RequestBody @Valid ProductRequestDto requestDto) {
 
-        ProductDto productDto = companyService.createHubRoute(requestDto);
+        ProductDto productDto = companyService.createProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.success(HttpStatus.CREATED, productDto));
     }
@@ -39,13 +39,13 @@ public class ProductController {
      * 예시: GET /hub?page=0&size=10&sortBy=createdAt&isAsc=false
      */
     @GetMapping
-    public ResponseEntity<ResponseDto<List<ProductDto>>> getAllHubRoutes(
+    public ResponseEntity<ResponseDto<List<ProductDto>>> getAllProducts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
 
-        List<ProductDto> productDto = companyService.getAllHubRoutes(page, size, sortBy, isAsc);
+        List<ProductDto> productDto = companyService.getAllProducts(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
@@ -55,8 +55,8 @@ public class ProductController {
      * 특정 허브 루트 상세 조회
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<ProductDto>> getHubRoute(@PathVariable UUID id) {
-        ProductDto productDto = companyService.getHubRoute(id);
+    public ResponseEntity<ResponseDto<ProductDto>> getProduct(@PathVariable UUID id) {
+        ProductDto productDto = companyService.getProduct(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
@@ -65,10 +65,10 @@ public class ProductController {
      * 특정 허브 루트 수정
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto<ProductDto>> updateHubRoute(
+    public ResponseEntity<ResponseDto<ProductDto>> updateProduct(
             @PathVariable UUID id,
             @RequestBody @Valid ProductRequestDto requestDto) {
-        ProductDto productDto = companyService.updateHubRoute(id, requestDto);
+        ProductDto productDto = companyService.updateProduct(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
@@ -77,8 +77,8 @@ public class ProductController {
      * 특정 허브 루트 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<String>> deleteHubRoute(@PathVariable UUID id) {
-        companyService.deleteHubRoute(id);
+    public ResponseEntity<ResponseDto<String>> deleteProduct(@PathVariable UUID id) {
+        companyService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Product deleted successfully"));
     }

@@ -26,28 +26,28 @@ public class CompanyController {
      * 새로운 허브 생성
      */
     @PostMapping
-    public ResponseEntity<ResponseDto<CompanyDto>> createHub(
+    public ResponseEntity<ResponseDto<CompanyDto>> createCompany(
             @RequestBody @Valid CompanyRequestDto requestDto) {
 
-        CompanyDto hub = productService.createHub(requestDto);
+        CompanyDto company = productService.createCompany(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.success(HttpStatus.CREATED, hub));
+                .body(ResponseDto.success(HttpStatus.CREATED, company));
     }
 
     /**
      * 전체 허브 목록 조회 (페이지네이션 지원)
-     * 예시: GET /hub?page=0&size=10&sortBy=createdAt&isAsc=false
+     * 예시: GET /Company?page=0&size=10&sortBy=createdAt&isAsc=false
      */
     @GetMapping
-    public ResponseEntity<ResponseDto<List<CompanyDto>>> getAllHubs(
+    public ResponseEntity<ResponseDto<List<CompanyDto>>> getAllCompanies(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
 
-        List<CompanyDto> hubs = productService.getAllHubs(page, size, sortBy, isAsc);
+        List<CompanyDto> companies = productService.getAllCompanies(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, hubs));
+                .body(ResponseDto.success(HttpStatus.OK, companies));
     }
 
 
@@ -55,30 +55,30 @@ public class CompanyController {
      * 특정 허브 허브상세 조회
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<CompanyDto>> getHub(@PathVariable UUID id) {
-        CompanyDto hub = productService.getHub(id);
+    public ResponseEntity<ResponseDto<CompanyDto>> getCompany(@PathVariable UUID id) {
+        CompanyDto company = productService.getCompany(id);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, hub));
+                .body(ResponseDto.success(HttpStatus.OK, company));
     }
 
     /**
      * 특정 허브 수정
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto<CompanyDto>> updateHub(
+    public ResponseEntity<ResponseDto<CompanyDto>> updateCompany(
             @PathVariable UUID id,
             @RequestBody @Valid CompanyRequestDto requestDto) {
-        CompanyDto updateHub = productService.updateHub(id, requestDto);
+        CompanyDto updateCompany = productService.updateCompany(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, updateHub));
+                .body(ResponseDto.success(HttpStatus.OK, updateCompany));
     }
 
     /**
      * 특정 허브 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<String>> deleteHub(@PathVariable UUID id) {
-        productService.deleteHub(id);
+    public ResponseEntity<ResponseDto<String>> deleteCompany(@PathVariable UUID id) {
+        productService.deleteCompany(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Company deleted successfully"));
     }
