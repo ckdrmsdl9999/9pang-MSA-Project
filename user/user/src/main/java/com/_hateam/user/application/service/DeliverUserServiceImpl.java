@@ -145,6 +145,35 @@ public class DeliverUserServiceImpl implements DeliverUserService {
         return DeliverUserResponseDto.from(updatedDeliverUser);
     }
 
+    // 배송담당자 삭제
+    @Override
+    @Transactional
+    public void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals) {
+        // 권한 검증
+        if (userPrincipals.getRole() != UserRole.ADMIN) {
+            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
+        }
+
+        DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
+                .orElseThrow(() -> new CustomNotFoundException("삭제하려는 배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
+
+        if (deliverUser.getDeletedAt() != null) {
+            throw new CustomNotFoundException("이미 삭제된 배송담당자입니다.");
+        }
+
+        // 논리적 삭제 처리
+        deliverUser.setDeletedAt(LocalDateTime.now());
+        deliverUser.setDeletedBy(userPrincipals.getUsername());
+        deliverUserRepository.save(deliverUser);
+
+        // 관련 User 엔티티 업데이트
+        User user = deliverUser.getUser();
+        if (user != null) {
+            user.setDeliver(false);
+            userRepository.save(user);
+        }
+    }
+
 
 
 }

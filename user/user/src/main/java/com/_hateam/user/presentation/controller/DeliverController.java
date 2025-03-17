@@ -29,7 +29,7 @@ public class DeliverController {
             @RequestBody DeliverUserCreateReqDto deliverUserCreateReqDto,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(deliverUserService.createDeliverUser(deliverUserCreateReqDto));
+        return ResponseEntity.status(HttpStatus.OK).body(deliverUserService.createDeliverUser(deliverUserCreateReqDto));
 
     }
 
@@ -40,7 +40,7 @@ public class DeliverController {
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         List<DeliverUserResponseDto> results = deliverUserService.searchDeliverUsersByName(name, userPrincipals);
-        return ResponseEntity.ok(results);
+        return ResponseEntity.status(HttpStatus.OK).body(results);
     }
 
     // 마스터 관리자 전체 조회
@@ -49,18 +49,31 @@ public class DeliverController {
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         List<DeliverUserResponseDto> deliverUsers = deliverUserService.getAllDeliverUsers(userPrincipals);
-        return ResponseEntity.ok(deliverUsers);
+        return ResponseEntity.status(HttpStatus.OK).body(deliverUsers);
     }
 
-    // 배송담당자 단일 조회
+    // 배송담당자 단일 조회(자기자신조회)
     @GetMapping("/")
     public ResponseEntity<?> getDeliverUser(
             @PathVariable UUID deliverId,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         DeliverUserResponseDto deliverUser = deliverUserService.getDeliverUserById(deliverId, userPrincipals);
-        return ResponseEntity.ok(deliverUser);
+        return ResponseEntity.status(HttpStatus.OK).body(deliverUser);
     }
+
+//    // 허브담당자 단일 조회(담당허브만 조회)
+//    @GetMapping("/")
+//    public ResponseEntity<?> getHubDeliverUser(
+//            @PathVariable UUID deliverId,
+//            @AuthenticationPrincipal UserPrincipals userPrincipals) {
+//
+//        DeliverUserResponseDto deliverUser = deliverUserService.getDeliverUserById(deliverId, userPrincipals);
+//        return ResponseEntity.status(HttpStatus.OK).body(deliverUser);
+//    }
+
+
+
 
 
     // 배송담당자 수정
@@ -71,8 +84,17 @@ public class DeliverController {
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         DeliverUserResponseDto updatedDeliverUser = deliverUserService.updateDeliverUser(deliverId, updateDto, userPrincipals);
-        return ResponseEntity.ok(updatedDeliverUser);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedDeliverUser);
     }
 
+    // 배송담당자 삭제
+    @DeleteMapping("/{deliverId}")
+    public ResponseEntity<?> deleteDeliverUser(
+            @PathVariable UUID deliverId,
+            @AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        deliverUserService.deleteDeliverUser(deliverId, userPrincipals);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
 }

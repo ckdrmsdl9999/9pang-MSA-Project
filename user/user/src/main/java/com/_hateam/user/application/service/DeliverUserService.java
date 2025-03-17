@@ -30,8 +30,8 @@ public interface DeliverUserService {
     // 배송담당자 수정
     DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, UserPrincipals userPrincipals);
 //
-//    // 배송담당자 삭제
-//    void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals);
+    // 배송담당자 삭제
+    void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals);
 
 
 
