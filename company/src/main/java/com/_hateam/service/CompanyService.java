@@ -28,16 +28,16 @@ public class CompanyService {
     public CompanyDto createCompany(CompanyRequestDto requestDto) {
         // Company 엔티티 생성: 요청 DTO의 값으로 빌더를 사용
         Company company = Company.builder()
-                .hub_id(requestDto.getHubId())
-                .user_id(requestDto.getUserId())
-                .company_name(requestDto.getCompanyName())
-                .company_address(requestDto.getCompanyAddress())
-                .company_type(requestDto.getCompanyType())
-                .postal_code(requestDto.getPostalCode())
+                .hubId(requestDto.getHubId())
+                .userId(requestDto.getUserId())
+                .companyName(requestDto.getCompanyName())
+                .companyAddress(requestDto.getCompanyAddress())
+                .companyType(requestDto.getCompanyType())
+                .postalCode(requestDto.getPostalCode())
                 .build();
 
         companyRepository.save(company);
-        return CompanyDto.fromEntity(company);
+        return CompanyDto.companyToCompanyDto(company);
     }
 
     @Transactional(readOnly = true)
@@ -51,14 +51,14 @@ public class CompanyService {
                         sortBy.equals("updatedAt") ? "updatedAt" : "createdAt"));
         List<Company> companyList = companyRepository.findAll(pageable).getContent();
         return companyList.stream()
-                .map(CompanyDto::fromEntity)
+                .map(CompanyDto::companyToCompanyDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CompanyDto getCompany(UUID id) {
         Company company = findCompany(id);
-        return CompanyDto.fromEntity(company);
+        return CompanyDto.companyToCompanyDto(company);
     }
 
     @Transactional
@@ -71,8 +71,7 @@ public class CompanyService {
         company.setCompanyAddress(requestDto.getCompanyAddress());
         company.setCompanyType(requestDto.getCompanyType());
         company.setPostalCode(requestDto.getPostalCode());
-        // 트랜잭션 내에서 변경 감지가 일어나면 저장 호출 없이 업데이트가 반영됨.
-        return CompanyDto.fromEntity(company);
+        return CompanyDto.companyToCompanyDto(company);
     }
 
     @Transactional
