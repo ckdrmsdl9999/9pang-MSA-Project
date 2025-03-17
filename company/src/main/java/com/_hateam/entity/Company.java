@@ -27,14 +27,14 @@ public class Company extends Timestamped {
     private UUID hubId;
 
     // 관리자 id
-    @Column(name = "user_id", nullable = false, length = 50, unique = true)
+    @Column(name = "user_id", nullable = false, length = 50)
     private String userId;
 
-    @Column(name = "company_name", nullable = false, length = 255)
-    private String companyName;
+    @Column(name = "company_name", nullable = false, length = 255, unique = true)
+    private String name;
 
     @Column(name = "company_address", nullable = false, length = 20)
-    private String companyAddress;
+    private String address;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "company_type", nullable = false, length = 20)

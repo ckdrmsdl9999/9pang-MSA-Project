@@ -24,7 +24,7 @@ public class Product extends Timestamped {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50, unique = true)
     private String name;
 
     @Column(name = "quantity", nullable = false)

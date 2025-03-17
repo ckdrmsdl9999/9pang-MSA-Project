@@ -23,7 +23,7 @@ public class ProductController {
     private final ProductService productService;
 
     /**
-     * 새로운 허브 루트 생성
+     * 새로운 상품 생성
      */
     @PostMapping
     public ResponseEntity<ResponseDto<ProductDto>> createProduct(
@@ -35,8 +35,7 @@ public class ProductController {
     }
 
     /**
-     * 전체 허브 루트 목록 조회 (페이지네이션 지원)
-     * 예시: GET /hub?page=0&size=10&sortBy=createdAt&isAsc=false
+     * 전체 상품 목록 조회 (페이지네이션 지원)
      */
     @GetMapping
     public ResponseEntity<ResponseDto<List<ProductDto>>> getAllProducts(
@@ -52,7 +51,7 @@ public class ProductController {
 
 
     /**
-     * 특정 허브 루트 상세 조회
+     * 특정 상품 상세 조회
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<ProductDto>> getProduct(@PathVariable UUID id) {
@@ -62,7 +61,7 @@ public class ProductController {
     }
 
     /**
-     * 특정 허브 루트 수정
+     * 특정 상품 수정
      */
     @PatchMapping("/{id}")
     public ResponseEntity<ResponseDto<ProductDto>> updateProduct(
@@ -74,7 +73,7 @@ public class ProductController {
     }
 
     /**
-     * 특정 허브 루트 삭제
+     * 특정 상품 삭제
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<String>> deleteProduct(@PathVariable UUID id) {

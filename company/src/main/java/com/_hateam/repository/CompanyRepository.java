@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
+    Optional<Object> findByNameAndDeletedAtIsNull(String name);
 }

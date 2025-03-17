@@ -44,8 +44,8 @@ public class CompanyDto {
                 .id(company.getId())
                 .hubId(company.getHubId())
                 .userId(company.getUserId())
-                .companyName(company.getCompanyName())
-                .companyAddress(company.getCompanyAddress())
+                .companyName(company.getName())
+                .companyAddress(company.getAddress())
                 .companyType(company.getCompanyType())
                 .postalCode(company.getPostalCode())
                 .build();

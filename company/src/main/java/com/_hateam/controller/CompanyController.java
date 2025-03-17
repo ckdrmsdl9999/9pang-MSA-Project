@@ -23,7 +23,7 @@ public class CompanyController {
     private final CompanyService companyService;
 
     /**
-     * 새로운 허브 생성
+     * 새로운 업체 생성
      */
     @PostMapping
     public ResponseEntity<ResponseDto<CompanyDto>> createCompany(
@@ -35,8 +35,7 @@ public class CompanyController {
     }
 
     /**
-     * 전체 허브 목록 조회 (페이지네이션 지원)
-     * 예시: GET /Company?page=0&size=10&sortBy=createdAt&isAsc=false
+     * 전체 업체 목록 조회 (페이지네이션 지원)
      */
     @GetMapping
     public ResponseEntity<ResponseDto<List<CompanyDto>>> getAllCompanies(
@@ -52,7 +51,7 @@ public class CompanyController {
 
 
     /**
-     * 특정 허브 허브상세 조회
+     * 특정 업체 상세 조회
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<CompanyDto>> getCompany(@PathVariable UUID id) {
@@ -62,7 +61,7 @@ public class CompanyController {
     }
 
     /**
-     * 특정 허브 수정
+     * 특정 업체 수정
      */
     @PatchMapping("/{id}")
     public ResponseEntity<ResponseDto<CompanyDto>> updateCompany(
@@ -74,7 +73,7 @@ public class CompanyController {
     }
 
     /**
-     * 특정 허브 삭제
+     * 특정 업체 삭제
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<String>> deleteCompany(@PathVariable UUID id) {
