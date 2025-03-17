@@ -1,9 +1,9 @@
 package com._hateam.entity;
 
+import com._hateam.CompanyType;
 import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -12,65 +12,49 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
-@Table(name = "p_hub")
+@Table(name = "p_company")
 public class Company extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "hub_id", nullable = false)
+    @Column(name = "company_id", nullable = false)
     private UUID id;
 
-    @Column(name = "name", nullable = false, length = 50, unique = true)
-    private String name;
+    // 소속 허브 id (필요한 경우 별도 매핑)
+    @Column(name = "hub_id", nullable = false, length = 50, unique = true)
+    private UUID hub_id;
 
-    @Column(name = "address", nullable = false, length = 255)
-    private String address;
+    // 관리자 id
+    @Column(name = "user_id", nullable = false, length = 50, unique = true)
+    private String user_id;
 
-    @Column(name = "latitude", nullable = false, length = 20)
-    private String latitude;
+    @Column(name = "company_name", nullable = false, length = 255)
+    private String company_name;
 
-    @Column(name = "longitude", nullable = false, length = 20)
-    private String longitude;
+    @Column(name = "company_address", nullable = false, length = 20)
+    private String company_address;
 
-    // 해당 Hub가 출발지로 사용된 경로들 (선택적)
-    @OneToMany(mappedBy = "sourceHub", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> outboundRoutes = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "company_type", nullable = false, length = 20)
+    private CompanyType company_type;
 
-    // 해당 Hub가 도착지로 사용된 경로들 (선택적)
-    @OneToMany(mappedBy = "destinationHub", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> inboundRoutes = new ArrayList<>();
+    @Column(name = "postal_code", nullable = false, length = 5)
+    private String postal_code;
 
-    /**
-     * 출발지 경로 추가 (양방향 연관관계 설정)
-     */
-    public void addOutboundRoute(Product product) {
-        outboundRoutes.add(product);
-        product.setSourceCompany(this);
+    // One-to-Many 관계: 하나의 Company는 여러 Product를 가질 수 있음 (Products는 선택적임)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
+
+    // 양방향 연관관계 관리 편의 메소드
+    public void addProduct(Product product) {
+        products.add(product);
+        product.setCompany(this);
     }
 
-    /**
-     * 도착지 경로 추가 (양방향 연관관계 설정)
-     */
-    public void addInboundRoute(Product product) {
-        inboundRoutes.add(product);
-        product.setDestinationCompany(this);
-    }
-
-    /**
-     * 경로 제거 (출발지 기준)
-     */
-    public void removeOutboundRoute(Product product) {
-        outboundRoutes.remove(product);
-        product.setSourceCompany(null);
-    }
-
-    /**
-     * 경로 제거 (도착지 기준)
-     */
-    public void removeInboundRoute(Product product) {
-        inboundRoutes.remove(product);
-        product.setDestinationCompany(null);
+    public void removeProduct(Product product) {
+        products.remove(product);
+        product.setCompany(null);
     }
 }

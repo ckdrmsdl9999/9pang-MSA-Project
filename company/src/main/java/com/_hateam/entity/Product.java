@@ -3,7 +3,6 @@ package com._hateam.entity;
 import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.UUID;
 
 @Entity
@@ -12,27 +11,28 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 통한 생성만 허용
 @Builder
-@Table(name = "p_hub_route")
+@Table(name = "p_product")
 public class Product extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "hub_route_id", nullable = false)
+    @Column(name = "product_id", nullable = false)
     private UUID id;
 
-    // 출발지 허브와의 연관관계 (mandatory)
+    // Many-to-One 관계: 각 Product는 반드시 하나의 Company에 속함
     @ManyToOne(optional = false)
-    @JoinColumn(name = "source_hub_id", nullable = false)
-    private Company sourceCompany;
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
-    // 도착지 허브와의 연관관계 (mandatory)
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "destination_hub_id", nullable = false)
-    private Company destinationCompany;
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
 
-    @Column(name = "distance_km")
-    private Long distanceKm;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
-    @Column(name = "estimated_time_minutes")
-    private Integer estimatedTimeMinutes;
+    @Column(name = "description", nullable = false, length = 255)
+    private String description;
+
+    @Column(name = "price", nullable = false)
+    private Integer price;
 }
