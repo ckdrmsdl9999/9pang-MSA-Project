@@ -32,8 +32,8 @@ dependencies {
 	// spring web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// eureka client
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+//	// eureka client
+//	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -66,6 +66,9 @@ dependencies {
 
 	// common
 	implementation 'com.9hateam:common:0.0.1-SNAPSHOT'
+
+	// security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 dependencyManagement {
