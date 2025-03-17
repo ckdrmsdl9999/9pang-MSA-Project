@@ -1,13 +1,10 @@
 package com._hateam.dto;
 
+import com._hateam.CompanyType;
 import com._hateam.entity.Company;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -17,34 +14,40 @@ import java.util.UUID;
 @Builder
 public class CompanyDto {
 
-    @NotNull(message = "허브 ID는 필수입니다.")
+    @NotNull(message = "회사 ID는 필수입니다.")
     private UUID id;
 
-    @NotNull(message = "허브 명은 필수입니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9가-힣\\s]{1,20}$", message = "허브 명은 특수문자를 제외한 20자 이하여야 합니다.")
-    private String name;
+    @NotNull(message = "소속 허브 ID는 필수입니다.")
+    private UUID hubId; // 엔티티의 hub_id와 대응
 
-    @NotNull(message = "주소는 필수입니다.")
-    @Size(max = 255, message = "주소는 255자 이하여야 합니다.")
-    private String address;
+    @NotNull(message = "관리자 ID는 필수입니다.")
+    @Size(max = 50, message = "관리자 ID는 50자 이하여야 합니다.")
+    private String userId;
 
-    @NotNull(message = "위도는 필수입니다.")
-    @Size(max = 20, message = "위도는 20자 이하여야 합니다.")
-    private String latitude;
+    @NotNull(message = "회사 이름은 필수입니다.")
+    @Size(max = 255, message = "회사 이름은 255자 이하여야 합니다.")
+    private String companyName;
 
-    @NotNull(message = "경도는 필수입니다.")
-    @Size(max = 20, message = "경도는 20자 이하여야 합니다.")
-    private String longitude;
+    @NotNull(message = "회사 주소는 필수입니다.")
+    @Size(max = 20, message = "회사 주소는 20자 이하여야 합니다.")
+    private String companyAddress;
 
-    // Company 엔티티를 HubDto로 변환하는 정적 팩토리 메소드
-    public static CompanyDto hubToHubDto(Company company) {
+    @NotNull(message = "회사 타입은 필수입니다.")
+    private CompanyType companyType;
+
+    @NotNull(message = "우편번호는 필수입니다.")
+    @Size(max = 5, message = "우편번호는 5자 이하여야 합니다.")
+    private String postalCode;
+
+    public static CompanyDto companyToCompanyDto(Company company) {
         return CompanyDto.builder()
                 .id(company.getId())
-                .name(company.getName())
-                .address(company.getAddress())
-                .latitude(company.getLatitude())
-                .longitude(company.getLongitude())
+                .hubId(company.getHubId())
+                .userId(company.getUserId())
+                .companyName(company.getCompanyName())
+                .companyAddress(company.getCompanyAddress())
+                .companyType(company.getCompanyType())
+                .postalCode(company.getPostalCode())
                 .build();
     }
-
 }

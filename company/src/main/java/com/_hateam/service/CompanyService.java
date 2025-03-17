@@ -26,107 +26,59 @@ public class CompanyService {
 
     @Transactional
     public CompanyDto createCompany(CompanyRequestDto requestDto) {
-        // 출발지와 도착지 ID가 동일하면 예외 발생
-        validateSourceAndDestinationDifferent(requestDto);
-
-        // 출발지와 도착지 Company 객체 조회
-        Company sourceCompany = getHubById(requestDto.getSourceHubId(), "출발지");
-        Company destinationCompany = getHubById(requestDto.getDestinationHubId(), "도착지");
-
-        // Company 엔티티 생성 (선택적 필드 포함)
-        Company Company = Company.builder()
-                .sourceCompany(sourceCompany)
-                .destinationCompany(destinationCompany)
-                .distanceKm(requestDto.getDistanceKm())
-                .estimatedTimeMinutes(requestDto.getEstimatedTimeMinutes())
+        // Company 엔티티 생성: 요청 DTO의 값으로 빌더를 사용
+        Company company = Company.builder()
+                .hub_id(requestDto.getHubId())
+                .user_id(requestDto.getUserId())
+                .company_name(requestDto.getCompanyName())
+                .company_address(requestDto.getCompanyAddress())
+                .company_type(requestDto.getCompanyType())
+                .postal_code(requestDto.getPostalCode())
                 .build();
 
-        companyRepository.save(Company);
-        return CompanyDto.fromEntity(Company);
+        companyRepository.save(company);
+        return CompanyDto.fromEntity(company);
     }
-
 
     @Transactional(readOnly = true)
     public List<CompanyDto> getAllCompanies(int page, int size, String sortBy, boolean isAsc) {
-        // 페이징, 정렬 처리
-        List<Company> CompanyList = hubInfoPaging(page, size, sortBy, isAsc);
-        return CompanyList.stream()
+        // 페이지 사이즈가 10, 30, 50 외의 값이면 기본 10으로 설정 (필요시)
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
+                        sortBy.equals("updatedAt") ? "updatedAt" : "createdAt"));
+        List<Company> companyList = companyRepository.findAll(pageable).getContent();
+        return companyList.stream()
                 .map(CompanyDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CompanyDto getCompany(UUID id) {
-        Company Company = findCompany(id);
-        return CompanyDto.fromEntity(Company);
+        Company company = findCompany(id);
+        return CompanyDto.fromEntity(company);
     }
 
     @Transactional
     public CompanyDto updateCompany(UUID id, CompanyRequestDto requestDto) {
-        Company Company = findCompany(id);
-
-        // 출발지와 도착지 ID가 동일하면 예외 발생
-        validateSourceAndDestinationDifferent(requestDto);
-
-        // 출발지 허브 업데이트 (ID가 변경된 경우)
-        if (requestDto.getSourceHubId() != null &&
-                !requestDto.getSourceHubId().equals(Company.getSourceCompany().getId())) {
-            Company newSourceCompany = getHubById(requestDto.getSourceHubId(), "출발지");
-            Company.setSourceCompany(newSourceCompany);
-        }
-
-        // 도착지 허브 업데이트 (ID가 변경된 경우)
-        if (requestDto.getDestinationHubId() != null &&
-                !requestDto.getDestinationHubId().equals(Company.getDestinationCompany().getId())) {
-            Company newDestinationCompany = getHubById(requestDto.getDestinationHubId(), "도착지");
-            Company.setDestinationCompany(newDestinationCompany);
-        }
-
-        // 기타 필드 업데이트
-        Company.setDistanceKm(requestDto.getDistanceKm());
-        Company.setEstimatedTimeMinutes(requestDto.getEstimatedTimeMinutes());
-
-        return CompanyDto.fromEntity(Company);
+        Company company = findCompany(id);
+        // 기존 Company 필드를 요청 DTO 값으로 업데이트
+        company.setHubId(requestDto.getHubId());
+        company.setUserId(requestDto.getUserId());
+        company.setCompanyName(requestDto.getCompanyName());
+        company.setCompanyAddress(requestDto.getCompanyAddress());
+        company.setCompanyType(requestDto.getCompanyType());
+        company.setPostalCode(requestDto.getPostalCode());
+        // 트랜잭션 내에서 변경 감지가 일어나면 저장 호출 없이 업데이트가 반영됨.
+        return CompanyDto.fromEntity(company);
     }
-
 
     @Transactional
     public void deleteCompany(UUID id) {
-        Company Company = findCompany(id);
-        companyRepository.delete(Company);
-    }
-
-    /**
-     * 요청 DTO에서 출발지와 도착지 Company ID가 동일하면 예외 발생.
-     */
-    private void validateSourceAndDestinationDifferent(CompanyRequestDto requestDto) {
-        if (requestDto.getSourceHubId().equals(requestDto.getDestinationHubId())) {
-            throw new IllegalArgumentException("출발지와 도착지는 동일할 수 없습니다.");
-        }
-    }
-
-    private Company getHubById(UUID hubId, String hubType) {
-        return companyRepository.findById(hubId)
-                .orElseThrow(() -> new EntityNotFoundException(hubType + " 허브를 찾을 수 없습니다. ID: " + hubId));
-    }
-
-
-    private List<Company> hubInfoPaging(int page, int size, String sortBy, boolean isAsc) {
-        if (size != 10 && size != 30 && size != 50) {
-            size = 10;
-        }
-        long totalRoutes = companyRepository.count();
-        int totalPages = (int) Math.ceil((double) totalRoutes / size);
-
-        if (page >= totalPages && totalRoutes > 0) {
-            throw new IllegalArgumentException("요청한 페이지 번호(" + page + ")가 전체 페이지 수(" + totalPages + ")를 초과합니다.");
-        }
-
-        // sortBy 파라미터가 "updatedAt"이면 updatedAt, 그 외는 createdAt으로 정렬
-        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
-                sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return companyRepository.findAll(pageable).getContent();
+        Company company = findCompany(id);
+        companyRepository.delete(company);
     }
 
     private Company findCompany(UUID id) {

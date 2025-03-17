@@ -24,24 +24,24 @@ public class Company extends Timestamped {
 
     // 소속 허브 id (필요한 경우 별도 매핑)
     @Column(name = "hub_id", nullable = false, length = 50, unique = true)
-    private UUID hub_id;
+    private UUID hubId;
 
     // 관리자 id
     @Column(name = "user_id", nullable = false, length = 50, unique = true)
-    private String user_id;
+    private String userId;
 
     @Column(name = "company_name", nullable = false, length = 255)
-    private String company_name;
+    private String companyName;
 
     @Column(name = "company_address", nullable = false, length = 20)
-    private String company_address;
+    private String companyAddress;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "company_type", nullable = false, length = 20)
-    private CompanyType company_type;
+    private CompanyType companyType;
 
     @Column(name = "postal_code", nullable = false, length = 5)
-    private String postal_code;
+    private String postalCode;
 
     // One-to-Many 관계: 하나의 Company는 여러 Product를 가질 수 있음 (Products는 선택적임)
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)

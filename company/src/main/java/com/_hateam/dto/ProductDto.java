@@ -1,11 +1,10 @@
 package com._hateam.dto;
 
+import com._hateam.entity.Company;
 import com._hateam.entity.Product;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -15,27 +14,34 @@ import java.util.UUID;
 @Builder
 public class ProductDto {
 
-    @NotNull(message = "허브 경로 ID는 필수입니다.")
+    @NotNull(message = "상품 ID는 필수입니다.")
     private UUID id;
 
-    @NotNull(message = "출발지 허브 정보는 필수입니다.")
-    private CompanyDto sourceHub;
+    @NotNull(message = "소속 회사 ID는 필수입니다.")
+    private UUID companyId;
 
-    @NotNull(message = "도착지 허브 정보는 필수입니다.")
-    private CompanyDto destinationHub;
+    @NotNull(message = "상품 이름은 필수입니다.")
+    @Size(max = 50, message = "상품 이름은 50자 이하여야 합니다.")
+    private String name;
 
-    // 선택적 필드: 거리(킬로미터)와 예상 소요 시간(분)
-    private Long distanceKm;
-    private Integer estimatedTimeMinutes;
+    @NotNull(message = "수량은 필수입니다.")
+    private Integer quantity;
 
-    // Product 엔티티를 DTO로 변환하는 정적 팩토리 메소드
-    public static ProductDto fromEntity(Product product) {
+    @NotNull(message = "상품 설명은 필수입니다.")
+    @Size(max = 255, message = "상품 설명은 255자 이하여야 합니다.")
+    private String description;
+
+    @NotNull(message = "가격은 필수입니다.")
+    private Integer price;
+
+    public static ProductDto productToProductDto(Product product) {
         return ProductDto.builder()
                 .id(product.getId())
-                .sourceHub(CompanyDto.hubToHubDto(product.getSourceCompany()))
-                .destinationHub(CompanyDto.hubToHubDto(product.getDestinationCompany()))
-                .distanceKm(product.getDistanceKm())
-                .estimatedTimeMinutes(product.getEstimatedTimeMinutes())
+                .companyId(product.getCompany().getId())
+                .name(product.getName())
+                .quantity(product.getQuantity())
+                .description(product.getDescription())
+                .price(product.getPrice())
                 .build();
     }
 }
