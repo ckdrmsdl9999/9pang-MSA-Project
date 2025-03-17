@@ -1,9 +1,9 @@
 package com._hateam.service;
 
-import com._hateam.dto.CompanyDto;
-import com._hateam.dto.CompanyRequestDto;
-import com._hateam.entity.Company;
-import com._hateam.repository.CompanyRepository;
+import com._hateam.dto.ProductDto;
+import com._hateam.dto.ProductRequestDto;
+import com._hateam.entity.Product;
+import com._hateam.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,52 +23,52 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final CompanyRepository companyRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
-    public CompanyDto createHub(CompanyRequestDto requestDto) {
+    public ProductDto createProduct(ProductRequestDto requestDto) {
         validateDuplicateHub(requestDto);
-        Company company = createHubEntity(requestDto);
-        companyRepository.save(company);
-        return CompanyDto.hubToHubDto(company);
+        Product Product = createHubEntity(requestDto);
+        productRepository.save(Product);
+        return ProductDto.hubToHubDto(Product);
     }
 
     @Transactional(readOnly = true)
-    public List<CompanyDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
-        List<Company> companyList = hubInfoPaging(page, size, sortBy, isAsc);
-        return companyList.stream()
-                .map(CompanyDto::hubToHubDto)
+    public List<ProductDto> getAllProducts(int page, int size, String sortBy, boolean isAsc) {
+        List<Product> ProductList = hubInfoPaging(page, size, sortBy, isAsc);
+        return ProductList.stream()
+                .map(ProductDto::hubToHubDto)
                 .collect(Collectors.toList());
     }
 
 
     @Transactional(readOnly = true)
-    public CompanyDto getHub(UUID id) {
-        Company company = findHub(id);
-        return CompanyDto.hubToHubDto(company);
+    public ProductDto getProduct(UUID id) {
+        Product Product = findHub(id);
+        return ProductDto.hubToHubDto(Product);
     }
 
     @Transactional
-    public CompanyDto updateHub(UUID id, CompanyRequestDto requestDto) {
-        Company company = findHub(id);
-        updateHubInfo(company, requestDto);
-        return CompanyDto.hubToHubDto(company);
+    public ProductDto updateProduct(UUID id, ProductRequestDto requestDto) {
+        Product Product = findHub(id);
+        updateHubInfo(Product, requestDto);
+        return ProductDto.hubToHubDto(Product);
     }
 
     @Transactional
-    public void deleteHub(UUID id) {
-        Company company = findHub(id);
-        companyRepository.delete(company);
+    public void deleteProduct(UUID id) {
+        Product Product = findHub(id);
+        productRepository.delete(Product);
     }
 
-    private void validateDuplicateHub(CompanyRequestDto requestDto) {
-        companyRepository.findByNameAndDeletedAtIsNull(requestDto.getName()).ifPresent(m -> {
+    private void validateDuplicateHub(ProductRequestDto requestDto) {
+        productRepository.findByNameAndDeletedAtIsNull(requestDto.getName()).ifPresent(m -> {
             throw new IllegalArgumentException("중복된 허브가 존재합니다.");
         });
     }
 
-    private Company createHubEntity(CompanyRequestDto requestDto) {
-        Company company = Company.builder().
+    private Product createHubEntity(ProductRequestDto requestDto) {
+        Product Product = Product.builder().
                 name(requestDto.getName()).
                 address(requestDto.getAddress()).
                 latitude(requestDto.getLatitude()).
@@ -78,19 +78,19 @@ public class ProductService {
 //        // 시큐리티 컨텍스트에서 인증 정보를 가져와 createdBy 필드 설정
 //            추후 시큐리티 적용시 다시 수정
 //        CreatedInfo createdInfo = new CreatedInfo();
-//        company.setCreatedBy(createdInfo.getCreatedBy());
-//        company.setCreatedAt(createdInfo.getCreatedAt());
-        return company;
+//        Product.setCreatedBy(createdInfo.getCreatedBy());
+//        Product.setCreatedAt(createdInfo.getCreatedAt());
+        return Product;
     }
 
-    private List<Company> hubInfoPaging(int page, int size, String sortBy, boolean isAsc) {
+    private List<Product> hubInfoPaging(int page, int size, String sortBy, boolean isAsc) {
         // 10, 30, 50 외의 size는 기본 10으로 설정
         if (size != 10 && size != 30 && size != 50) {
             size = 10;
         }
 
         // 전체 hub 수 조회
-        long totalHubs = companyRepository.count();
+        long totalHubs = productRepository.count();
         // 전체 페이지 수 계산 (0페이지부터 시작하므로)
         int totalPages = (int) Math.ceil((double) totalHubs / size);
 
@@ -101,17 +101,17 @@ public class ProductService {
 
         Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
-        return companyRepository.findAll(pageable).getContent();
+        return productRepository.findAll(pageable).getContent();
     }
 
-    private Company findHub(UUID id) {
-        return companyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + id));
+    private Product findHub(UUID id) {
+        return productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
     }
 
-    private void updateHubInfo(Company company, CompanyRequestDto requestDto) {
-        company.setName(requestDto.getName());
-        company.setAddress(requestDto.getAddress());
-        company.setLatitude(requestDto.getLatitude());
-        company.setLongitude(requestDto.getLongitude());
+    private void updateHubInfo(Product Product, ProductRequestDto requestDto) {
+        Product.setName(requestDto.getName());
+        Product.setAddress(requestDto.getAddress());
+        Product.setLatitude(requestDto.getLatitude());
+        Product.setLongitude(requestDto.getLongitude());
     }
 }

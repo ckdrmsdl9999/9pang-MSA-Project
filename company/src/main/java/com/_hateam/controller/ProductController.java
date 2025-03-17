@@ -3,7 +3,7 @@ package com._hateam.controller;
 import com._hateam.common.dto.ResponseDto;
 import com._hateam.dto.ProductDto;
 import com._hateam.dto.ProductRequestDto;
-import com._hateam.service.CompanyService;
+import com._hateam.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final CompanyService companyService;
+    private final ProductService productService;
 
     /**
      * 새로운 허브 루트 생성
@@ -29,7 +29,7 @@ public class ProductController {
     public ResponseEntity<ResponseDto<ProductDto>> createProduct(
             @RequestBody @Valid ProductRequestDto requestDto) {
 
-        ProductDto productDto = companyService.createProduct(requestDto);
+        ProductDto productDto = productService.createProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.success(HttpStatus.CREATED, productDto));
     }
@@ -45,7 +45,7 @@ public class ProductController {
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
 
-        List<ProductDto> productDto = companyService.getAllProducts(page, size, sortBy, isAsc);
+        List<ProductDto> productDto = productService.getAllProducts(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
@@ -56,7 +56,7 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<ProductDto>> getProduct(@PathVariable UUID id) {
-        ProductDto productDto = companyService.getProduct(id);
+        ProductDto productDto = productService.getProduct(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
@@ -68,7 +68,7 @@ public class ProductController {
     public ResponseEntity<ResponseDto<ProductDto>> updateProduct(
             @PathVariable UUID id,
             @RequestBody @Valid ProductRequestDto requestDto) {
-        ProductDto productDto = companyService.updateProduct(id, requestDto);
+        ProductDto productDto = productService.updateProduct(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
@@ -78,7 +78,7 @@ public class ProductController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<String>> deleteProduct(@PathVariable UUID id) {
-        companyService.deleteProduct(id);
+        productService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Product deleted successfully"));
     }

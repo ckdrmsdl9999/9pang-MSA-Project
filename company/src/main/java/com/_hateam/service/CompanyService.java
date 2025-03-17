@@ -1,11 +1,9 @@
 package com._hateam.service;
 
-import com._hateam.dto.ProductDto;
-import com._hateam.dto.ProductRequestDto;
+import com._hateam.dto.CompanyDto;
+import com._hateam.dto.CompanyRequestDto;
 import com._hateam.entity.Company;
-import com._hateam.entity.Product;
 import com._hateam.repository.CompanyRepository;
-import com._hateam.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +22,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CompanyService {
 
-    private final ProductRepository productRepository;
-    private final CompanyRepository companyRepository; // Company 엔티티 조회를 위한 Repository
+    private final CompanyRepository companyRepository;
 
     @Transactional
-    public ProductDto createHubRoute(ProductRequestDto requestDto) {
+    public CompanyDto createCompany(CompanyRequestDto requestDto) {
         // 출발지와 도착지 ID가 동일하면 예외 발생
         validateSourceAndDestinationDifferent(requestDto);
 
@@ -36,73 +33,73 @@ public class CompanyService {
         Company sourceCompany = getHubById(requestDto.getSourceHubId(), "출발지");
         Company destinationCompany = getHubById(requestDto.getDestinationHubId(), "도착지");
 
-        // Product 엔티티 생성 (선택적 필드 포함)
-        Product product = Product.builder()
+        // Company 엔티티 생성 (선택적 필드 포함)
+        Company Company = Company.builder()
                 .sourceCompany(sourceCompany)
                 .destinationCompany(destinationCompany)
                 .distanceKm(requestDto.getDistanceKm())
                 .estimatedTimeMinutes(requestDto.getEstimatedTimeMinutes())
                 .build();
 
-        productRepository.save(product);
-        return ProductDto.fromEntity(product);
+        companyRepository.save(Company);
+        return CompanyDto.fromEntity(Company);
     }
 
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getAllHubRoutes(int page, int size, String sortBy, boolean isAsc) {
+    public List<CompanyDto> getAllCompanies(int page, int size, String sortBy, boolean isAsc) {
         // 페이징, 정렬 처리
-        List<Product> productList = hubInfoPaging(page, size, sortBy, isAsc);
-        return productList.stream()
-                .map(ProductDto::fromEntity)
+        List<Company> CompanyList = hubInfoPaging(page, size, sortBy, isAsc);
+        return CompanyList.stream()
+                .map(CompanyDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public ProductDto getHubRoute(UUID id) {
-        Product product = findHubRoute(id);
-        return ProductDto.fromEntity(product);
+    public CompanyDto getCompany(UUID id) {
+        Company Company = findCompany(id);
+        return CompanyDto.fromEntity(Company);
     }
 
     @Transactional
-    public ProductDto updateHubRoute(UUID id, ProductRequestDto requestDto) {
-        Product product = findHubRoute(id);
+    public CompanyDto updateCompany(UUID id, CompanyRequestDto requestDto) {
+        Company Company = findCompany(id);
 
         // 출발지와 도착지 ID가 동일하면 예외 발생
         validateSourceAndDestinationDifferent(requestDto);
 
         // 출발지 허브 업데이트 (ID가 변경된 경우)
         if (requestDto.getSourceHubId() != null &&
-                !requestDto.getSourceHubId().equals(product.getSourceCompany().getId())) {
+                !requestDto.getSourceHubId().equals(Company.getSourceCompany().getId())) {
             Company newSourceCompany = getHubById(requestDto.getSourceHubId(), "출발지");
-            product.setSourceCompany(newSourceCompany);
+            Company.setSourceCompany(newSourceCompany);
         }
 
         // 도착지 허브 업데이트 (ID가 변경된 경우)
         if (requestDto.getDestinationHubId() != null &&
-                !requestDto.getDestinationHubId().equals(product.getDestinationCompany().getId())) {
+                !requestDto.getDestinationHubId().equals(Company.getDestinationCompany().getId())) {
             Company newDestinationCompany = getHubById(requestDto.getDestinationHubId(), "도착지");
-            product.setDestinationCompany(newDestinationCompany);
+            Company.setDestinationCompany(newDestinationCompany);
         }
 
         // 기타 필드 업데이트
-        product.setDistanceKm(requestDto.getDistanceKm());
-        product.setEstimatedTimeMinutes(requestDto.getEstimatedTimeMinutes());
+        Company.setDistanceKm(requestDto.getDistanceKm());
+        Company.setEstimatedTimeMinutes(requestDto.getEstimatedTimeMinutes());
 
-        return ProductDto.fromEntity(product);
+        return CompanyDto.fromEntity(Company);
     }
 
 
     @Transactional
-    public void deleteHubRoute(UUID id) {
-        Product product = findHubRoute(id);
-        productRepository.delete(product);
+    public void deleteCompany(UUID id) {
+        Company Company = findCompany(id);
+        companyRepository.delete(Company);
     }
 
     /**
      * 요청 DTO에서 출발지와 도착지 Company ID가 동일하면 예외 발생.
      */
-    private void validateSourceAndDestinationDifferent(ProductRequestDto requestDto) {
+    private void validateSourceAndDestinationDifferent(CompanyRequestDto requestDto) {
         if (requestDto.getSourceHubId().equals(requestDto.getDestinationHubId())) {
             throw new IllegalArgumentException("출발지와 도착지는 동일할 수 없습니다.");
         }
@@ -114,11 +111,11 @@ public class CompanyService {
     }
 
 
-    private List<Product> hubInfoPaging(int page, int size, String sortBy, boolean isAsc) {
+    private List<Company> hubInfoPaging(int page, int size, String sortBy, boolean isAsc) {
         if (size != 10 && size != 30 && size != 50) {
             size = 10;
         }
-        long totalRoutes = productRepository.count();
+        long totalRoutes = companyRepository.count();
         int totalPages = (int) Math.ceil((double) totalRoutes / size);
 
         if (page >= totalPages && totalRoutes > 0) {
@@ -129,11 +126,11 @@ public class CompanyService {
         Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
                 sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
-        return productRepository.findAll(pageable).getContent();
+        return companyRepository.findAll(pageable).getContent();
     }
 
-    private Product findHubRoute(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+    private Company findCompany(UUID id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + id));
     }
 }

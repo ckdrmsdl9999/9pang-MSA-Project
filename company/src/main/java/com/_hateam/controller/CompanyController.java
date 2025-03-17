@@ -3,7 +3,7 @@ package com._hateam.controller;
 import com._hateam.common.dto.ResponseDto;
 import com._hateam.dto.CompanyDto;
 import com._hateam.dto.CompanyRequestDto;
-import com._hateam.service.ProductService;
+import com._hateam.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CompanyController {
 
-    private final ProductService productService;
+    private final CompanyService companyService;
 
     /**
      * 새로운 허브 생성
@@ -29,7 +29,7 @@ public class CompanyController {
     public ResponseEntity<ResponseDto<CompanyDto>> createCompany(
             @RequestBody @Valid CompanyRequestDto requestDto) {
 
-        CompanyDto company = productService.createCompany(requestDto);
+        CompanyDto company = companyService.createCompany(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.success(HttpStatus.CREATED, company));
     }
@@ -45,7 +45,7 @@ public class CompanyController {
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
 
-        List<CompanyDto> companies = productService.getAllCompanies(page, size, sortBy, isAsc);
+        List<CompanyDto> companies = companyService.getAllCompanies(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, companies));
     }
@@ -56,7 +56,7 @@ public class CompanyController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<CompanyDto>> getCompany(@PathVariable UUID id) {
-        CompanyDto company = productService.getCompany(id);
+        CompanyDto company = companyService.getCompany(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, company));
     }
@@ -68,7 +68,7 @@ public class CompanyController {
     public ResponseEntity<ResponseDto<CompanyDto>> updateCompany(
             @PathVariable UUID id,
             @RequestBody @Valid CompanyRequestDto requestDto) {
-        CompanyDto updateCompany = productService.updateCompany(id, requestDto);
+        CompanyDto updateCompany = companyService.updateCompany(id, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, updateCompany));
     }
@@ -78,7 +78,7 @@ public class CompanyController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<String>> deleteCompany(@PathVariable UUID id) {
-        productService.deleteCompany(id);
+        companyService.deleteCompany(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Company deleted successfully"));
     }
