@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class Timestamped {
+public abstract class Timestamped {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -55,5 +55,4 @@ public class Timestamped {
             createdBy = authentication.getName();
         }
     }
-
 }

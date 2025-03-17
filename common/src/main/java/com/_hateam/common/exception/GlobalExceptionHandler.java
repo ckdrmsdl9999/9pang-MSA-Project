@@ -1,4 +1,5 @@
 package com._hateam.common.exception;
+
 import com._hateam.common.dto.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
 
 @ControllerAdvice
 @Slf4j
@@ -146,5 +148,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ResponseDto.failure(HttpStatus.CONFLICT, e.getMessage()));
     }
-
 }

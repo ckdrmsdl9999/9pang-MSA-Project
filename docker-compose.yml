@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: .
+      dockerfile: eureka/Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"  # 내부 8761 -> 호스트 8761
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SERVER_PORT=8761
+    networks:
+      - msanet
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SERVER_PORT=8080
+      # Eureka URL 내부 네트워크 사용
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - msanet
+
+  hubs-service:
+    build:
+      context: .
+      dockerfile: hub/hub/Dockerfile
+    container_name: hubs-service
+    # 외부에는 노출하지 않고, 내부 네트워크에서만 접근
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SERVER_PORT=8080
+      - SPRING_APPLICATION_NAME=hubs-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - msanet
+
+networks:
+  msanet:
+    driver: bridge
