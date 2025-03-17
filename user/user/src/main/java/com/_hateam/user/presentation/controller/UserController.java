@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class UserController {
 
     @GetMapping("/admin/{userId}")//관리자단일조회(MASTER), 스프링시큐리티로 권한 제어 예정
     public ResponseDto<?> getAdminUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
-
+        System.out.println(userPrincipals.getId()+"테스토");
         return ResponseDto.success(HttpStatus.OK, userService.getUser(userId));
     }
 
@@ -76,7 +77,6 @@ public class UserController {
     @PatchMapping("/{userId}")  // 회원 수정(MASTER)
     public ResponseDto<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,
                                      @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
 
         //userService.updateUser(userUpdateReqDto,Long.parseLong(userId));
         return ResponseDto.success(HttpStatus.OK, userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));

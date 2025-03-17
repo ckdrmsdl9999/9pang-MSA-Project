@@ -19,7 +19,7 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String username;
 
     @Column(nullable = false)
@@ -37,6 +37,7 @@ public class User extends Timestamped {
     @Column(name="is_deliver",nullable = false)
     boolean isDeliver;
 
-
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private DeliverUser deliverUser;
 
 }
