@@ -1,26 +1,41 @@
 package com._hateam.user.domain.model;
 
+import com._hateam.common.entity.Timestamped;
+import com._hateam.user.domain.enums.UserRole;
 import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import lombok.*;
 
 @Entity
 @Table(name="p_user")
-public class User {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User extends Timestamped {
 
     @Id
-    String userId;
+    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long userId;
+
+    @Column(nullable = false)
+    String username;
+
+    @Column(nullable = false)
+    String nickname;
 
     @Column(nullable = false)
     String password;
 
-    @Column(nullable = false)
-    String slack_id;
+    @Column(name = "slack_id", nullable = false)
+    String slackId;
 
-//    @Enumerated(EnumType.STRING)
-//    UserRoles userRoles;
+    @Enumerated(EnumType.STRING)
+    UserRole userRoles;
 
-    @Column(nullable = false)
-    boolean is_deliver;
+    @Column(name="is_deliver",nullable = false)
+    boolean isDeliver;
 
 
 

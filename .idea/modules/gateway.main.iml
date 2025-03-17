@@ -1,8 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
-  <component name="AdditionalModuleElements">
+<module external.linked.project.id="gateway:main" external.linked.project.path="$MODULE_DIR$/../../gateway" external.root.project.path="$MODULE_DIR$/../../gateway" external.system.id="GRADLE" external.system.module.group="com.9hateam" external.system.module.type="sourceSet" external.system.module.version="0.0.1-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet external-system-id="GRADLE" type="web" name="Web">
+      <configuration>
+        <webroots />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
+    <output url="file://$MODULE_DIR$/../../gateway/build/classes/java/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../gateway/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../gateway/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../gateway/src/main/resources" type="java-resource" />
+    </content>
     <content url="file://$MODULE_DIR$/../../gateway/build/generated/sources/annotationProcessor/java/main">
       <sourceFolder url="file://$MODULE_DIR$/../../gateway/build/generated/sources/annotationProcessor/java/main" isTestSource="false" generated="true" />
     </content>
+    <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.18.36" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-web:3.4.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-actuator:3.4.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.cloud:spring-cloud-starter-gateway:4.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0" level="project" />
   </component>
 </module>

@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/eureka.main.iml" filepath="$PROJECT_DIR$/.idea/modules/eureka.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub-route.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hub-route.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hub.main.iml" />
     </modules>
   </component>

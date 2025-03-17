@@ -1,23 +1,17 @@
-package com._hateam.user.domain.repository;
+package com._hateam.user.infrastructure.repository;
 
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-
-@Repository
-public interface UserRepository {
-
-    User save(User user);
+import java.util.List;
+public interface JpaUserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findByUsername(String username);
 
-   //Optional<User> findById(Long userId);
-
-    Optional<User> findById(Long userId);
+//    Collection<User>  findAllByDeletedAtIsNull();
 
     List<User> findAllByDeletedAtIsNull();
 
