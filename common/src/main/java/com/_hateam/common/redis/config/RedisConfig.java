@@ -1,4 +1,4 @@
-package com._hateam.common.config;
+package com._hateam.common.redis.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
