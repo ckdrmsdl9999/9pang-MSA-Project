@@ -4,6 +4,7 @@ import com._hateam.CompanyType;
 import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

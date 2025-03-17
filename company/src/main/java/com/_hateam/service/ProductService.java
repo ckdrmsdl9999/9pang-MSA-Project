@@ -1,12 +1,11 @@
 package com._hateam.service;
 
-import com._hateam.dto.CompanyRequestDto;
 import com._hateam.dto.ProductDto;
 import com._hateam.dto.ProductRequestDto;
 import com._hateam.entity.Company;
 import com._hateam.entity.Product;
-import com._hateam.repository.ProductRepository;
 import com._hateam.repository.CompanyRepository;
+import com._hateam.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
