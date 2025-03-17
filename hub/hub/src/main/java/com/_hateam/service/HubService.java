@@ -7,6 +7,10 @@ import com._hateam.repository.HubRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,11 +25,14 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "hub")
 public class HubService {
+
 
     private final HubRepository hubRepository;
 
     @Transactional
+    @CachePut(key = "#result.id")
     public HubDto createHub(HubRequestDto requestDto) {
         validateDuplicateHub(requestDto);
         Hub hub = createHubEntity(requestDto);
@@ -33,7 +40,9 @@ public class HubService {
         return HubDto.hubToHubDto(hub);
     }
 
+
     @Transactional(readOnly = true)
+    @Cacheable(key = "'allHubs_' + #page + '_' + #size + '_' + #sortBy + '_' + #isAsc")
     public List<HubDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
         List<Hub> hubList = hubInfoPaging(page, size, sortBy, isAsc);
         return hubList.stream()
@@ -43,12 +52,14 @@ public class HubService {
 
 
     @Transactional(readOnly = true)
+    @Cacheable(key = "#id")
     public HubDto getHub(UUID id) {
         Hub hub = findHub(id);
         return HubDto.hubToHubDto(hub);
     }
 
     @Transactional
+    @CachePut(key = "#id")
     public HubDto updateHub(UUID id, HubRequestDto requestDto) {
         Hub hub = findHub(id);
         updateHubInfo(hub, requestDto);
@@ -56,6 +67,7 @@ public class HubService {
     }
 
     @Transactional
+    @CacheEvict(key = "#id")
     public void deleteHub(UUID id) {
         Hub hub = findHub(id);
         hubRepository.delete(hub);
