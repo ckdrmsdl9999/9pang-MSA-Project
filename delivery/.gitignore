@@ -2,11 +2,8 @@ HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/**
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/generated
-application-local.yml
 
 ### STS ###
 .apt_generated
@@ -38,16 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### macOS ###
-# General
-.DS_Store
-.AppleDouble
-.LSOverride
-
-### Windows 시스템 파일 ###
-Thumbs.db
-ehthumbs.db
-
-### Linux 시스템 파일 ###
-.directory
