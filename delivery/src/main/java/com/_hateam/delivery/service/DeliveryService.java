@@ -9,9 +9,13 @@ import com._hateam.delivery.dto.response.DeliveryResponseDto;
 import com._hateam.delivery.dto.response.OrderResponseDto;
 import com._hateam.delivery.dto.response.UserResponseDto;
 import com._hateam.delivery.entity.Delivery;
+import com._hateam.delivery.entity.DeliveryStatus;
 import com._hateam.delivery.entity.OrderStatus;
 import com._hateam.delivery.repository.DeliveryRepository;
+import com._hateam.delivery.repository.DeliveryRepositoryCustom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,6 +28,7 @@ import java.util.UUID;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryRepositoryCustom deliveryRepositoryCustom;
 
     /**
      * todo: order로 부터 가져올것 : 허브id, 회사id, 주문요청(현재 테이블이나 entity에는 없다),
@@ -81,6 +86,7 @@ public class DeliveryService {
     /**
      * 배송정보 상세 조회
      */
+    @Transactional(readOnly = true)
     public DeliveryResponseDto getDeliveryForMaster(UUID deliveryId) {
         Delivery delivery = checkDelivery(deliveryId);
         return DeliveryResponseDto.from(delivery);
@@ -125,5 +131,19 @@ public class DeliveryService {
         if (deliveryIsExists) {
             throw new CustomConflictException("주어진 주문에 대한 배송정보는 이미 존재합니다.");
         }
+    }
+
+    // todo: 전체 조회 or 검색시 response를 상세때와 동일하게 둘 필요가 있는가?
+    @Transactional(readOnly = true)
+    public Page<DeliveryResponseDto> findDeliveryListForMaster(Pageable pageable) {
+        return deliveryRepositoryCustom.findDeliveryListWithPage(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DeliveryResponseDto> searchDeliveryListForAdmin(
+            Pageable pageable,
+            DeliveryStatus status,
+            String keyword) {
+        return deliveryRepositoryCustom.searchDeliveryListWithPage(status, keyword, pageable);
     }
 }

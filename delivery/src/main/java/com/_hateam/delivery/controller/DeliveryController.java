@@ -5,16 +5,16 @@ import com._hateam.common.dto.ResponseDto;
 import com._hateam.delivery.dto.request.RegisterDeliveryRequestDto;
 import com._hateam.delivery.dto.request.UpdateDeliveryRequestDto;
 import com._hateam.delivery.dto.response.DeliveryResponseDto;
+import com._hateam.delivery.entity.DeliveryStatus;
 import com._hateam.delivery.service.DeliveryService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.net.URI;
 import java.util.UUID;
 
@@ -30,25 +30,27 @@ public class DeliveryController {
      * todo: master를 제외하면 본인의 것만 보이도록 해야함 master는 전부가 보이도록 우선은 master 기준으로 작성
      * todo: page 추가, pageresponsedto 관련 고민, 로그인한 user 정보 가져오는법
      */
-//    @GetMapping
-//    public ResponseEntity<PageResponseDto<DeliveryResponseDto>> getDeliveryList(
-//            Pageable pageable
-//    ) {
-//        return ResponseEntity.ok(deliveryService.findDeliveryListForMaster(pageable));
-//    }
+    @GetMapping
+    public PageResponseDto<DeliveryResponseDto> getDeliveryList(
+            Pageable pageable
+    ) {
+        Page<DeliveryResponseDto> page = deliveryService.findDeliveryListForMaster(pageable);
+        return PageResponseDto.success(HttpStatus.OK, page, "배송 전체 조회 성공");
+    }
 
     /**
      * 배송 전체 검색
      * todo: master를 제외하면 본인의 것만 보이도록 해야함 master는 전부가 보이도록 우선은 master 기준으로 작성, 추후 page 추가
      */
-//    @GetMapping("/search")
-//    public ResponseEntity<ResponseDto<DeliveryResponseDto>> searchDeliveryList(
-//            @RequestParam @NotBlank(message = "status를 입력해주세요.") String status,
-//            @RequestParam @NotBlank(message = "검색어를 입력해주세요.") String keyword,
-//            Pageable pageable
-//    ) {
-//        return ResponseEntity.ok(deliveryService.searchDeliveryListForAdmin(pageable, status, keyword));
-//    }
+    @GetMapping("/search")
+    public PageResponseDto<DeliveryResponseDto> searchDeliveryList(
+            @RequestParam(required = false) DeliveryStatus status,
+            @RequestParam(required = false) String keyword,
+            Pageable pageable
+    ) {
+        Page<DeliveryResponseDto> page = deliveryService.searchDeliveryListForAdmin(pageable, status, keyword);
+        return PageResponseDto.success(HttpStatus.OK, page, "배송 전체 조회 성공");
+    }
 
     /**
      * 배송 상세 조회

@@ -21,7 +21,7 @@ public class DeliveryResponseDto {
     private String delivererUsername; //todo: username or UUID
 
     @Builder
-    private DeliveryResponseDto(UUID id, UUID orderId,
+    public DeliveryResponseDto(UUID id, UUID orderId,
                                DeliveryStatus status, UUID startHubId, UUID endHubId,
                                String receiverAddress, String receiverName, String receiverSlackId,
                                String delivererUsername) {

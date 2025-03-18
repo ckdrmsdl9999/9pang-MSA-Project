@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.net.URI;
@@ -48,6 +49,18 @@ public class GlobalExceptionHandler {
 
         return handleRedirectException(
                 "Type MethodArgumentNotValidExceptionHandler : " + errorMessage,
+                request);
+    }
+
+    // request로 받는 type 불일치시
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    @ResponseBody
+    public ResponseEntity<ResponseDto> MethodArgumentTypeMismatchExceptionHandler(
+            MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String errorMessage = ex.getPropertyName() + "의 값이 유효하지 않습니다.";
+
+        return handleRedirectException(
+                "Type MethodArgumentTypeMismatchException : " + errorMessage,
                 request);
     }
 
