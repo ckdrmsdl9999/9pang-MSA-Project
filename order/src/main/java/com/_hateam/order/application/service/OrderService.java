@@ -98,8 +98,6 @@ public class OrderService {
      * @return 주문 정보 응답 DTO 목록
      */
     public List<OrderResponseDto> searchOrders(OrderSearchDto searchDto) {
-        searchDto.processDateStrings();
-
         try {
             List<Order> orders = orderRepository.search(
                     searchDto.getSearchTerm(),
@@ -128,7 +126,6 @@ public class OrderService {
                     .toList();
 
         } catch (Exception e) {
-            e.printStackTrace();
             return List.of();
         }
     }
