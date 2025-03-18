@@ -48,7 +48,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     // 날짜 범위 조건 생성
-    private BooleanExpression betweenDate(QOrder order, LocalDateTime startDate, LocalDateTime endDate) {
+    private BooleanExpression betweenDeliveryDate(QOrder order, LocalDateTime startDate, LocalDateTime endDate) {
 
         if (startDate != null && endDate != null) {
             return order.deliveryDeadline.between(startDate, endDate);
@@ -88,34 +88,40 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
 
+        // 삭제되지 않은 데이터만 조회
         builder.and(isNotDeleted(order));
 
+        // 검색어 조건 추가
         BooleanExpression searchCondition = searchTextContains(order, searchTerm);
         if (searchCondition != null) {
             builder.and(searchCondition);
         }
 
+        // 상태 조건 추가
         BooleanExpression statusCondition = statusEq(order, status);
         if (statusCondition != null) {
             builder.and(statusCondition);
         }
 
+        // 회사 ID 조건 추가
         BooleanExpression companyCondition = companyIdEq(order, companyId);
         if (companyCondition != null) {
             builder.and(companyCondition);
         }
 
+        // 허브 ID 조건 추가
         BooleanExpression hubCondition = hubIdEq(order, hubId);
         if (hubCondition != null) {
             builder.and(hubCondition);
         }
 
-        BooleanExpression dateCondition = betweenDate(order, startDate, endDate);
+        // 날짜 조건 추가
+        BooleanExpression dateCondition = betweenDeliveryDate(order, startDate, endDate);
         if (dateCondition != null) {
             builder.and(dateCondition);
         }
 
-        // 페이지네이션 적용
+        // 페이지네이션 적용 및 쿼리 실행
         List<Order> results = queryFactory
                 .selectFrom(order)
                 .where(builder)
@@ -124,7 +130,6 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .limit(size)
                 .fetch();
 
-        System.out.println("조회 결과 개수: " + results.size());
         return results;
     }
 
@@ -155,7 +160,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         BooleanExpression hubCondition = hubIdEq(order, hubId);
         if (hubCondition != null) builder.and(hubCondition);
 
-        BooleanExpression dateCondition = betweenDate(order, startDate, endDate);
+        BooleanExpression dateCondition = betweenDeliveryDate(order, startDate, endDate);
         if (dateCondition != null) builder.and(dateCondition);
 
         return queryFactory
