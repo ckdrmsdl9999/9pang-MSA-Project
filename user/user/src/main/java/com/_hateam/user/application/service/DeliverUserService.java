@@ -1,7 +1,5 @@
 package com._hateam.user.application.service;
 
-
-
 import com._hateam.user.application.dto.DeliverUserCreateReqDto;
 import com._hateam.user.application.dto.DeliverUserResponseDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
@@ -25,16 +23,10 @@ public interface DeliverUserService {
     // 배송담당자 단일 조회
     DeliverUserResponseDto getDeliverUserById(UUID deliverId, UserPrincipals userPrincipals);
 
-    // 배송담당자 목록 조회 (허브별)
-//    List<DeliverUserResponseDto> getDeliverUsersByHubId(UUID hubId, UserPrincipals userPrincipals);
-
     // 배송담당자 수정
     DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, UserPrincipals userPrincipals);
 
     // 배송담당자 삭제
     void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals);
-
-
-
 
 }

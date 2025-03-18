@@ -3,7 +3,6 @@ package com._hateam.user.application.service;
 
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
-import com._hateam.user.domain.model.User;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

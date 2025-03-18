@@ -1,32 +1,21 @@
 package com._hateam.user.application.service;
 
-import com._hateam.common.dto.ResponseDto;
-import com._hateam.common.exception.CustomAccessDeniedException;
 import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.UserRepository;
-import com._hateam.user.infrastructure.configuration.ForbiddenException;
 import com._hateam.user.infrastructure.security.JwtUtil;
 import com._hateam.user.infrastructure.security.UserPrincipals;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

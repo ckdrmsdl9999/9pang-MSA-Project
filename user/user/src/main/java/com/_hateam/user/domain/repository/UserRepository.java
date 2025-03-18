@@ -21,10 +21,6 @@ public interface UserRepository {
 
     List<User> findAllByDeletedAtIsNull();
 
-    List<User> findByUserRoles(UserRole role);
-
-    List<User> findByNicknameContaining(String nickname);
-
     // 페이징 및 정렬을 위한 새로운 메서드
     Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable);
 

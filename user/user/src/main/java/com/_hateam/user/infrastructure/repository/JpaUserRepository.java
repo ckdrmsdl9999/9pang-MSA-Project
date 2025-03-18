@@ -13,15 +13,7 @@ public interface JpaUserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findByUsername(String username);
 
-//    Collection<User>  findAllByDeletedAtIsNull();
-
     List<User> findAllByDeletedAtIsNull();
-
-    List<User> findByUserRoles(UserRole role);
-
-    List<User> findByNicknameContaining(String nickname);
-
-   // List<User> findByApproved(boolean approved);
 
     // 추가: 페이징 및 정렬을 위한 새로운 메서드
     Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable);
