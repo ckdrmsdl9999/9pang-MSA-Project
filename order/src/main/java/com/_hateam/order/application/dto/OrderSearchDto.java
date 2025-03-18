@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 @Getter
@@ -28,6 +30,8 @@ public class OrderSearchDto {
     private Integer page;
     private Integer size;
     private String sort;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public String getSearchTerm() {
         return searchTerm == null ? "" : searchTerm;
@@ -55,20 +59,29 @@ public class OrderSearchDto {
     }
 
     public void processDateStrings() {
-        if (startDateStr != null && !startDateStr.isEmpty()) {
+        // 시작일 처리
+        if (startDateStr != null && !startDateStr.trim().isEmpty()) {
             try {
-                this.startDate = LocalDate.parse(startDateStr).atStartOfDay();
-            } catch (Exception e) {
+                LocalDate date = LocalDate.parse(startDateStr.trim(), DATE_FORMATTER);
+                this.startDate = date.atStartOfDay();
+            } catch (DateTimeParseException e) {
                 this.startDate = null;
             }
+        } else {
+            this.startDate = null;
         }
 
-        if (endDateStr != null && !endDateStr.isEmpty()) {
+        // 종료일 처리
+        if (endDateStr != null && !endDateStr.trim().isEmpty()) {
             try {
-                this.endDate = LocalDate.parse(endDateStr).atTime(LocalTime.MAX);
-            } catch (Exception e) {
+                LocalDate date = LocalDate.parse(endDateStr.trim(), DATE_FORMATTER);
+                // 종료일은 해당 일의 마지막 시간(23:59:59.999999999)으로 설정
+                this.endDate = date.atTime(LocalTime.MAX);
+            } catch (DateTimeParseException e) {
                 this.endDate = null;
             }
+        } else {
+            this.endDate = null;
         }
     }
 }
