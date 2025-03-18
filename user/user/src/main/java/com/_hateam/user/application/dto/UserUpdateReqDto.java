@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Builder
 @Setter
@@ -23,6 +25,8 @@ public class UserUpdateReqDto {
 
     @NotBlank(message = "슬랙Id를 적어주세요")
     private String slackId;
+
+    private UUID hubId;
 
     @NotNull(message = "배송담당자 여부를 선택해주세요")
     boolean isDeliver;

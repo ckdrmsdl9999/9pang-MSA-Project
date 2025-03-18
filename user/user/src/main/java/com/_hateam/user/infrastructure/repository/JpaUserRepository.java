@@ -21,4 +21,5 @@ public interface JpaUserRepository extends JpaRepository<User,Long> {
 
    // List<User> findByApproved(boolean approved);
 
+
 }

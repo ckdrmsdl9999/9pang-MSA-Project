@@ -2,10 +2,13 @@ package com._hateam.user.application.service;
 
 import com._hateam.common.dto.ResponseDto;
 import com._hateam.common.exception.CustomAccessDeniedException;
+import com._hateam.common.exception.CustomForbiddenException;
+import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.UserRepository;
+import com._hateam.user.infrastructure.configuration.ForbiddenException;
 import com._hateam.user.infrastructure.security.JwtUtil;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,18 +44,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto) {//로그인
 
-//        try {//사용자인증
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             signInReqDto.getUsername(),
                             signInReqDto.getPassword()
                     )
             );
-//        }catch (UsernameNotFoundException e) {
-//            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-//        } catch (BadCredentialsException e) {
-//            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-//        }//글로벌 exception 적용
 
         // 토큰에 값 담기위해 값 조회
         User user = userRepository.findByUsername(signInReqDto.getUsername())
@@ -79,7 +76,7 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers(UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() == UserRole.COMPANY) {
-            throw new CustomAccessDeniedException("해당 권한으로는 사용할 수 없습니다.");
+            throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
         }
 
         return userRepository.findAllByDeletedAtIsNull();
@@ -89,21 +86,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(Long userId){
 
-
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다 " + userId));
+                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
     }
 
     @Transactional
     @Override
-    public User updateUser(UserUpdateReqDto userUpdateReqDto,Long userId,UserPrincipals userPrincipals) {
+    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId,UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomAccessDeniedException("관리자 권한이 필요합니다.");
+            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
         }
 
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
 
         // 업데이트할 필드들만 설정
         if (userUpdateReqDto.getNickname() != null) {
@@ -111,6 +107,9 @@ public class UserServiceImpl implements UserService {
         }
         if (userUpdateReqDto.getSlackId() != null) {
             existingUser.setSlackId(userUpdateReqDto.getSlackId());
+        }
+        if (userUpdateReqDto.getHubId() != null) {
+            existingUser.setHubId(userUpdateReqDto.getHubId());
         }
      return existingUser;
     }
@@ -120,12 +119,12 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId, UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomAccessDeniedException("관리자 권한이 필요합니다.");
+            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
         }
 
         // ADMIN 권한이 있을 때 실행할 코드
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
 
             user.setDeletedAt(LocalDateTime.now());
             user.setDeletedBy(user.getUsername());
@@ -137,15 +136,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User searchUser(String username,UserPrincipals userPrincipals) {
         // 본인 검색인지 확인
+        System.out.println(username+"값확인"+userPrincipals.getUsername());
         if (!userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomAccessDeniedException("본인의 아이디만 조회가능합니다.");
+            throw new CustomForbiddenException("본인의 아이디만 조회가능합니다.");
         }else if(userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN){
             return userRepository.findByUsername(username)
-                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
+                    .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"z"));
         }
 
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + username));
+                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"x"));
     }
 
 
@@ -154,17 +154,17 @@ public class UserServiceImpl implements UserService {
     public User updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomAccessDeniedException("관리자 권한이 필요합니다.");
+            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + userId));
 
         try {
             user.setUserRoles(role);
             return userRepository.save(user);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("유효하지 않은 권한입니다: " + role);
+        } catch (CustomForbiddenException e) {
+            throw new CustomForbiddenException("유효하지 않은 권한입니다: " + role);
         }
     }
 

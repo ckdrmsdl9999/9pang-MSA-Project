@@ -5,6 +5,8 @@ import com._hateam.user.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name="p_user")
 @Getter
@@ -19,7 +21,7 @@ public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String username;
 
     @Column(nullable = false)
@@ -27,6 +29,9 @@ public class User extends Timestamped {
 
     @Column(nullable = false)
     String password;
+
+    @Column(name="hub_id")
+    UUID hubId;
 
     @Column(name = "slack_id", nullable = false)
     String slackId;
@@ -37,6 +42,7 @@ public class User extends Timestamped {
     @Column(name="is_deliver",nullable = false)
     boolean isDeliver;
 
-
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private DeliverUser deliverUser;
 
 }

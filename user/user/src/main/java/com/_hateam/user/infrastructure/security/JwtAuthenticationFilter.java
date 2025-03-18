@@ -31,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
     private static final List<String> excludeUrls = List.of(
             "/api/users/signup",
             "/api/users/signin"
+          //  "/api/delivery-users/**"
     );
 
     // 특정 URL이 해당하면 필터링을 저적용하지않도록 검사

@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional//(readOnly = true)
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자 ID를 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("사용자 ID를 찾을 수 없습니다(토큰검증실패): " + id));
         return UserPrincipals.create(user);
     }
 }
