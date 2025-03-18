@@ -49,20 +49,33 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> search(String searchTerm, OrderStatus status,
                               LocalDateTime startDate, LocalDateTime endDate,
+                              UUID companyId, UUID hubId,
                               int page, int size, String sort) {
         int limitedSize = limitSize(size);
 
-        Sort.Direction direction = sort.equalsIgnoreCase("asc") ?
-                Sort.Direction.ASC : Sort.Direction.DESC;
+        try {
+            return jpaOrderRepository.searchByDynamicCondition(
+                    searchTerm, status, startDate, endDate, companyId, hubId,
+                    page, limitedSize, sort
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
 
-        Pageable pageable = PageRequest.of(page - 1, limitedSize,
-                Sort.by(direction, "createdAt"));
-
-        Page<Order> orderPage = jpaOrderRepository.search(
-                searchTerm, status, startDate, endDate, null, pageable
-        );
-
-        return orderPage.getContent();
+    @Override
+    public long countSearchResults(String searchTerm, OrderStatus status,
+                                   LocalDateTime startDate, LocalDateTime endDate,
+                                   UUID companyId, UUID hubId) {
+        try {
+            return jpaOrderRepository.countByDynamicCondition(
+                    searchTerm, status, startDate, endDate, companyId, hubId
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
@@ -79,6 +92,8 @@ public class OrderRepositoryImpl implements OrderRepository {
     // 페이지 크기 제한 메서드
     private int limitSize(int size) {
         if (size <= 0) return 10; // 기본값
-        return Math.min(Math.max(size, 10), 50); // 10-50 사이로 제한
+        else if (size <= 10) return 10;
+        else if (size <= 30) return 30;
+        else return 50; // 최대 50
     }
 }

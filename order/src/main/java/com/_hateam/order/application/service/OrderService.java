@@ -98,19 +98,36 @@ public class OrderService {
      * @return 주문 정보 응답 DTO 목록
      */
     public List<OrderResponseDto> searchOrders(OrderSearchDto searchDto) {
-        List<Order> orders = orderRepository.search(
-                searchDto.getSearchTerm(),
-                searchDto.getStatus(),
-                searchDto.getStartDate(),
-                searchDto.getEndDate(),
-                searchDto.getPage(),
-                searchDto.getSize(),
-                searchDto.getSort()
-        );
+        try {
+            List<Order> orders = orderRepository.search(
+                    searchDto.getSearchTerm(),
+                    searchDto.getStatus(),
+                    searchDto.getStartDate(),
+                    searchDto.getEndDate(),
+                    searchDto.getCompanyId(),
+                    searchDto.getHubId(),
+                    searchDto.getPage(),
+                    searchDto.getSize(),
+                    searchDto.getSort()
+            );
 
-        return orders.stream()
-                .map(OrderResponseDto::from)
-                .toList();
+            // 검색 결과 총 개수 조회
+            long totalCount = orderRepository.countSearchResults(
+                    searchDto.getSearchTerm(),
+                    searchDto.getStatus(),
+                    searchDto.getStartDate(),
+                    searchDto.getEndDate(),
+                    searchDto.getCompanyId(),
+                    searchDto.getHubId()
+            );
+
+            return orders.stream()
+                    .map(OrderResponseDto::from)
+                    .toList();
+
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     /**

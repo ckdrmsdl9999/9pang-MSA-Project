@@ -1,21 +1,16 @@
-package com._hateam.order.domain.repository;
+package com._hateam.order.infrastructure.repository;
 
 import com._hateam.order.domain.model.Order;
 import com._hateam.order.domain.model.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface OrderRepository {
-    Order save(Order order);
+public interface OrderRepositoryCustom {
 
-    Optional<Order> findById(UUID orderId);
-
-    List<Order> findAll(int page, int size, String sort);
-
-    List<Order> search(
+    // 동적 쿼리를 이용한 주문 검색
+    List<Order> searchByDynamicCondition(
             String searchTerm,
             OrderStatus status,
             LocalDateTime startDate,
@@ -27,8 +22,8 @@ public interface OrderRepository {
             String sort
     );
 
-    // 검색 결과 개수 조회 메서드
-    long countSearchResults(
+    // 동적 쿼리를 이용한 검색 결과 개수 조회
+    long countByDynamicCondition(
             String searchTerm,
             OrderStatus status,
             LocalDateTime startDate,
@@ -36,8 +31,4 @@ public interface OrderRepository {
             UUID companyId,
             UUID hubId
     );
-
-    void delete(Order order);
-
-    boolean existsById(UUID orderId);
 }
