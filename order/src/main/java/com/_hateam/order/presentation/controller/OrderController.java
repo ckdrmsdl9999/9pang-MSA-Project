@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,6 +101,9 @@ public class OrderController {
                 .size(size)
                 .sort(sort)
                 .build();
+
+        // 날짜 문자열 처리 로직 호출
+        searchDto.processDateStrings();
 
         List<OrderResponseDto> responseDtos = orderService.searchOrders(searchDto);
         return ResponseEntity.ok(ResponseDto.success(responseDtos));
