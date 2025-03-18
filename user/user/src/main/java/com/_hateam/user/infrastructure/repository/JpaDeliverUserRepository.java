@@ -34,4 +34,8 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
 
     List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
 
+    List<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId);
+
+    List<DeliverUser> findByDeletedAtIsNull();
+
     }

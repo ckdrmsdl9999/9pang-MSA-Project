@@ -43,8 +43,8 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(results);
     }
 
-    // 마스터 관리자 전체 조회
-    @GetMapping("/admin/")
+    //  목록 조회(권한별 분리)
+    @GetMapping("/")
     public ResponseEntity<?> getAllDeliverUsers(
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
 
@@ -52,7 +52,7 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(deliverUsers);
     }
 
-    // 단일 조회(역활별 분리)
+    // 단일 조회(권한별 분리)
     @GetMapping("/{deliverId}")
     public ResponseEntity<?> getDeliverUser(
             @PathVariable UUID deliverId,

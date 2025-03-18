@@ -45,22 +45,43 @@ public class DeliverUserServiceImpl implements DeliverUserService {
         return DeliverUserResponseDto.from(savedDeliverUser);
     }
 
-    // 배송담당자 관리자 검색
-    @Override
-    @Transactional(readOnly = true)
-    public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPrincipals userPrincipals) {
-        // 권한 검증
-        if (userPrincipals.getRole() != UserRole.ADMIN) {throw new CustomForbiddenException("관리자 권한이 필요합니다.");}
-
-        List<DeliverUser> deliverUsers = deliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
-
-
-        return deliverUsers.stream()
-                .map(DeliverUserResponseDto::from)
-                .collect(Collectors.toList());
+@Override//권한별 담당자 검색
+@Transactional(readOnly = true)
+public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPrincipals userPrincipals) {
+    List<DeliverUser> deliverUsers;
+    // 권한 검증 및 권한별 처리
+    if (userPrincipals.getRole() == UserRole.ADMIN) {
+        // 마스터 관리자: 모든 배송담당자 검색 가능
+        deliverUsers = deliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
     }
+    else if (userPrincipals.getRole() == UserRole.HUB) {
+        // 허브 관리자: 담당 허브의 배송담당자만 검색 가능
+        DeliverUser hubAdmin = deliverUserRepository.findByUser_UserId(userPrincipals.getId())
+                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(H). ID: " + userPrincipals.getId()));
 
-    // 배송담당자 관리자 조회 (전체 목록)
+        UUID hubId = hubAdmin.getHubId();
+        deliverUsers = deliverUserRepository.findByNameContainingAndHubIdAndDeletedAtIsNull(name, hubId);
+    }
+    else if (userPrincipals.getRole() == UserRole.DELIVERY) {
+        // 배송 담당자: 본인 정보만 조회 가능(이름이 일치하는 경우만)
+        DeliverUser deliverUser = deliverUserRepository.findByUser_UserId(userPrincipals.getId())
+                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(D). ID: " + userPrincipals.getId()));
+
+        // 자신의 이름이 검색어를 포함하는 경우에만 결과 반환
+        if (deliverUser.getName().contains(name)) {
+            deliverUsers = List.of(deliverUser);
+        } else {
+            deliverUsers = Collections.emptyList();
+        }
+    }
+    else { // UserRole.COMPANY 등 기타 역할
+        throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
+    }
+    return deliverUsers.stream()
+            .map(DeliverUserResponseDto::from)
+            .collect(Collectors.toList());
+}
+    // 배송담당자 목록 조회
     @Override
     @Transactional(readOnly = true)
     public List<DeliverUserResponseDto> getAllDeliverUsers(UserPrincipals userPrincipals) {
@@ -71,10 +92,12 @@ public class DeliverUserServiceImpl implements DeliverUserService {
         DeliverUser searchMan = deliverUserRepository.findByUser_UserId(userPrincipals.getId()).orElseThrow(
                 () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + userPrincipals.getId())
         );
-        List<DeliverUser> deliverUsers;
+        List<DeliverUser> deliverUsers = deliverUserRepository.findByDeletedAtIsNull();;
+
         //ADMIN 은 전부조회
         if(userPrincipals.getRole() == UserRole.HUB){
             UUID hubId = searchMan.getHubId(); // 관리자의 허브 ID
+            System.out.println("창근hub목록조회"+hubId);
             deliverUsers = deliverUserRepository.findByHubIdAndDeletedAtIsNull(hubId);
 
         }
@@ -85,9 +108,7 @@ public class DeliverUserServiceImpl implements DeliverUserService {
             throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
         }
 
-        deliverUsers = deliverUserRepository.findAll().stream()
-                .filter(du -> du.getDeletedAt() == null)
-                .collect(Collectors.toList());
+
 
         return deliverUsers.stream()
                 .map(DeliverUserResponseDto::from)
@@ -99,15 +120,16 @@ public class DeliverUserServiceImpl implements DeliverUserService {
     @Transactional(readOnly = true)
     public DeliverUserResponseDto getDeliverUserById(UUID deliverId, UserPrincipals userPrincipals) {
         // 권한 검증
+        System.out.println(deliverId+"값체크 창근");
         DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
-                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
+                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(d). ID: " + deliverId));
         DeliverUser searchMan = deliverUserRepository.findByUser_UserId(userPrincipals.getId()).orElseThrow(
-                () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + userPrincipals.getId())
+                () -> new CustomNotFoundException("배송담당자가 아니기 때문에 조회불가합니다. ID: " + userPrincipals.getId())
         );
 
         //ADMIN 은 전부조회
         if(userPrincipals.getRole() == UserRole.HUB){
-            if (!deliverUser.getHubId().equals(searchMan.getHubId())) {//조회자의hubid와 나의 hubㅑid
+            if (!deliverUser.getHubId().equals(searchMan.getHubId())) {//조회자의hubid와 나의 hubid
                 throw new CustomForbiddenException("본인 소속 허브의 배송담당자만 조회할 수 있습니다.");
             }
         }

@@ -36,4 +36,7 @@ public interface DeliverUserRepository {
 
     List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
 
+    List<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId);
+
+    List<DeliverUser> findByDeletedAtIsNull();
 }

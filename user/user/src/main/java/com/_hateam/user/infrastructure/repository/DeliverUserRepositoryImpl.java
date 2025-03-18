@@ -43,20 +43,20 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
         return jpaDeliverUserRepository.findByDeliverType(deliverType);
     }
 
-    @Override
-    public List<DeliverUser> findByStatus(Status status) {
-        return jpaDeliverUserRepository.findByStatus(status);
-    }
-
-    @Override
-    public List<DeliverUser> findByStatusAndHubId(Status status, UUID hubId) {
-        return jpaDeliverUserRepository.findByStatusAndHubId(status, hubId);
-    }
-
-    @Override
-    public Optional<DeliverUser> findBySlackId(String slackId) {
-        return jpaDeliverUserRepository.findBySlackId(slackId);
-    }
+//    @Override
+//    public List<DeliverUser> findByStatus(Status status) {
+//        return jpaDeliverUserRepository.findByStatus(status);
+//    }
+//
+//    @Override
+//    public List<DeliverUser> findByStatusAndHubId(Status status, UUID hubId) {
+//        return jpaDeliverUserRepository.findByStatusAndHubId(status, hubId);
+//    }
+//
+//    @Override
+//    public Optional<DeliverUser> findBySlackId(String slackId) {
+//        return jpaDeliverUserRepository.findBySlackId(slackId);
+//    }
 
     @Override
     public List<DeliverUser> findAllByOrderByRotationOrderAsc() {
@@ -88,4 +88,13 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
         return jpaDeliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
     }
 
+    @Override
+    public List<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId) {
+        return jpaDeliverUserRepository.findByNameContainingAndHubIdAndDeletedAtIsNull(name, hubId);
+    }
+
+    @Override
+    public List<DeliverUser> findByDeletedAtIsNull() {
+        return jpaDeliverUserRepository.findByDeletedAtIsNull();
+    }
 }
