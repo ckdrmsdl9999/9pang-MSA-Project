@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,34 +73,55 @@ public class UserServiceImpl implements UserService {
 
     }
 
+//    @Override
+//    public List<User> getAllUsers(UserPrincipals userPrincipals) {
+//        // 권한검증
+//        if(userPrincipals.getRole() == UserRole.COMPANY) {
+//            throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
+//        }
+//
+//        return userRepository.findAllByDeletedAtIsNull();
+//    }
+
     @Override
-    public List<User> getAllUsers(UserPrincipals userPrincipals) {
+    public List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() == UserRole.COMPANY) {
             throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
         }
+        List<User> users = userRepository.findAllByDeletedAtIsNull();
 
-        return userRepository.findAllByDeletedAtIsNull();
+        return users.stream()
+                .map(UserResponseDto::from)
+                .collect(Collectors.toList());
+
     }
-
 
     @Override
-    public User getUser(Long userId){
+    public UserResponseDto getUser(Long userId){
 
-        return userRepository.findById(userId)
+        User user =userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+        return UserResponseDto.from(user);
     }
+
+//    @Override
+//    public User getUser(Long userId){
+//
+//        return userRepository.findById(userId)
+//                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+//    }
 
     @Transactional
     @Override
-    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId,UserPrincipals userPrincipals) {
+    public UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId,UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
+            throw new CustomNotFoundException("관리자 권한이 필요합니다.");
         }
 
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 업데이트할 필드들만 설정
         if (userUpdateReqDto.getNickname() != null) {
@@ -111,8 +133,34 @@ public class UserServiceImpl implements UserService {
         if (userUpdateReqDto.getHubId() != null) {
             existingUser.setHubId(userUpdateReqDto.getHubId());
         }
-     return existingUser;
+        User updatedUser = userRepository.save(existingUser);
+     return UserResponseDto.from(updatedUser);
     }
+
+//    @Transactional
+//    @Override
+//    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId,UserPrincipals userPrincipals) {
+//        // 권한검증
+//        if(userPrincipals.getRole() != UserRole.ADMIN) {
+//            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
+//        }
+//
+//        User existingUser = userRepository.findById(userId)
+//                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
+//
+//        // 업데이트할 필드들만 설정
+//        if (userUpdateReqDto.getNickname() != null) {
+//            existingUser.setNickname(userUpdateReqDto.getNickname());
+//        }
+//        if (userUpdateReqDto.getSlackId() != null) {
+//            existingUser.setSlackId(userUpdateReqDto.getSlackId());
+//        }
+//        if (userUpdateReqDto.getHubId() != null) {
+//            existingUser.setHubId(userUpdateReqDto.getHubId());
+//        }
+//        return existingUser;
+//    }
+
 
     @Transactional
     @Override
@@ -132,6 +180,21 @@ public class UserServiceImpl implements UserService {
 
 
     }
+
+//    @Override
+//    public User searchUser(String username,UserPrincipals userPrincipals) {
+//        // 본인 검색인지 확인
+//        System.out.println(username+"값확인"+userPrincipals.getUsername());
+//        if (!userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN) {
+//            throw new CustomForbiddenException("본인의 아이디만 조회가능합니다.");
+//        }else if(userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN){
+//            return userRepository.findByUsername(username)
+//                    .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"z"));
+//        }
+//
+//        return userRepository.findByUsername(username)
+//                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"x"));
+//    }
 
     @Override
     public User searchUser(String username,UserPrincipals userPrincipals) {

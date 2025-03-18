@@ -4,6 +4,7 @@ import com._hateam.common.entity.Timestamped;
 import com._hateam.user.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 
@@ -39,8 +40,9 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     UserRole userRoles;
 
+    @ColumnDefault("false")
     @Column(name="is_deliver",nullable = false)
-    boolean isDeliver;
+    boolean isDeliver=false;
 
     @OneToOne(mappedBy = "user", orphanRemoval = true)
     private DeliverUser deliverUser;

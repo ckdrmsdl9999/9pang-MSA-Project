@@ -17,15 +17,16 @@ public interface UserService {
 
     public void signOut();
 
-    public List<User> getAllUsers(UserPrincipals userPrincipals);
+    public List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals);
 
-    public User getUser(Long userId);
+    public UserResponseDto getUser(Long userId);
+    //public User getUser(Long userId);
 
-    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, UserPrincipals userPrincipals);
+    public UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, UserPrincipals userPrincipals);
 
     public void deleteUser(Long userId,UserPrincipals userPrincipals);
 
-    public User searchUser(String username,UserPrincipals userPrincipals);
+    public UserResponseDto searchUser(String username,UserPrincipals userPrincipals);
 
     AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto);
 
