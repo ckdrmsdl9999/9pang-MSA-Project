@@ -1,4 +1,4 @@
-package com._hateam.common.controller;
+package com._hateam.common.redis.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

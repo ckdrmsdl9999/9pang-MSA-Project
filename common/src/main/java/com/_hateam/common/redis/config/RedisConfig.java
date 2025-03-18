@@ -1,4 +1,4 @@
-package com._hateam.common.config;
+package com._hateam.common.redis.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,6 +82,7 @@ public class RedisConfig {
         // 캐시 이름 설정 담아주기(적절하게 바꿔서 사용하세요)
         Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>();
         redisCacheConfigurationMap.put("hub", redisCacheConfiguration);
+        redisCacheConfigurationMap.put("hub-route", redisCacheConfiguration);
 
         // RedisCacheManager 리턴
         return RedisCacheManager.RedisCacheManagerBuilder

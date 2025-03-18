@@ -9,6 +9,10 @@ import com._hateam.repository.HubRouteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,12 +26,14 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "hub-route")
 public class HubRouteService {
 
     private final HubRouteRepository hubRouteRepository;
     private final HubRepository hubRepository; // Hub 엔티티 조회를 위한 Repository
 
     @Transactional
+    @CachePut(key = "#result.id")
     public HubRouteDto createHubRoute(HubRouteRequestDto requestDto) {
         // 출발지와 도착지 ID가 동일하면 예외 발생
         validateSourceAndDestinationDifferent(requestDto);
@@ -50,6 +56,7 @@ public class HubRouteService {
 
 
     @Transactional(readOnly = true)
+    @Cacheable(key = "'allHubRoutes_' + #page + '_' + #size + '_' + #sortBy + '_' + #isAsc")
     public List<HubRouteDto> getAllHubRoutes(int page, int size, String sortBy, boolean isAsc) {
         // 페이징, 정렬 처리
         List<HubRoute> hubRouteList = hubInfoPaging(page, size, sortBy, isAsc);
@@ -59,12 +66,14 @@ public class HubRouteService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(key = "#id")
     public HubRouteDto getHubRoute(UUID id) {
         HubRoute hubRoute = findHubRoute(id);
         return HubRouteDto.fromEntity(hubRoute);
     }
 
     @Transactional
+    @CachePut(key = "#id")
     public HubRouteDto updateHubRoute(UUID id, HubRouteRequestDto requestDto) {
         HubRoute hubRoute = findHubRoute(id);
 
@@ -94,6 +103,7 @@ public class HubRouteService {
 
 
     @Transactional
+    @CacheEvict(key = "#id")
     public void deleteHubRoute(UUID id) {
         HubRoute hubRoute = findHubRoute(id);
         hubRouteRepository.delete(hubRoute);
