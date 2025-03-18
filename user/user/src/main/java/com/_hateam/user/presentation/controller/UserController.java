@@ -10,6 +10,8 @@ import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,10 +38,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
     }
 
-//    @PostMapping("/signin")//로그인
-//    public  ResponseDto<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto,BindingResult bindingResult) {
-//        return ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto));
-//    }
 
     @GetMapping("/")//회원조회(자기자신만)
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserPrincipals userPrincipals) {
@@ -51,29 +49,19 @@ public class UserController {
     @GetMapping("/admin/{userId}")//관리자단일조회(MASTER), 스프링시큐리티로 권한 제어 예정
     public ResponseEntity<?> getAdminUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
         System.out.println(userPrincipals.getId()+"테스토");
-//        return ResponseDto.success(HttpStatus.OK, userService.getUser(userId));
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getUser(userId)));
     }
 
 
-    @GetMapping("/admin/search")//관리자단일검색(MASTER)
-    public ResponseEntity<?> getAdminSearch(@RequestParam String username,@AuthenticationPrincipal UserPrincipals userPrincipals){
-      //  return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals)));
-    }
-
-
-
     @PatchMapping("/roles/{userId}") // 권한 수정(MASTER)
     public ResponseEntity<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,@AuthenticationPrincipal UserPrincipals userPrincipals) {
-        //return ResponseDto.success(HttpStatus.OK, userService.updateUserRole(userId, roleUpdateDto.getRole(),userPrincipals));
     return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(userService.updateUserRole(userId, roleUpdateDto.getRole(),userPrincipals)));
     }
 
-    @GetMapping("/search") // 유저 검색(자기자신만)
-    public ResponseEntity<?> userSearch(@RequestParam String username, @AuthenticationPrincipal UserPrincipals userPrincipals) {
-        //return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals)));
+    @GetMapping("/search") // 유저 검색(권한에 따라)
+    public ResponseEntity<?> userSearch(@RequestParam String username, @RequestParam(defaultValue = "createdAt") String sortBy,
+                                        @RequestParam(defaultValue = "desc") String order, @PageableDefault(page = 0, size = 10) Pageable pageable, @AuthenticationPrincipal UserPrincipals userPrincipals) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals,sortBy,order,pageable)));
     }
 
     @GetMapping("/getusers")//회원목록 조회(DELIVERY,HUB,MASTER)
@@ -88,7 +76,6 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));
     }
-
 
     @DeleteMapping("/{userId}")  // 회원 탈퇴(MASTER)
     public ResponseEntity<?> deleteUser(@PathVariable Long userId,

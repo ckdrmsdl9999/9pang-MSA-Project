@@ -14,6 +14,7 @@ import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,8 +40,9 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public User saveUser(UserSignUpReqDto userSignUpReqDto) {
-     return userRepository.save(UserSignUpReqDto.toEntity(userSignUpReqDto,passwordEncoder));
+    public UserResponseDto saveUser(UserSignUpReqDto userSignUpReqDto) {
+     User savedUser =userRepository.save(UserSignUpReqDto.toEntity(userSignUpReqDto,passwordEncoder));
+        return UserResponseDto.from(savedUser);
     }
 
     @Transactional
@@ -68,20 +71,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    public void signOut(){
 
-    }
-
-//    @Override
-//    public List<User> getAllUsers(UserPrincipals userPrincipals) {
-//        // 권한검증
-//        if(userPrincipals.getRole() == UserRole.COMPANY) {
-//            throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
-//        }
-//
-//        return userRepository.findAllByDeletedAtIsNull();
-//    }
 
     @Override
     public List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals) {
@@ -105,12 +95,6 @@ public class UserServiceImpl implements UserService {
         return UserResponseDto.from(user);
     }
 
-//    @Override
-//    public User getUser(Long userId){
-//
-//        return userRepository.findById(userId)
-//                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
-//    }
 
     @Transactional
     @Override
@@ -137,30 +121,6 @@ public class UserServiceImpl implements UserService {
      return UserResponseDto.from(updatedUser);
     }
 
-//    @Transactional
-//    @Override
-//    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId,UserPrincipals userPrincipals) {
-//        // 권한검증
-//        if(userPrincipals.getRole() != UserRole.ADMIN) {
-//            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
-//        }
-//
-//        User existingUser = userRepository.findById(userId)
-//                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
-//
-//        // 업데이트할 필드들만 설정
-//        if (userUpdateReqDto.getNickname() != null) {
-//            existingUser.setNickname(userUpdateReqDto.getNickname());
-//        }
-//        if (userUpdateReqDto.getSlackId() != null) {
-//            existingUser.setSlackId(userUpdateReqDto.getSlackId());
-//        }
-//        if (userUpdateReqDto.getHubId() != null) {
-//            existingUser.setHubId(userUpdateReqDto.getHubId());
-//        }
-//        return existingUser;
-//    }
-
 
     @Transactional
     @Override
@@ -178,57 +138,63 @@ public class UserServiceImpl implements UserService {
             user.setDeletedBy(user.getUsername());
             userRepository.save(user);
 
-
     }
 
-//    @Override
-//    public User searchUser(String username,UserPrincipals userPrincipals) {
-//        // 본인 검색인지 확인
-//        System.out.println(username+"값확인"+userPrincipals.getUsername());
-//        if (!userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN) {
-//            throw new CustomForbiddenException("본인의 아이디만 조회가능합니다.");
-//        }else if(userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN){
-//            return userRepository.findByUsername(username)
-//                    .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"z"));
-//        }
-//
-//        return userRepository.findByUsername(username)
-//                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"x"));
-//    }
 
     @Override
-    public User searchUser(String username,UserPrincipals userPrincipals) {
-        // 본인 검색인지 확인
-        System.out.println(username+"값확인"+userPrincipals.getUsername());
-        if (!userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomForbiddenException("본인의 아이디만 조회가능합니다.");
-        }else if(userPrincipals.getUsername().equals(username)&&userPrincipals.getRole() != UserRole.ADMIN){
-            return userRepository.findByUsername(username)
-                    .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"z"));
+    public Page<UserResponseDto> searchUser(String username, UserPrincipals userPrincipals,
+                                            String sortBy, String order, Pageable pageable) {
+        // 페이지 사이즈 적용
+        if(pageable.getPageSize() != 10 && pageable.getPageSize() != 20 && pageable.getPageSize() != 30) {
+            pageable = PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort());
         }
 
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + username+"x"));
+        // 정렬 설정 적용
+        Sort sort = Sort.by(order.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+        // PageRequest에 정렬 적용
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        Page<User> userPage;
+
+        // 권한별 처리
+        if (userPrincipals.getRole() == UserRole.ADMIN) {
+            // 관리자는 모든 사용자 검색 가능
+            userPage = userRepository.findByUsernameContainingAndDeletedAtIsNull(username, pageRequest);
+        } else {
+            // 일반 사용자(COMPANY, HUB, DELIVERY)는 자신의 정보만 조회 가능
+            if (!userPrincipals.getUsername().equals(username)) {
+                throw new CustomForbiddenException("본인의 아이디만 조회가능합니다.");
+            }
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new CustomNotFoundException("사용자를 찾을 수 없습니다: " + username));
+
+            // 단일 사용자를 Page 객체로 변환
+            userPage = new PageImpl<>(List.of(user), pageRequest, 1);
+        }
+
+        // User 엔티티를 UserResponseDto로 변환
+        return userPage.map(UserResponseDto::from);
     }
+
 
 
     @Transactional
     @Override
-    public User updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals) {
+    public UserResponseDto updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() != UserRole.ADMIN) {
             throw new CustomForbiddenException("관리자 권한이 필요합니다.");
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new CustomNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
-        try {
-            user.setUserRoles(role);
-            return userRepository.save(user);
-        } catch (CustomForbiddenException e) {
-            throw new CustomForbiddenException("유효하지 않은 권한입니다: " + role);
-        }
+
+        user.setUserRoles(role);
+        User updatedUser = userRepository.save(user);
+        return UserResponseDto.from(updatedUser);
+
     }
 
 

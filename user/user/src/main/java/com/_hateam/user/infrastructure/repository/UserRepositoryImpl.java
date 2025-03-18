@@ -4,6 +4,8 @@ import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -43,6 +45,9 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findByNicknameContaining(String nickname) {
         return jpaUserRepository.findByNicknameContaining(nickname);
     }
-
+    @Override
+    public Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable) {
+        return jpaUserRepository.findByUsernameContainingAndDeletedAtIsNull(username, pageable);
+    }
 
 }
