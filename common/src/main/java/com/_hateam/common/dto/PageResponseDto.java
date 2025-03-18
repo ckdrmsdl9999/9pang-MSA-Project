@@ -20,11 +20,11 @@ public class PageResponseDto<T> {
     }
 
     // 성공적인 응답을 위한 생성자
-    public PageResponseDto(int code, String status, String message, List<T> data, Page page) {
+    public PageResponseDto(int code, String status, String message, Page page) {
         this.code = code;
         this.status = status;
         this.message = message;
-        this.data = data;
+        this.data = page.getContent();
         this.paginationDto = new PaginationDto(page);
     }
 
@@ -37,11 +37,11 @@ public class PageResponseDto<T> {
         this.data = null;
     }
 
-    public PageResponseDto(HttpStatus httpStatus, List<T> data, Page page) {
+    public PageResponseDto(HttpStatus httpStatus, Page page, String message) {
         this.code = httpStatus.value();
         this.status = httpStatus.getReasonPhrase();
-        this.message = "성공적으로 처리되었습니다.";
-        this.data = data;
+        this.message = message;
+        this.data = page.getContent();
         this.paginationDto = new PaginationDto(page);
     }
 
@@ -50,5 +50,10 @@ public class PageResponseDto<T> {
         this.status = httpStatus.getReasonPhrase();
         this.message = message;
         this.data = null;
+        this.paginationDto = null;
+    }
+
+    public static PageResponseDto success(HttpStatus status, Page page, String message) {
+        return new PageResponseDto<>(status, page, message);
     }
 }
