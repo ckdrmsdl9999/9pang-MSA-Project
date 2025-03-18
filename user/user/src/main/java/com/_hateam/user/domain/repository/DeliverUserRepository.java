@@ -5,6 +5,8 @@ import com._hateam.user.domain.enums.Status;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,21 +24,16 @@ public interface DeliverUserRepository {
 
     Optional<DeliverUser> findByUser_UserId(Long userId);
 
-    List<DeliverUser> findByDeliverType(DeliverType deliverType);
-
-    List<DeliverUser> findAllByOrderByRotationOrderAsc();
-
-    boolean existsByContactNumber(String contactNumber);
-
     List<DeliverUser> findAll();
 
     List<DeliverUser> findByHubIdAndDeletedAtIsNull(UUID hubId);
 
-    void deleteByDeliverId(UUID deliverId);
-
     List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
 
-    List<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId);
-
     List<DeliverUser> findByDeletedAtIsNull();
+    // 페이징 메소드 추가
+    Page<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name, Pageable pageable);
+
+    Page<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId, Pageable pageable);
+
 }

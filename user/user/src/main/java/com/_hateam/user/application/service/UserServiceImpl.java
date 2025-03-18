@@ -44,18 +44,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto) {//로그인
 
-//        try {//사용자인증
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             signInReqDto.getUsername(),
                             signInReqDto.getPassword()
                     )
             );
-//        }catch (UsernameNotFoundException e) {
-//            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-//        } catch (BadCredentialsException e) {
-//            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
-//        }//글로벌 exception 적용
 
         // 토큰에 값 담기위해 값 조회
         User user = userRepository.findByUsername(signInReqDto.getUsername())
@@ -98,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateUser(UserUpdateReqDto userUpdateReqDto,Long userId,UserPrincipals userPrincipals) {
+    public User updateUser(UserUpdateReqDto userUpdateReqDto, Long userId,UserPrincipals userPrincipals) {
         // 권한검증
         if(userPrincipals.getRole() != UserRole.ADMIN) {
             throw new CustomForbiddenException("관리자 권한이 필요합니다.");
@@ -113,6 +107,9 @@ public class UserServiceImpl implements UserService {
         }
         if (userUpdateReqDto.getSlackId() != null) {
             existingUser.setSlackId(userUpdateReqDto.getSlackId());
+        }
+        if (userUpdateReqDto.getHubId() != null) {
+            existingUser.setHubId(userUpdateReqDto.getHubId());
         }
      return existingUser;
     }

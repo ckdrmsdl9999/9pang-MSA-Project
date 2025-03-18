@@ -5,6 +5,8 @@ import com._hateam.user.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name="p_user")
 @Getter
@@ -27,6 +29,9 @@ public class User extends Timestamped {
 
     @Column(nullable = false)
     String password;
+
+    @Column(name="hub_id")
+    UUID hubId;
 
     @Column(name = "slack_id", nullable = false)
     String slackId;

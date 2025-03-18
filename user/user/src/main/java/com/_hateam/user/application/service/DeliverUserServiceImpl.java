@@ -10,6 +10,7 @@ import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.model.User;
@@ -33,11 +34,10 @@ public class DeliverUserServiceImpl implements DeliverUserService {
     private final UserRepository userRepository;
 
     @Override
-    @Transactional//배송담당자 생성
+    @Transactional//배송 담당자 생성
     public DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto deliverUserCreateReqDto) {
-
         User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
+                .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
 
         DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
         DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
@@ -47,20 +47,31 @@ public class DeliverUserServiceImpl implements DeliverUserService {
 
 @Override//권한별 담당자 검색
 @Transactional(readOnly = true)
-public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPrincipals userPrincipals) {
-    List<DeliverUser> deliverUsers;
+public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPrincipals userPrincipals, String sortBy, String order, Pageable pageable) {
+
+    Page<DeliverUser> deliverUserPage;
+    //페이지 사이즈 적용
+    if(pageable.getPageSize()!=10&&pageable.getPageSize()!=20&&pageable.getPageSize()!=30){
+        pageable = PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort());
+    }
+    // 정렬 설정 적용
+    Sort sort = Sort.by(order.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+    // PageRequest에 정렬 적용
+    PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
     // 권한 검증 및 권한별 처리
     if (userPrincipals.getRole() == UserRole.ADMIN) {
         // 마스터 관리자: 모든 배송담당자 검색 가능
-        deliverUsers = deliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
+        deliverUserPage = deliverUserRepository.findByNameContainingAndDeletedAtIsNull(name, pageRequest);
     }
     else if (userPrincipals.getRole() == UserRole.HUB) {
-        // 허브 관리자: 담당 허브의 배송담당자만 검색 가능
-        DeliverUser hubAdmin = deliverUserRepository.findByUser_UserId(userPrincipals.getId())
-                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(H). ID: " + userPrincipals.getId()));
 
-        UUID hubId = hubAdmin.getHubId();
-        deliverUsers = deliverUserRepository.findByNameContainingAndHubIdAndDeletedAtIsNull(name, hubId);
+        // 허브관리자는 유저에서 추가,허브 관리자는 자신의 HubId를 불러와서 자신의 HubId 가지고 잇는 배송 담당자 검색
+        // 애들 검색
+        User user = userRepository.findById(userPrincipals.getId()).orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(H). ID: " + userPrincipals.getId()));
+
+        UUID hubId = user.getHubId();
+        deliverUserPage = deliverUserRepository.findByNameContainingAndHubIdAndDeletedAtIsNull(name, hubId, pageRequest);
     }
     else if (userPrincipals.getRole() == UserRole.DELIVERY) {
         // 배송 담당자: 본인 정보만 조회 가능(이름이 일치하는 경우만)
@@ -69,17 +80,17 @@ public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
 
         // 자신의 이름이 검색어를 포함하는 경우에만 결과 반환
         if (deliverUser.getName().contains(name)) {
-            deliverUsers = List.of(deliverUser);
+            // 단일 객체를 페이지로 변환
+            deliverUserPage = new PageImpl<>(List.of(deliverUser), pageRequest, 1);
         } else {
-            deliverUsers = Collections.emptyList();
+            deliverUserPage = new PageImpl<>(Collections.emptyList(), pageRequest, 0);
         }
     }
-    else { // UserRole.COMPANY 등 기타 역할
+    else { // COMPANY의 경우
         throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
     }
-    return deliverUsers.stream()
-            .map(DeliverUserResponseDto::from)
-            .collect(Collectors.toList());
+
+    return deliverUserPage.map(DeliverUserResponseDto::from);
 }
     // 배송담당자 목록 조회
     @Override
@@ -87,17 +98,13 @@ public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     public List<DeliverUserResponseDto> getAllDeliverUsers(UserPrincipals userPrincipals) {
 
         // 권한 검증
-        // DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
-        // .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
         DeliverUser searchMan = deliverUserRepository.findByUser_UserId(userPrincipals.getId()).orElseThrow(
-                () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + userPrincipals.getId())
-        );
-        List<DeliverUser> deliverUsers = deliverUserRepository.findByDeletedAtIsNull();;
+                () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + userPrincipals.getId()));
+        List<DeliverUser> deliverUsers = deliverUserRepository.findByDeletedAtIsNull();
 
         //ADMIN 은 전부조회
         if(userPrincipals.getRole() == UserRole.HUB){
             UUID hubId = searchMan.getHubId(); // 관리자의 허브 ID
-            System.out.println("창근hub목록조회"+hubId);
             deliverUsers = deliverUserRepository.findByHubIdAndDeletedAtIsNull(hubId);
 
         }
@@ -107,8 +114,6 @@ public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
         else if (userPrincipals.getRole() == UserRole.COMPANY) {
             throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
         }
-
-
 
         return deliverUsers.stream()
                 .map(DeliverUserResponseDto::from)
@@ -120,7 +125,6 @@ public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     @Transactional(readOnly = true)
     public DeliverUserResponseDto getDeliverUserById(UUID deliverId, UserPrincipals userPrincipals) {
         // 권한 검증
-        System.out.println(deliverId+"값체크 창근");
         DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
                 .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(d). ID: " + deliverId));
         DeliverUser searchMan = deliverUserRepository.findByUser_UserId(userPrincipals.getId()).orElseThrow(
@@ -149,9 +153,7 @@ public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     }
 
 
-
-
-    // 배송담당자 수정
+    // 배송 담당자 수정
     @Override
     @Transactional
     public DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, UserPrincipals userPrincipals) {
@@ -199,7 +201,7 @@ public List<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
         return DeliverUserResponseDto.from(updatedDeliverUser);
     }
 
-    // 배송담당자 삭제
+    // 배송 담당자 삭제
     @Override
     @Transactional
     public void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals) {

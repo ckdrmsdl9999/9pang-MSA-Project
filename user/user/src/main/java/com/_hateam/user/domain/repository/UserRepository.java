@@ -15,8 +15,6 @@ public interface UserRepository {
 
     Optional<User> findByUsername(String username);
 
-   //Optional<User> findById(Long userId);
-
     Optional<User> findById(Long userId);
 
     List<User> findAllByDeletedAtIsNull();
@@ -24,7 +22,5 @@ public interface UserRepository {
     List<User> findByUserRoles(UserRole role);
 
     List<User> findByNicknameContaining(String nickname);
-
-   // List<User> findByApproved(boolean approved);
 
 }

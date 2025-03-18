@@ -17,9 +17,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final JpaUserRepository jpaUserRepository;
 
     @Override
-    public User save(User user) {
-        return jpaUserRepository.save(user);
-    }
+    public User save(User user) { return jpaUserRepository.save(user); }
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -45,11 +43,6 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findByNicknameContaining(String nickname) {
         return jpaUserRepository.findByNicknameContaining(nickname);
     }
-
-//    @Override
-//    public List<User> findByApproved(boolean approved) {
-//        return jpaUserRepository.findByApproved(approved);
-//    }
 
 
 }

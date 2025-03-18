@@ -1,5 +1,6 @@
 package com._hateam.user.presentation.controller;
 
+import com._hateam.common.dto.ResponseDto;
 import com._hateam.user.application.dto.DeliverUserCreateReqDto;
 import com._hateam.user.application.dto.DeliverUserResponseDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
@@ -8,6 +9,8 @@ import com._hateam.user.application.service.UserService;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,45 +24,36 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DeliverController {
     private final DeliverUserService deliverUserService;
-    private final UserService userService;
 
-    //배송담당자 추가
+    //배송 담당자 추가
     @PostMapping("/add")
-    public ResponseEntity<?> createDeliverUser(//hub 아이디는 임의값
+    public ResponseEntity<?> createDeliverUser(
             @RequestBody DeliverUserCreateReqDto deliverUserCreateReqDto,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(deliverUserService.createDeliverUser(deliverUserCreateReqDto));
-
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.createDeliverUser(deliverUserCreateReqDto)));
     }
 
-    // 마스터 관리자 검색
+    // 검색(페이징추가, 권한별 분리)
     @GetMapping("/admin/search")
     public ResponseEntity<?> searchDeliverUsers(
-            @RequestParam String name,
+            @RequestParam String name,@RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String order, @PageableDefault(page = 0, size = 10) Pageable pageable,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
-        List<DeliverUserResponseDto> results = deliverUserService.searchDeliverUsersByName(name, userPrincipals);
-        return ResponseEntity.status(HttpStatus.OK).body(results);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.searchDeliverUsersByName(name,userPrincipals, sortBy, order, pageable)));
     }
 
-    //  목록 조회(권한별 분리)
+    // 배송 담당자 목록 조회(권한별 분리)
     @GetMapping("/")
-    public ResponseEntity<?> getAllDeliverUsers(
-            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
-        List<DeliverUserResponseDto> deliverUsers = deliverUserService.getAllDeliverUsers(userPrincipals);
-        return ResponseEntity.status(HttpStatus.OK).body(deliverUsers);
+    public ResponseEntity<?> getAllDeliverUsers(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getAllDeliverUsers(userPrincipals)));
     }
 
-    // 단일 조회(권한별 분리)
+    // 배송 담당자 단일 조회(권한별 분리)
     @GetMapping("/{deliverId}")
     public ResponseEntity<?> getDeliverUser(
             @PathVariable UUID deliverId,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
-        DeliverUserResponseDto deliverUser = deliverUserService.getDeliverUserById(deliverId, userPrincipals);
-        return ResponseEntity.status(HttpStatus.OK).body(deliverUser);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverUserById(deliverId, userPrincipals)));
     }
 
 
@@ -69,9 +63,7 @@ public class DeliverController {
             @PathVariable UUID deliverId,
             @RequestBody DeliverUserUpdateReqDto updateDto,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
-        DeliverUserResponseDto updatedDeliverUser = deliverUserService.updateDeliverUser(deliverId, updateDto, userPrincipals);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedDeliverUser);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.updateDeliverUser(deliverId, updateDto, userPrincipals)));
     }
 
     // 배송담당자 삭제(관리자별)
@@ -79,9 +71,8 @@ public class DeliverController {
     public ResponseEntity<?> deleteDeliverUser(
             @PathVariable UUID deliverId,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         deliverUserService.deleteDeliverUser(deliverId, userPrincipals);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success("배송담당자 삭제 완료"));
     }
 
 }

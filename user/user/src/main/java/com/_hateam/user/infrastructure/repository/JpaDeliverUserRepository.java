@@ -4,6 +4,8 @@ package com._hateam.user.infrastructure.repository;
 import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.Status;
 import com._hateam.user.domain.model.DeliverUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,12 +22,6 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
 
     List<DeliverUser> findByDeliverType(DeliverType deliverType);
 
-    List<DeliverUser> findByStatus(Status status);
-
-    List<DeliverUser> findByStatusAndHubId(Status status, UUID hubId);
-
-    Optional<DeliverUser> findBySlackId(String slackId);
-
     List<DeliverUser> findAllByOrderByRotationOrderAsc();
 
     boolean existsByContactNumber(String contactNumber);
@@ -34,8 +30,12 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
 
     List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
 
-    List<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId);
-
     List<DeliverUser> findByDeletedAtIsNull();
 
-    }
+    Page<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name, Pageable pageable);
+
+    Page<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId, Pageable pageable);
+
+
+
+}

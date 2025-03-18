@@ -33,9 +33,7 @@ public class UserController {
 
     @PostMapping("/signin")//로그인
     public  ResponseDto<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto,BindingResult bindingResult) {
-
         return ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto));
-
     }
 
     @GetMapping("/")//회원조회(자기자신만)
@@ -51,8 +49,6 @@ public class UserController {
 
     @GetMapping("/admin/search")//관리자단일검색(MASTER)
     public ResponseDto<?> getAdminSearch(@RequestParam String username,@AuthenticationPrincipal UserPrincipals userPrincipals){
-
-
         return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
     }
 
@@ -64,10 +60,8 @@ public class UserController {
 
     @GetMapping("/search") // 유저 검색(자기자신만)
     public ResponseDto<?> userSearch(@RequestParam String username, @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         return ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals));
     }
-
 
     @GetMapping("/getusers")//회원목록 조회(DELIVERY,HUB,MASTER)
     public ResponseDto<?> getAllUser(@AuthenticationPrincipal UserPrincipals userPrincipals){
@@ -77,7 +71,6 @@ public class UserController {
     @PatchMapping("/{userId}")  // 회원 수정(MASTER)
     public ResponseDto<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,
                                      @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         //userService.updateUser(userUpdateReqDto,Long.parseLong(userId));
         return ResponseDto.success(HttpStatus.OK, userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));
     }
@@ -85,8 +78,7 @@ public class UserController {
     @DeleteMapping("/{userId}")  // 회원 탈퇴(MASTER)
     public ResponseDto<?> deleteUser(@PathVariable Long userId,
                                      @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
-        userService.deleteUser(userId,userPrincipals);  // 또는 username 대신 userId를 사용하도록 서비스 메소드 수정 필요
+        userService.deleteUser(userId,userPrincipals);
         return ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다.");
     }
 }
