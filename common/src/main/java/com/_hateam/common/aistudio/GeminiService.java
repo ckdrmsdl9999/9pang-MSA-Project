@@ -27,16 +27,16 @@ public class GeminiService {
     @Transactional
     public CreatedGeminiResponseDto generateContent(GeminiRequestDto requestDto) {
         String originalPrompt = requestDto.getContents()
-            .get(0)
-            .getParts()
-            .get(0)
-            .getText();
+                .get(0)
+                .getParts()
+                .get(0)
+                .getText();
         String finalPrompt = originalPrompt + SendToAiMessage.ADDITIONAL_MESSAGE.getSendToAiMessage();
 
         GeminiRequestDto modifiedRequest = new GeminiRequestDto(
-            List.of(new GeminiRequestDto.Content(
-                List.of(new GeminiRequestDto.Part(finalPrompt))
-            ))
+                List.of(new GeminiRequestDto.Content(
+                        List.of(new GeminiRequestDto.Part(finalPrompt))
+                ))
         );
 
         GeminiResponseDto response = geminiClient.generateContent(modifiedRequest);
@@ -48,23 +48,24 @@ public class GeminiService {
 
         // 응답 추출
         String finalResponse = response.getCandidates()
-            .get(0)
-            .getContent()
-            .getParts()
-            .get(0)
-            .getText();
+                .get(0)
+                .getContent()
+                .getParts()
+                .get(0)
+                .getText();
 
         // 저장
         Gemini gemini = saveGeneratedContent(Gemini.builder()
-            .question(finalPrompt)
-            .answer(finalResponse)
-            .build());
+                .question(finalPrompt)
+                .answer(finalResponse)
+                .build());
 
         // 응답 반환
         return CreatedGeminiResponseDto.from(gemini);
     }
+
     @Transactional
-    public void softDeleteGemini(UUID geminiId,  UserDetails userDetails) {
+    public void softDeleteGemini(UUID geminiId, UserDetails userDetails) {
         // 삭제되지 않은 행만 조회하도록 처리
         Gemini gemini = geminiRepository.findByIdAndIsDeletedFalse(geminiId)
                 .orElseThrow(() -> new EntityNotFoundException("Gemini record not found with id: " + geminiId));
@@ -75,6 +76,7 @@ public class GeminiService {
         // Timestamped의 delete 메소드가 있다면 아래와 같이 호출하여 deletedAt, deletedBy를 기록
         gemini.delete(userDetails.getUsername());
     }
+
     private Gemini saveGeneratedContent(Gemini gemini) {
         return geminiRepository.save(gemini);
     }
