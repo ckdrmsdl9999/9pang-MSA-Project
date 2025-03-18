@@ -40,9 +40,8 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     UserRole userRoles;
 
-    @ColumnDefault("false")
     @Column(name="is_deliver",nullable = false)
-    boolean isDeliver=false;
+    boolean isDeliver;
 
     @OneToOne(mappedBy = "user", orphanRemoval = true)
     private DeliverUser deliverUser;

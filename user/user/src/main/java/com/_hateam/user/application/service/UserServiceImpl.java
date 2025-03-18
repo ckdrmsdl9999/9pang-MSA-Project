@@ -117,6 +117,9 @@ public class UserServiceImpl implements UserService {
         if (userUpdateReqDto.getHubId() != null) {
             existingUser.setHubId(userUpdateReqDto.getHubId());
         }
+        existingUser.setUpdatedBy(userPrincipals.getUsername());
+        existingUser.setUpdatedAt(LocalDateTime.now());
+
         User updatedUser = userRepository.save(existingUser);
      return UserResponseDto.from(updatedUser);
     }

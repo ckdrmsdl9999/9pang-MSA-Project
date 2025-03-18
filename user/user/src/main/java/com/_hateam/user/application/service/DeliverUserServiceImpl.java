@@ -42,6 +42,12 @@ public class DeliverUserServiceImpl implements DeliverUserService {
         DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
         DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
 
+
+        // User 배송담당자 여부 업데이트
+            user.setDeliver(true);
+            userRepository.save(user);
+
+
         return DeliverUserResponseDto.from(savedDeliverUser);
     }
 
