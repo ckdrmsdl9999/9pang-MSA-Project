@@ -4,6 +4,7 @@ package com._hateam.common.aistudio.feign;
 import com._hateam.common.aistudio.config.GeminiClientConfig;
 import com._hateam.common.aistudio.dto.GeminiRequestDto;
 import com._hateam.common.aistudio.dto.GeminiResponseDto;
+import com._hateam.common.aistudio.entity.Gemini;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,8 @@ public interface GeminiClient {
      * @param request 요청 본문 (JSON 형식)
      * @return 생성된 콘텐츠에 대한 응답 DTO
      */
-    @PostMapping(value = "/v1beta/models/gemini-1.5-flash:generateContent",
+//    Gemini 2.0 Pro
+    @PostMapping(value = "/v1beta/models/gemini-2.0-pro-exp-02-05:generateContent",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     GeminiResponseDto generateContent(@RequestBody GeminiRequestDto request);
 }
