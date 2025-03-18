@@ -1,6 +1,11 @@
 package com._hateam.common.dto;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.net.URI;
 
 public class ResponseDto<T> {
 
@@ -90,4 +95,21 @@ public class ResponseDto<T> {
         return new ResponseDto<>(status, message);
     }
 
+    // uri location을 담은 응답을 위한 메서드
+    public static ResponseDto<Void> responseWithLocation(HttpStatus status, URI location, String message) {
+        // 현재 HttpServletResponse 객체를 가져옴
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes != null) {
+            HttpServletResponse response = requestAttributes.getResponse();
+            if (response != null) {
+                // Location 헤더에 URI를 추가
+                response.setHeader("Location", location.toString());
+            }
+        }
+        return new ResponseDto<>(status, message);
+    }
+
+    public static ResponseDto<Void> responseWithNoData(HttpStatus status, String message) {
+        return new ResponseDto<>(status, message);
+    }
 }

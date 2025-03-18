@@ -32,6 +32,9 @@ jar {
 repositories {
 	mavenCentral()
 }
+ext {
+	set('springCloudVersion', "2024.0.0")
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -39,12 +42,42 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	
+
+	// ✅ OpenFeign (Spring Cloud)
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// ✅ eureka-client (Spring Cloud)
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// ✅ Spring Boot Redis Starter (Spring Data Redis + 기본 클라이언트 Lettuce 포함)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// ✅ Date 타입 redis에 저장하기 위해 필요한 의존성
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
+	// ✅ (선택) Jedis 클라이언트를 사용하려면 추가
+	implementation 'redis.clients:jedis:5.0.2'
+
+	// ✅ (선택) Spring Cache와 함께 사용 시 필요
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// queryDsl
+	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 publishing {

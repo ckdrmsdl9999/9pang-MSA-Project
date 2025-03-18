@@ -1,21 +1,11 @@
 package com._hateam;
 
+import com._hateam.common.config.CommonApplication;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableJpaAuditing
-@EnableScheduling
-@EnableFeignClients
-@EnableCaching
-@SpringBootApplication
+@CommonApplication  // 공통 설정이 모두 적용됩니다.
 public class HubApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(HubApplication.class, args);
 	}
-
 }
