@@ -1,11 +1,11 @@
-package com._hateam.common.aistudio;
+package com._hateam.aistudio;
 
-import com._hateam.common.aistudio.dto.CreatedGeminiResponseDto;
-import com._hateam.common.aistudio.dto.GeminiRequestDto;
-import com._hateam.common.aistudio.dto.GeminiResponseDto;
-import com._hateam.common.aistudio.entity.Gemini;
-import com._hateam.common.aistudio.feign.GeminiClient;
-import com._hateam.common.aistudio.repository.GeminiRepository;
+import com._hateam.aistudio.dto.GeminiRequestDto;
+import com._hateam.aistudio.dto.GeminiResponseDto;
+import com._hateam.aistudio.feign.GeminiClient;
+import com._hateam.aistudio.repository.GeminiRepository;
+import com._hateam.aistudio.dto.CreatedGeminiResponseDto;
+import com._hateam.aistudio.entity.Gemini;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class GeminiService {
     private final GeminiRepository geminiRepository;
 
     @Transactional
-    public CreatedGeminiResponseDto generateContent(GeminiRequestDto requestDto) {
+    public CreatedGeminiResponseDto generateContent(com._hateam.aistudio.dto.GeminiRequestDto requestDto) {
         String originalPrompt = requestDto.getContents()
                 .get(0)
                 .getParts()
@@ -33,8 +33,8 @@ public class GeminiService {
                 .getText();
         String finalPrompt = originalPrompt + SendToAiMessage.ADDITIONAL_MESSAGE.getSendToAiMessage();
 
-        GeminiRequestDto modifiedRequest = new GeminiRequestDto(
-                List.of(new GeminiRequestDto.Content(
+        com._hateam.aistudio.dto.GeminiRequestDto modifiedRequest = new com._hateam.aistudio.dto.GeminiRequestDto(
+                List.of(new com._hateam.aistudio.dto.GeminiRequestDto.Content(
                         List.of(new GeminiRequestDto.Part(finalPrompt))
                 ))
         );

@@ -1,18 +1,19 @@
-package com._hateam.common.aistudio.feign;
+package com._hateam.aistudio.feign;
 
 
-import com._hateam.common.aistudio.config.GeminiClientConfig;
-import com._hateam.common.aistudio.dto.GeminiRequestDto;
-import com._hateam.common.aistudio.dto.GeminiResponseDto;
+import com._hateam.aistudio.dto.GeminiResponseDto;
+import com._hateam.aistudio.config.GeminiClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 // 🔹 Gemini API 연동을 위한 FeignClient 정의
-@FeignClient(name = "GeminiClient",
+@FeignClient(
+        name = "GeminiClient",
         url = "https://generativelanguage.googleapis.com",
-        configuration = GeminiClientConfig.class)
+        configuration = {GeminiClientConfig.class}
+)
 public interface GeminiClient {
 
     /**
@@ -24,5 +25,5 @@ public interface GeminiClient {
 //    Gemini 2.0 Pro
     @PostMapping(value = "/v1beta/models/gemini-2.0-pro-exp-02-05:generateContent",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    GeminiResponseDto generateContent(@RequestBody GeminiRequestDto request);
+    <T> GeminiResponseDto generateContent(@RequestBody T request);
 }

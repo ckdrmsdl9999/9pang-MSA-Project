@@ -61,6 +61,7 @@ dependencies {
 	// ✅ (선택) Spring Cache와 함께 사용 시 필요
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
