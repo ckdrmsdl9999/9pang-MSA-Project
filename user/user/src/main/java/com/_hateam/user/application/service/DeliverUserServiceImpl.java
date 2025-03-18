@@ -18,6 +18,7 @@ import com._hateam.user.domain.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -51,24 +52,40 @@ public class DeliverUserServiceImpl implements DeliverUserService {
         // 권한 검증
         if (userPrincipals.getRole() != UserRole.ADMIN) {throw new CustomForbiddenException("관리자 권한이 필요합니다.");}
 
-        List<DeliverUser> deliverUsers = deliverUserRepository.findAll().stream()
-                .filter(du -> du.getName().contains(name) && du.getDeletedAt() == null)
-                .collect(Collectors.toList());
+        List<DeliverUser> deliverUsers = deliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
+
 
         return deliverUsers.stream()
                 .map(DeliverUserResponseDto::from)
                 .collect(Collectors.toList());
     }
+
     // 배송담당자 관리자 조회 (전체 목록)
     @Override
     @Transactional(readOnly = true)
     public List<DeliverUserResponseDto> getAllDeliverUsers(UserPrincipals userPrincipals) {
+
         // 권한 검증
-        if (userPrincipals.getRole() != UserRole.ADMIN) {
-            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
+        // DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
+        // .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
+        DeliverUser searchMan = deliverUserRepository.findByUser_UserId(userPrincipals.getId()).orElseThrow(
+                () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + userPrincipals.getId())
+        );
+        List<DeliverUser> deliverUsers;
+        //ADMIN 은 전부조회
+        if(userPrincipals.getRole() == UserRole.HUB){
+            UUID hubId = searchMan.getHubId(); // 관리자의 허브 ID
+            deliverUsers = deliverUserRepository.findByHubIdAndDeletedAtIsNull(hubId);
+
+        }
+        else if(userPrincipals.getRole() == UserRole.DELIVERY){
+            deliverUsers = List.of(searchMan);
+        }
+        else if (userPrincipals.getRole() == UserRole.COMPANY) {
+            throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
         }
 
-        List<DeliverUser> deliverUsers = deliverUserRepository.findAll().stream()
+        deliverUsers = deliverUserRepository.findAll().stream()
                 .filter(du -> du.getDeletedAt() == null)
                 .collect(Collectors.toList());
 
@@ -77,18 +94,30 @@ public class DeliverUserServiceImpl implements DeliverUserService {
                 .collect(Collectors.toList());
     }
 
-    // 배송담당자 단일 조회
+    // 단일 조회
     @Override
     @Transactional(readOnly = true)
     public DeliverUserResponseDto getDeliverUserById(UUID deliverId, UserPrincipals userPrincipals) {
         // 권한 검증
-//        if (userPrincipals.getRole() != UserRole.ADMIN &&
-//                !isOwnDeliverUser(deliverId, userPrincipals.getUserId())) {
-//            throw new CustomForbiddenException("해당 배송담당자 정보에 접근할 권한이 없습니다.");
-//        }
-
         DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
                 .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
+        DeliverUser searchMan = deliverUserRepository.findByUser_UserId(userPrincipals.getId()).orElseThrow(
+                () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + userPrincipals.getId())
+        );
+
+        //ADMIN 은 전부조회
+        if(userPrincipals.getRole() == UserRole.HUB){
+            if (!deliverUser.getHubId().equals(searchMan.getHubId())) {//조회자의hubid와 나의 hubㅑid
+                throw new CustomForbiddenException("본인 소속 허브의 배송담당자만 조회할 수 있습니다.");
+            }
+        }
+        else if(userPrincipals.getRole() == UserRole.DELIVERY){
+            if (!deliverUser.getUser().getUserId().equals(userPrincipals.getId())) {
+                throw new CustomForbiddenException("본인의 정보만 조회할 수 있습니다.");}
+        }
+        else if (userPrincipals.getRole() == UserRole.COMPANY) {
+            throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
+        }
 
         if (deliverUser.getDeletedAt() != null) {
             throw new CustomNotFoundException("삭제된 배송담당자입니다.");
@@ -96,6 +125,9 @@ public class DeliverUserServiceImpl implements DeliverUserService {
 
         return DeliverUserResponseDto.from(deliverUser);
     }
+
+
+
 
     // 배송담당자 수정
     @Override

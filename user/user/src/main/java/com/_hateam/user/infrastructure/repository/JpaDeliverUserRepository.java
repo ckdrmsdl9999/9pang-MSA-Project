@@ -29,4 +29,9 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
     List<DeliverUser> findAllByOrderByRotationOrderAsc();
 
     boolean existsByContactNumber(String contactNumber);
+
+    List<DeliverUser> findByHubIdAndDeletedAtIsNull(UUID hubId);
+
+    List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
+
     }

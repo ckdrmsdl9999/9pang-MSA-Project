@@ -77,4 +77,15 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
     public void deleteByDeliverId(UUID deliverId) {
         jpaDeliverUserRepository.deleteById(deliverId);
     }
+
+    @Override
+    public List<DeliverUser> findByHubIdAndDeletedAtIsNull(UUID hubId) {
+        return jpaDeliverUserRepository.findByHubIdAndDeletedAtIsNull(hubId);
+    }
+
+    @Override
+    public List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name) {
+        return jpaDeliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
+    }
+
 }

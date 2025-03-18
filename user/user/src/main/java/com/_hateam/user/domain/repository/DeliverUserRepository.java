@@ -24,18 +24,16 @@ public interface DeliverUserRepository {
 
     List<DeliverUser> findByDeliverType(DeliverType deliverType);
 
-    List<DeliverUser> findByStatus(Status status);
-
-    List<DeliverUser> findByStatusAndHubId(Status status, UUID hubId);
-
-    Optional<DeliverUser> findBySlackId(String slackId);
-
     List<DeliverUser> findAllByOrderByRotationOrderAsc();
 
     boolean existsByContactNumber(String contactNumber);
 
     List<DeliverUser> findAll();
 
+    List<DeliverUser> findByHubIdAndDeletedAtIsNull(UUID hubId);
+
     void deleteByDeliverId(UUID deliverId);
+
+    List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
 
 }

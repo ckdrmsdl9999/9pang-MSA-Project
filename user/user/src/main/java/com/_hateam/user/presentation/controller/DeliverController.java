@@ -52,8 +52,8 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(deliverUsers);
     }
 
-    // 배송담당자 단일 조회(자기자신조회)
-    @GetMapping("/")
+    // 단일 조회(역활별 분리)
+    @GetMapping("/{deliverId}")
     public ResponseEntity<?> getDeliverUser(
             @PathVariable UUID deliverId,
             @AuthenticationPrincipal UserPrincipals userPrincipals) {
@@ -62,21 +62,8 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(deliverUser);
     }
 
-//    // 허브담당자 단일 조회(담당허브만 조회)
-//    @GetMapping("/")
-//    public ResponseEntity<?> getHubDeliverUser(
-//            @PathVariable UUID deliverId,
-//            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-//
-//        DeliverUserResponseDto deliverUser = deliverUserService.getDeliverUserById(deliverId, userPrincipals);
-//        return ResponseEntity.status(HttpStatus.OK).body(deliverUser);
-//    }
 
-
-
-
-
-    // 배송담당자 수정
+    // 배송담당자 수정(관리자만)
     @PostMapping("/{deliverId}")
     public ResponseEntity<?> updateDeliverUser(
             @PathVariable UUID deliverId,
@@ -87,7 +74,7 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedDeliverUser);
     }
 
-    // 배송담당자 삭제
+    // 배송담당자 삭제(관리자별)
     @DeleteMapping("/{deliverId}")
     public ResponseEntity<?> deleteDeliverUser(
             @PathVariable UUID deliverId,
