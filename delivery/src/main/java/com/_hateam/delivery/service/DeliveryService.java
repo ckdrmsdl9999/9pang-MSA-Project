@@ -93,7 +93,7 @@ public class DeliveryService {
         // todo: 배송담당자 배정 단순히 순번대로 배정해도 큰 문제 없을듯. 추후 업체 배송준비가 다 된 배송건들을 매일 아침에 알려주면 될듯
         UUID delivererId = UUID.randomUUID();
 
-        Delivery delivery = Delivery.addOf(orderResponseDto, companyResponseDto, userResponseDto, destHubId, delivererId);
+        Delivery delivery = Delivery.addOf(orderResponseDto, companyResponseDto, userResponseDto, destHubId);
 
         // todo: sequence 확인 + 배송경로 생성
         // todo: sequence 조회
@@ -111,7 +111,11 @@ public class DeliveryService {
             hubResponseDto.setSequence(i);
             hubResponseDto.setDistanceKm((long) 25.51);
             hubResponseDto.setEstimatedTimeMinutes(240);
-            deliveryRouteList.add(DeliveryRoute.addOf(delivery, startHubId, endHubId, hubResponseDto));
+            DeliveryRoute deliveryRoute = DeliveryRoute.addOf(delivery, startHubId, endHubId, hubResponseDto);
+            // 첫배송담당자 배정
+            if (i == 0) deliveryRoute.updateDelivererId(delivererId);
+
+            deliveryRouteList.add(deliveryRoute);
         }
 
         delivery.addDeliveyRouteListFrom(deliveryRouteList);

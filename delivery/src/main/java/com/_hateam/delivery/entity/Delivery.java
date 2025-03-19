@@ -64,8 +64,7 @@ public class Delivery extends Timestamped {
                      final UUID endHubId,
                      final String receiverAddress,
                      final String receiverName,
-                     final String receiverSlackId,
-                     final UUID delivererId) {
+                     final String receiverSlackId) {
         this.orderId = orderId;
         this.status = status;
         this.startHubId = startHubId;
@@ -73,7 +72,6 @@ public class Delivery extends Timestamped {
         this.receiverAddress = receiverAddress;
         this.receiverName = receiverName;
         this.receiverSlackId = receiverSlackId;
-        this.delivererId = delivererId;
     }
 
     /**
@@ -82,8 +80,7 @@ public class Delivery extends Timestamped {
     public static Delivery addOf(final OrderResponseDto orderResponseDto,
                                  final CompanyResponseDto companyResponseDto,
                                  final UserResponseDto userResponseDto,
-                                 final UUID destHubId,
-                                 final UUID delivererId) {
+                                 final UUID destHubId) {
         return Delivery.builder()
                 .orderId(orderResponseDto.getOrderId())
                 .status(DeliveryStatus.WAITING_AT_HUB)
@@ -92,7 +89,6 @@ public class Delivery extends Timestamped {
                 .receiverAddress(companyResponseDto.getCompanyAddress())
                 .receiverName(companyResponseDto.getUsername())
                 .receiverSlackId(userResponseDto.getSlackId())
-                .delivererId(delivererId)
                 .build();
     }
 
