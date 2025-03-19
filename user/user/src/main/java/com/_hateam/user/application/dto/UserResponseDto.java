@@ -20,6 +20,7 @@ public class UserResponseDto {
     private String username;
     private String nickname;
     private String slackId;
+    private UUID hubId;
     private UserRole userRoles;
     private boolean isDeliver;
     // 배송담당자 ID만 포함(유저를 통해 deliverId가져오기 위해)
@@ -32,6 +33,7 @@ public class UserResponseDto {
                 .username(user.getUsername())
                 .nickname(user.getNickname())
                 .slackId(user.getSlackId())
+                .hubId(user.getHubId())
                 .userRoles(user.getUserRoles())
                 .deliverId(user.isDeliver() && user.getDeliverUser() != null ?
                 user.getDeliverUser().getDeliverId() : null)

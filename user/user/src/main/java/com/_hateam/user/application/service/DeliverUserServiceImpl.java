@@ -8,23 +8,18 @@ import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.infrastructure.security.UserPrincipals;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +36,12 @@ public class DeliverUserServiceImpl implements DeliverUserService {
 
         DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
         DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
+
+
+        // User 배송담당자 여부 업데이트
+            user.setDeliver(true);
+            userRepository.save(user);
+
 
         return DeliverUserResponseDto.from(savedDeliverUser);
     }

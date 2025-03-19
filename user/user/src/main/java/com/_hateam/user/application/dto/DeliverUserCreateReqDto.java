@@ -5,7 +5,6 @@ import com._hateam.user.domain.enums.Status;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.model.User;
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 

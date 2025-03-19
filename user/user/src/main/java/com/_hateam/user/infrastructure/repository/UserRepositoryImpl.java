@@ -1,12 +1,11 @@
 package com._hateam.user.infrastructure.repository;
 
-import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,14 +34,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findByUserRoles(UserRole role) {
-        return jpaUserRepository.findByUserRoles(role);
+    public Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable) {
+        return jpaUserRepository.findByUsernameContainingAndDeletedAtIsNull(username, pageable);
     }
-
-    @Override
-    public List<User> findByNicknameContaining(String nickname) {
-        return jpaUserRepository.findByNicknameContaining(nickname);
-    }
-
 
 }

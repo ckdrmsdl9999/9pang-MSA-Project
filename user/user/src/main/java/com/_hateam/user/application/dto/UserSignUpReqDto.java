@@ -42,7 +42,7 @@ public class UserSignUpReqDto {
 
         return User.builder().username(userSignUpReqDto.getUsername()).password(passwordEncoder.encode(userSignUpReqDto.getPassword())).
                 userRoles(userSignUpReqDto.getRole()).slackId(userSignUpReqDto.getSlackId()).
-                nickname(userSignUpReqDto.getNickname()).isDeliver(userSignUpReqDto.isDeliver()).build();
+                nickname(userSignUpReqDto.getNickname()).isDeliver(false).build();
 
     }
 

@@ -1,6 +1,6 @@
 package com._hateam.user.application.dto;
 
-import com._hateam.user.domain.enums.UserRole;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
