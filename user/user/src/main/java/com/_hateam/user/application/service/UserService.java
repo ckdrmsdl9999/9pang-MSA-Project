@@ -16,6 +16,9 @@ public interface UserService {
 
      List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals);
 
+     List<UserResponseDto> getCompany();
+     List<UserResponseDto> getHub();
+
      UserResponseDto getUser(Long userId);
 
      UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, UserPrincipals userPrincipals);

@@ -38,10 +38,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
     }
 
-
-    @GetMapping("/")//회원조회(자기자신만)
+    @GetMapping("/")//회원조회
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUser(userPrincipals.getId())));
     }
@@ -69,11 +67,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getAllUsers(userPrincipals)));
     }
 
-
     @PatchMapping("/{userId}")  // 회원 수정(MASTER)
     public ResponseEntity<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,
                                      @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));
     }
 
@@ -83,5 +79,22 @@ public class UserController {
         userService.deleteUser(userId,userPrincipals);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."));
     }
+
+    @GetMapping("/hub-admin")//허브의 관리자조회ROLE값 HUB조회(
+    public ResponseEntity<?> getHubAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+    }
+
+    @GetMapping("/company-admin")//업체 관리자 조회 ROLE값 COMPANY
+    public ResponseEntity<?> getCompanyAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+    }
+
+
+
 
 }

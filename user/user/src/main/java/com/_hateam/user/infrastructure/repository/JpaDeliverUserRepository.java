@@ -36,6 +36,8 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
 
     Page<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId, Pageable pageable);
 
+    List<DeliverUser> findByDeliveryTypeAndDeletedAtIsNull(DeliverType deliveryType);
+    //user도메인
 
 
 }

@@ -3,6 +3,7 @@ package com._hateam.user.application.service;
 import com._hateam.user.application.dto.DeliverUserCreateReqDto;
 import com._hateam.user.application.dto.DeliverUserResponseDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
+import com._hateam.user.application.dto.UserResponseDto;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,4 +30,9 @@ public interface DeliverUserService {
     // 배송담당자 삭제
     void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals);
 
+    //업체 배송 담당자 목록 조회
+    List<DeliverUserResponseDto> getCompanyDeliver();
+
+    //허브 배송 담당자목록 조회
+    List<DeliverUserResponseDto> getHubDeliver();
 }

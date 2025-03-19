@@ -1,5 +1,6 @@
 package com._hateam.user.infrastructure.repository;
 
+import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable) {
         return jpaUserRepository.findByUsernameContainingAndDeletedAtIsNull(username, pageable);
+    }
+
+    @Override
+    public List<User> findAllByUserRolesAndDeletedAtIsNull(UserRole userRole) {
+        return jpaUserRepository.findAllByUserRolesAndDeletedAtIsNull(userRole);
     }
 
 }

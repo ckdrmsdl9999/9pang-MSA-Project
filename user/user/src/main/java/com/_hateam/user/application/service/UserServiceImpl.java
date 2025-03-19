@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUser(Long userId){
+    public UserResponseDto getUser(Long userId){//추후 권한에 따라
 
         User user =userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
@@ -189,6 +189,27 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //
+    @Override
+    public List<UserResponseDto> getCompany() {
+        List<User> companyUsers = userRepository.findAllByUserRolesAndDeletedAtIsNull(UserRole.COMPANY);
+        if (companyUsers.isEmpty()) {
+            throw new CustomNotFoundException("COMPANY 권한을 가진 사용자를 찾을 수 없습니다.");
+        }
+        return companyUsers.stream()
+                .map(UserResponseDto::from)
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public List<UserResponseDto> getHub() {
+        List<User> hubUsers = userRepository.findAllByUserRolesAndDeletedAtIsNull(UserRole.HUB);
+        if (hubUsers.isEmpty()) {
+            throw new CustomNotFoundException("HUB 권한을 가진 사용자를 찾을 수 없습니다.");
+        }
+        return hubUsers.stream()
+                .map(UserResponseDto::from)
+                .collect(Collectors.toList());
+    }
 
 }

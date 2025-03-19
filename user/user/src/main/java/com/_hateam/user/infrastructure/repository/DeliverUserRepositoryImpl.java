@@ -1,5 +1,6 @@
 package com._hateam.user.infrastructure.repository;
 
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,4 +53,14 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
         return jpaDeliverUserRepository.findByNameContainingAndHubIdAndDeletedAtIsNull(name, hubId, pageable);
     }
 
+    @Override
+    public List<DeliverUser> findByDeliveryTypeAndDeletedAtIsNull(DeliverType deliveryType) {
+        return jpaDeliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(deliveryType);
+    }
+
+
+
 }
+
+
+

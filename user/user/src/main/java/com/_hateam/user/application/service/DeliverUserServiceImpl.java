@@ -5,6 +5,8 @@ import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.DeliverUserCreateReqDto;
 import com._hateam.user.application.dto.DeliverUserResponseDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
+import com._hateam.user.application.dto.UserResponseDto;
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.infrastructure.security.UserPrincipals;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class DeliverUserServiceImpl implements DeliverUserService {
 
     private final DeliverUserRepository deliverUserRepository;
+
     private final UserRepository userRepository;
 
     @Override
@@ -231,6 +234,16 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
         }
     }
 
+    @Override
+    public List<DeliverUserResponseDto> getCompanyDeliver() {
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(DeliverType.DELIVER_COMPANY);
+        return deliverUser.stream().map(DeliverUserResponseDto::from).collect(Collectors.toList());
+    }
 
+    @Override
+    public List<DeliverUserResponseDto> getHubDeliver() {
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(DeliverType.DELIVER_HUB);
+        return deliverUser.stream().map(DeliverUserResponseDto::from).collect(Collectors.toList());
+    }
 
 }

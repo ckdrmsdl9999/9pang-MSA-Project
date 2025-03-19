@@ -1,5 +1,6 @@
 package com._hateam.user.domain.repository;
 
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.model.DeliverUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +26,7 @@ public interface DeliverUserRepository {
     Page<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name, Pageable pageable);
 
     Page<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId, Pageable pageable);
+
+    List<DeliverUser> findByDeliveryTypeAndDeletedAtIsNull(DeliverType deliveryType);
 
 }

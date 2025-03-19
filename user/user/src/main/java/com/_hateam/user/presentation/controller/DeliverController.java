@@ -71,4 +71,21 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success("배송담당자 삭제 완료"));
     }
 
+
+    @GetMapping("/")//업체 소속 배달담당자 조회 Deliverer중 COM
+    public ResponseEntity<?> getCompanyDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(deliverUserService.getCompanyDeliver()));
+    }
+
+
+    @GetMapping("/")//허브 소속 배달담당자 조회 Deliverer중 COM
+    public ResponseEntity<?> getHubDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(deliverUserService.getHubDeliver()));
+    }
+
+
 }
