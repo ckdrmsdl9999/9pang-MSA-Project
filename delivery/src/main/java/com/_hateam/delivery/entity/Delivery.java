@@ -12,7 +12,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.List;
 import java.util.UUID;
+
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -46,19 +50,22 @@ public class Delivery extends Timestamped {
     @Column(nullable = false)
     private String receiverSlackId;
 
-    @Column(nullable = false)
-    private String delivererUsername;
+    // nullable
+    private UUID delivererId;
+
+    @OneToMany(fetch = LAZY, cascade = PERSIST)
+    private List<DeliveryRoute> deliveryRouteList;
 
 
     @Builder
     private Delivery(final UUID orderId,
-                    final DeliveryStatus status,
-                    final UUID startHubId,
-                    final UUID endHubId,
-                    final String receiverAddress,
-                    final String receiverName,
-                    final String receiverSlackId,
-                    final String delivererUsername) {
+                     final DeliveryStatus status,
+                     final UUID startHubId,
+                     final UUID endHubId,
+                     final String receiverAddress,
+                     final String receiverName,
+                     final String receiverSlackId,
+                     final UUID delivererId) {
         this.orderId = orderId;
         this.status = status;
         this.startHubId = startHubId;
@@ -66,7 +73,7 @@ public class Delivery extends Timestamped {
         this.receiverAddress = receiverAddress;
         this.receiverName = receiverName;
         this.receiverSlackId = receiverSlackId;
-        this.delivererUsername = delivererUsername;
+        this.delivererId = delivererId;
     }
 
     /**
@@ -76,7 +83,7 @@ public class Delivery extends Timestamped {
                                  final CompanyResponseDto companyResponseDto,
                                  final UserResponseDto userResponseDto,
                                  final UUID destHubId,
-                                 final String delivererUsername) {
+                                 final UUID delivererId) {
         return Delivery.builder()
                 .orderId(orderResponseDto.getOrderId())
                 .status(DeliveryStatus.WAITING_AT_HUB)
@@ -85,8 +92,12 @@ public class Delivery extends Timestamped {
                 .receiverAddress(companyResponseDto.getCompanyAddress())
                 .receiverName(companyResponseDto.getUsername())
                 .receiverSlackId(userResponseDto.getSlackId())
-                .delivererUsername(delivererUsername)
+                .delivererId(delivererId)
                 .build();
+    }
+
+    public void addDeliveyRouteListFrom(List<DeliveryRoute> deliveryRouteList) {
+        this.deliveryRouteList = deliveryRouteList;
     }
 
     public void updateOf(UpdateDeliveryRequestDto requestDto) {
@@ -97,7 +108,15 @@ public class Delivery extends Timestamped {
         this.receiverAddress = requestDto.getReceiverAddress();
         this.receiverName = requestDto.getReceiverName();
         this.receiverSlackId = requestDto.getReceiverSlackId();
-        this.delivererUsername = requestDto.getDelivererUsername();
+        this.delivererId = requestDto.getDelivererId();
+    }
+
+    public void updateStatusOf(DeliveryStatus status) {
+        this.status = status;
+    }
+
+    public void updateDelivererId(UUID delivererId) {
+        this.delivererId = delivererId;
     }
 
     public void deleteOf(final String deletedBy) {

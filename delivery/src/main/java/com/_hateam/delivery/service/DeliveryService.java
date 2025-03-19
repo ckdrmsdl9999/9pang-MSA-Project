@@ -1,14 +1,13 @@
 package com._hateam.delivery.service;
 
+import com._hateam.common.dto.ResponseDto;
 import com._hateam.common.exception.CustomConflictException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.delivery.dto.request.RegisterDeliveryRequestDto;
 import com._hateam.delivery.dto.request.UpdateDeliveryRequestDto;
-import com._hateam.delivery.dto.response.CompanyResponseDto;
-import com._hateam.delivery.dto.response.DeliveryResponseDto;
-import com._hateam.delivery.dto.response.OrderResponseDto;
-import com._hateam.delivery.dto.response.UserResponseDto;
+import com._hateam.delivery.dto.response.*;
 import com._hateam.delivery.entity.Delivery;
+import com._hateam.delivery.entity.DeliveryRoute;
 import com._hateam.delivery.entity.DeliveryStatus;
 import com._hateam.delivery.entity.OrderStatus;
 import com._hateam.delivery.repository.DeliveryRepository;
@@ -21,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,6 +30,26 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryRepositoryCustom deliveryRepositoryCustom;
+
+    /**
+     * querydsl 통한 전체 조회
+     */
+    // todo: 전체 조회 or 검색시 response를 상세때와 동일하게 둘 필요가 있는가?
+    @Transactional(readOnly = true)
+    public Page<DeliveryResponseDto> findDeliveryListForMaster(Pageable pageable) {
+        return deliveryRepositoryCustom.findDeliveryListWithPage(pageable);
+    }
+
+    /**
+     * querydsl 통한 검색
+     */
+    @Transactional(readOnly = true)
+    public Page<DeliveryResponseDto> searchDeliveryListForMaster(
+            Pageable pageable,
+            DeliveryStatus status,
+            String keyword) {
+        return deliveryRepositoryCustom.searchDeliveryListWithPage(status, keyword, pageable);
+    }
 
     /**
      * todo: order로 부터 가져올것 : 허브id, 회사id, 주문요청(현재 테이블이나 entity에는 없다),
@@ -69,12 +90,34 @@ public class DeliveryService {
         // todo: 그 위치기반으로 주변 위치 찾는 query가 있었는데... 그걸로 찾는다고 가정하고
         UUID destHubId = UUID.randomUUID();
 
-        // todo: 배송담당자 배정 로직 예상하는 방식은 미배정후 매일 도착한 화물에 대하여 정해진 시간에 배정로직 진행
-        String delivererUsername = "deliverer01";
+        // todo: 배송담당자 배정 단순히 순번대로 배정해도 큰 문제 없을듯. 추후 업체 배송준비가 다 된 배송건들을 매일 아침에 알려주면 될듯
+        UUID delivererId = UUID.randomUUID();
 
-        Delivery delivery = Delivery.addOf(orderResponseDto, companyResponseDto, userResponseDto, destHubId, delivererUsername);
+        Delivery delivery = Delivery.addOf(orderResponseDto, companyResponseDto, userResponseDto, destHubId, delivererId);
+
+        // todo: sequence 확인 + 배송경로 생성
+        // todo: sequence 조회
+        String sequence =
+                "b22ec476-39f7-49c3-8760-22cf3bd04d68, b22ec476-39f7-78c3-8760-22cf3bd04d43, b22ec476-39f0-49c3-8760-22cf3bd04d43";
+        // todo: 조회된 sequence의 각 배송경로 생성
+        // todo: 생성시점에서 배송경로에 맞는 배송 담당자 배정? 단순하게는 그냥 순번대로 배정
+        //  -> 매일 각 허브에서 현재 본인 허브에 도착한 배송을 조회하여 도착허브에 따라 분류하여 배정
+        List<DeliveryRoute> deliveryRouteList = new ArrayList<>();
+        String[] sequnceArray = sequence.split(", ");
+        for (int i = 0; i<sequnceArray.length-1; i++) {
+            UUID startHubId = UUID.fromString(sequnceArray[i]);
+            UUID endHubId = UUID.fromString(sequnceArray[i+1]);
+            HubResponseDto hubResponseDto = new HubResponseDto();
+            hubResponseDto.setSequence(i);
+            hubResponseDto.setDistanceKm((long) 25.51);
+            hubResponseDto.setEstimatedTimeMinutes(240);
+            deliveryRouteList.add(DeliveryRoute.addOf(delivery, startHubId, endHubId, hubResponseDto));
+        }
+
+        delivery.addDeliveyRouteListFrom(deliveryRouteList);
+
+
         deliveryRepository.save(delivery);
-        // todo: 배송경로 생성
 
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -85,6 +128,7 @@ public class DeliveryService {
 
     /**
      * 배송정보 상세 조회
+     * todo: deliveryRoute가 추가되면서 n+1 발생가능, querydsl로 join 처리 필요
      */
     @Transactional(readOnly = true)
     public DeliveryResponseDto getDeliveryForMaster(UUID deliveryId) {
@@ -94,6 +138,7 @@ public class DeliveryService {
 
     /**
      * 배송정보 수정
+     * todo: 배송정보에서 status 수정시 order에도 수정사항을 알려줘야 함(mq)
      */
     @Transactional
     public URI updateDeliveryForMaster(UUID deliveryId, UpdateDeliveryRequestDto updateDeliveryRequestDto) {
@@ -108,6 +153,36 @@ public class DeliveryService {
     }
 
     /**
+     * 배송정보 수정
+     * todo: 배송정보에서 status 수정시 order에도 수정사항을 알려줘야 함(mq)
+     */
+    @Transactional
+    public URI updateDeliveryStatus(UUID deliveryId, DeliveryStatus status) {
+        Delivery delivery = checkDelivery(deliveryId);
+
+        delivery.updateStatusOf(status);
+
+        if (status == DeliveryStatus.DELIVERY_COMPLETED) {
+            orderUpdate(OrderStatus.DONE);
+        }
+
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(delivery.getId())
+                .toUri();
+    }
+
+    /**
+     * todo: feignclient or 카프카 통한 수정요청
+     */
+    public ResponseDto<?> orderUpdate(OrderStatus status) {
+        System.out.println("------------주문상태 수정 요청------------");
+        return null;
+    }
+
+
+    /**
      * 배송정보 삭제
      */
     @Transactional
@@ -115,6 +190,8 @@ public class DeliveryService {
         Delivery delivery = checkDelivery(deliveryId);
         delivery.deleteOf("deleter"); // todo: 추후에 로그인한 사람으로 수정 필요 생성, 수정자도 관련 로직 필요
     }
+
+    /*내부 메서드------------------------------------------------------------------------------------------------------*/
 
     /**
      * 조회시 check사항
@@ -131,19 +208,5 @@ public class DeliveryService {
         if (deliveryIsExists) {
             throw new CustomConflictException("주어진 주문에 대한 배송정보는 이미 존재합니다.");
         }
-    }
-
-    // todo: 전체 조회 or 검색시 response를 상세때와 동일하게 둘 필요가 있는가?
-    @Transactional(readOnly = true)
-    public Page<DeliveryResponseDto> findDeliveryListForMaster(Pageable pageable) {
-        return deliveryRepositoryCustom.findDeliveryListWithPage(pageable);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<DeliveryResponseDto> searchDeliveryListForAdmin(
-            Pageable pageable,
-            DeliveryStatus status,
-            String keyword) {
-        return deliveryRepositoryCustom.searchDeliveryListWithPage(status, keyword, pageable);
     }
 }
