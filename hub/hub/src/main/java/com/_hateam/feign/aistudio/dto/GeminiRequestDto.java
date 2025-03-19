@@ -1,4 +1,4 @@
-package com._hateam.aistudio.dto;
+package com._hateam.feign.aistudio.dto;
 
 import com._hateam.entity.Hub;
 import lombok.AllArgsConstructor;

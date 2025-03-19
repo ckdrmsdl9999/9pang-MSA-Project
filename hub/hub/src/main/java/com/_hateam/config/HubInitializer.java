@@ -1,8 +1,6 @@
 package com._hateam.config;
 
-import com._hateam.aistudio.dto.GeminiRequestDto;
-import com._hateam.aistudio.dto.GeminiResponseDto;
-import com._hateam.aistudio.feign.GeminiClient;
+import com._hateam.feign.aistudio.feign.GeminiClient;
 import com._hateam.dto.HubResponseDto;
 import com._hateam.entity.Hub;
 import com._hateam.entity.HubRoute;

@@ -1,7 +1,7 @@
-package com._hateam.aistudio.dto;
+package com._hateam.feign.aistudio.dto;
 
 
-import com._hateam.aistudio.entity.Gemini;
+import com._hateam.feign.aistudio.entity.Gemini;
 
 import java.util.UUID;
 
