@@ -60,8 +60,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-
-
     @Override
     public List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals) {
         // 권한검증
@@ -78,7 +76,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto getUser(Long userId){//추후 권한에 따라
-
         User user =userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
         return UserResponseDto.from(user);
@@ -113,7 +110,6 @@ public class UserServiceImpl implements UserService {
      return UserResponseDto.from(updatedUser);
     }
 
-
     @Transactional
     @Override
     public void deleteUser(Long userId, UserPrincipals userPrincipals) {
@@ -131,7 +127,6 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
     }
-
 
     @Override
     public Page<UserResponseDto> searchUser(String username, UserPrincipals userPrincipals,
@@ -169,8 +164,6 @@ public class UserServiceImpl implements UserService {
         return userPage.map(UserResponseDto::from);
     }
 
-
-
     @Transactional
     @Override
     public UserResponseDto updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals) {
@@ -189,27 +182,29 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //
     @Override
-    public List<UserResponseDto> getCompany() {
+    public List<FeignCompanyAdminResDto> getCompany() {
         List<User> companyUsers = userRepository.findAllByUserRolesAndDeletedAtIsNull(UserRole.COMPANY);
-        if (companyUsers.isEmpty()) {
-            throw new CustomNotFoundException("COMPANY 권한을 가진 사용자를 찾을 수 없습니다.");
-        }
+
         return companyUsers.stream()
-                .map(UserResponseDto::from)
+                .map(FeignCompanyAdminResDto::from)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<UserResponseDto> getHub() {
+    public List<FeignHubAdminResDto> getHub() {
         List<User> hubUsers = userRepository.findAllByUserRolesAndDeletedAtIsNull(UserRole.HUB);
-        if (hubUsers.isEmpty()) {
-            throw new CustomNotFoundException("HUB 권한을 가진 사용자를 찾을 수 없습니다.");
-        }
+
         return hubUsers.stream()
-                .map(UserResponseDto::from)
+                .map(FeignHubAdminResDto::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public FeignUserResDto getUserByFeign(Long userId){//추후 권한에 따라
+        User user =userRepository.findById(userId)
+                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+        return FeignUserResDto.from(user);
     }
 
 }

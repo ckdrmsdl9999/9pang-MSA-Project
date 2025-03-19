@@ -16,8 +16,9 @@ public interface UserService {
 
      List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals);
 
-     List<UserResponseDto> getCompany();
-     List<UserResponseDto> getHub();
+     List<FeignCompanyAdminResDto> getCompany();
+
+     List<FeignHubAdminResDto> getHub();
 
      UserResponseDto getUser(Long userId);
 
@@ -31,6 +32,6 @@ public interface UserService {
 
      UserResponseDto updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals);
 
-
+     public FeignUserResDto getUserByFeign(Long userId);
 
 }

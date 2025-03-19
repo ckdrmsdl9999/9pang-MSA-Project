@@ -2,10 +2,7 @@ package com._hateam.user.application.service;
 
 import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
-import com._hateam.user.application.dto.DeliverUserCreateReqDto;
-import com._hateam.user.application.dto.DeliverUserResponseDto;
-import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
-import com._hateam.user.application.dto.UserResponseDto;
+import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
@@ -234,16 +231,30 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
         }
     }
 
+
+    //업체 배송담당자목록 조회(Feign)
     @Override
-    public List<DeliverUserResponseDto> getCompanyDeliver() {
+    public List<FeignInCompanyDeliverResDto> getCompanyDeliver() {
         List<DeliverUser> deliverUser = deliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(DeliverType.DELIVER_COMPANY);
-        return deliverUser.stream().map(DeliverUserResponseDto::from).collect(Collectors.toList());
+        return deliverUser.stream().map(FeignInCompanyDeliverResDto::from).collect(Collectors.toList());
     }
 
+    //허브 배송담당자목록 조회(Feign)
     @Override
-    public List<DeliverUserResponseDto> getHubDeliver() {
+    public List<FeignInHubDeliverResDto> getHubDeliver() {
         List<DeliverUser> deliverUser = deliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(DeliverType.DELIVER_HUB);
-        return deliverUser.stream().map(DeliverUserResponseDto::from).collect(Collectors.toList());
+        return deliverUser.stream().map(FeignInHubDeliverResDto::from).collect(Collectors.toList());
+    }
+
+    // 배송담당자 슬랙 ID조회(Feign)
+    @Override
+    @Transactional(readOnly = true)
+    public FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId, UserPrincipals userPrincipals) {
+        // 권한 검증
+        DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
+                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(d). ID: " + deliverId));
+
+        return FeignDeliverSlackIdResDto.from(deliverUser);
     }
 
 }

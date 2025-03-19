@@ -29,7 +29,6 @@ public class UserController {
 
     @PostMapping("/signup")//회원가입
     public ResponseDto<?> addUser(@RequestBody @Valid UserSignUpReqDto signUpReqDto, BindingResult bindingResult) {
-
         return ResponseDto.success(HttpStatus.OK,userService.saveUser(signUpReqDto));
     }
 
@@ -38,7 +37,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
     }
 
-    @GetMapping("/")//회원조회
+    @GetMapping("/getuser")//자기자신 회원조회
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserPrincipals userPrincipals) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUser(userPrincipals.getId())));
@@ -80,20 +79,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."));
     }
 
-    @GetMapping("/hub-admin")//허브의 관리자조회ROLE값 HUB조회(
+    @GetMapping("/hub-admin")//허브의 관리자조회(Feign, ROLE=HUB)(
     public ResponseEntity<?> getHubAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUser(userPrincipals.getId())));
     }
 
-    @GetMapping("/company-admin")//업체 관리자 조회 ROLE값 COMPANY
+    @GetMapping("/company-admin")//업체 관리자 조회(Feign,ROLE=COMPANY)
     public ResponseEntity<?> getCompanyAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUser(userPrincipals.getId())));
     }
 
+    @GetMapping("/api/users/{userId}/message")//사용자정보조회(Feign)
+    public ResponseEntity<?> getUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUserByFeign(userId)));
+    }
 
 
 

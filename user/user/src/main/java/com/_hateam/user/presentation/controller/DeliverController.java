@@ -80,12 +80,22 @@ public class DeliverController {
     }
 
 
-    @GetMapping("/")//허브 소속 배달담당자 조회 Deliverer중 COM
+    @GetMapping("/")//허브 소속 배달담당자 조회 Deliverer중 HUB
     public ResponseEntity<?> getHubDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(deliverUserService.getHubDeliver()));
     }
+
+    // 배송 담당자 SlackId및 유저 조회
+    @GetMapping("/{deliverId}/slack")
+    public ResponseEntity<?> getDeliverSlackId(
+            @PathVariable UUID deliverId,
+            @AuthenticationPrincipal UserPrincipals userPrincipals) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverSlackUserById(deliverId, userPrincipals)));
+    }
+
+
 
 
 }
