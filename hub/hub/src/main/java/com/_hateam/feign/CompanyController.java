@@ -17,8 +17,10 @@ import java.util.UUID;
 )
 public interface CompanyController {
     //    허브의 소속 특정 업체 조회
-    @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ResponseDto<CompanyDto>> getCompany(@PathVariable UUID id);
+    @GetMapping
+    ResponseEntity<ResponseDto<CompanyDto>> getCompanyByCompanyIdAndHubId(
+            @RequestParam(value = "companyId", defaultValue = "0") UUID companyId,
+            @RequestParam(value = "hubId", defaultValue = "0" ) UUID hubId);
 
     //    허브의 소속 업체 전체 조회
     @GetMapping

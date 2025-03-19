@@ -17,11 +17,11 @@ import java.util.UUID;
 )
 public interface HubController {
     //    업체의 소속 허브 조회
-    @GetMapping(value = "/companies/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/companies/{id}")
     ResponseEntity<ResponseDto<CompanyDto>> getHubByCompanyId(@PathVariable UUID id);
 
     //        상품의 소속 허브 조회
-    @GetMapping(value = "/products/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/products/{id}")
     ResponseEntity<ResponseDto<ProductDto>> getHubByProductId(@PathVariable UUID id);
 
 

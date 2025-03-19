@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -56,6 +57,29 @@ public class ProductService {
         return ProductDto.productToProductDto(product);
     }
 
+    public List<ProductDto> getProductsByHubId(UUID hubId) {
+        // 1. hubId를 사용하여 회사 목록을 찾습니다.
+        List<Company> companies = companyRepository.findByHubId(hubId);
+
+        // 2. 회사 목록이 비어 있으면 null 또는 예외를 반환합니다.
+        if (companies == null || companies.isEmpty()) {
+            return null; // 또는 throw new CompanyNotFoundException("Companies not found for hubId: " + hubId);
+        }
+
+        // 3. 모든 회사의 제품 목록을 하나의 목록으로 합칩니다.
+        List<Product> allProducts = new ArrayList<>();
+        for (Company company : companies) {
+            allProducts.addAll(company.getProducts());
+        }
+
+        // 4. 제품 목록을 ProductDto 목록으로 변환합니다.
+        List<ProductDto> productDtoList = allProducts.stream()
+                .map(ProductDto::productToProductDto)
+                .collect(Collectors.toList());
+
+        // 5. ProductDto 목록을 반환합니다.
+        return productDtoList;
+    }
     @Transactional
     public ProductDto updateProduct(UUID id, ProductRequestDto requestDto) {
         Product product = findProduct(id);
@@ -115,4 +139,6 @@ public class ProductService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
     }
+
+
 }

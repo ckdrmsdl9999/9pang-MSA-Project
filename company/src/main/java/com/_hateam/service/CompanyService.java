@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com._hateam.dto.CompanyDto.companyToCompanyDto;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class CompanyService {
         validateDuplicateCompany(requestDto);
         Company company = createCompanyEntity(requestDto);
         companyRepository.save(company);
-        return CompanyDto.companyToCompanyDto(company);
+        return companyToCompanyDto(company);
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +53,7 @@ public class CompanyService {
     @Transactional(readOnly = true)
     public CompanyDto getCompany(UUID id) {
         Company company = findCompany(id);
-        return CompanyDto.companyToCompanyDto(company);
+        return companyToCompanyDto(company);
     }
 
     @Transactional(readOnly = true)
@@ -71,6 +73,15 @@ public class CompanyService {
                 .collect(Collectors.toList());
     }
 
+    public CompanyDto getCompanyByCompanyIdAndHubId(UUID companyId, UUID hubId) {
+        Company company = companyRepository.findByIdAndHubId(companyId, hubId);
+        if (company == null) {
+            throw new EntityNotFoundException();
+        }
+        return companyToCompanyDto(company);
+    }
+
+
     @Transactional
     public CompanyDto updateCompany(UUID id, CompanyRequestDto requestDto) {
         Company company = findCompany(id);
@@ -79,7 +90,7 @@ public class CompanyService {
             validateDuplicateCompany(requestDto);
         }
         updateCompanyInfo(company, requestDto);
-        return CompanyDto.companyToCompanyDto(company);
+        return companyToCompanyDto(company);
     }
 
     @Transactional
@@ -121,4 +132,6 @@ public class CompanyService {
                     throw new IllegalArgumentException("중복된 회사가 존재합니다.");
                 });
     }
+
+
 }

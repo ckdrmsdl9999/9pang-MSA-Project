@@ -13,8 +13,7 @@ import java.util.UUID;
         url = "http://localhost:8080/companies/products"
 )
 public interface ProductController {
-    //    허브의 업체 조회
-
-    @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ResponseDto<ProductDto>> getProduct(@PathVariable UUID id);
+    //    허브의 소속 상품 조회
+    @GetMapping(value = "/hub/{hubId}")
+    ResponseEntity<ResponseDto<ProductDto>> getProductsByHubId(@PathVariable UUID hubId);
 }

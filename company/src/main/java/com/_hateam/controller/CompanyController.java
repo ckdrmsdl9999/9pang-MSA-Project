@@ -47,6 +47,15 @@ public class CompanyController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, companies));
     }
+
+    @GetMapping
+    ResponseEntity<ResponseDto<CompanyDto>> getCompanyByCompanyIdAndHubId(
+            @RequestParam(value = "hubId", defaultValue = "0") UUID hubId,
+            @RequestParam(value = "companyId", defaultValue = "0" ) UUID companyId){
+            CompanyDto company = companyService.getCompanyByCompanyIdAndHubId(companyId, hubId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseDto.success(HttpStatus.OK, company));
+    }
     @GetMapping
     public ResponseEntity<ResponseDto<List<CompanyDto>>> getCompaniesByHubId(
             @RequestParam(value = "hubId", defaultValue = "0") UUID id,
