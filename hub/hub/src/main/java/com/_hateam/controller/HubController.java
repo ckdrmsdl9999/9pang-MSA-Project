@@ -61,6 +61,22 @@ public class HubController {
                 .body(ResponseDto.success(HttpStatus.OK, hub));
     }
 
+    @GetMapping("/companies/{id}")
+    public ResponseEntity<ResponseDto<HubDto>> getHubByCompanyId(@PathVariable UUID id) {
+        HubDto hub = hubService.getHubByCompanyId(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, hub));
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ResponseDto<HubDto>> getHubByProductId(@PathVariable UUID id) {
+        HubDto hub = hubService.getHubByProductId(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, hub));
+    }
+
+
+
     /**
      * 특정 허브 수정
      */

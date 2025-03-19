@@ -4,17 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/9pang.iml" filepath="$PROJECT_DIR$/.idea/9pang.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/company.main.iml" filepath="$PROJECT_DIR$/.idea/modules/company.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/eureka.main.iml" filepath="$PROJECT_DIR$/.idea/modules/eureka.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway.test.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub-route.iml" filepath="$PROJECT_DIR$/.idea/modules/hub-route.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub-route.test.iml" filepath="$PROJECT_DIR$/.idea/modules/hub-route.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hub.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub.test.iml" filepath="$PROJECT_DIR$/.idea/modules/hub.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order.test.iml" filepath="$PROJECT_DIR$/.idea/modules/order.test.iml" />
     </modules>
   </component>
 </project>

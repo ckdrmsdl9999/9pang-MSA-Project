@@ -54,6 +54,23 @@ public class CompanyService {
         return CompanyDto.companyToCompanyDto(company);
     }
 
+    @Transactional(readOnly = true)
+    public List<CompanyDto> getCompaniesByHubId(UUID hubId, int page, int size, String sortBy, boolean isAsc) {
+        // 페이지 사이즈가 10, 30, 50이 아니면 기본 10으로 설정
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+        // 정렬 기준: sortBy가 "updatedAt"이면 updatedAt, 그 외는 createdAt
+        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
+                sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        // 해당 hubId를 가진 회사 목록을 페이지 단위로 조회
+        List<Company> companyList = companyRepository.findByHubId(hubId, pageable).getContent();
+        return companyList.stream()
+                .map(CompanyDto::companyToCompanyDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public CompanyDto updateCompany(UUID id, CompanyRequestDto requestDto) {
         Company company = findCompany(id);

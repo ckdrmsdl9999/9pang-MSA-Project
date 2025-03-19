@@ -1,6 +1,6 @@
 package com._hateam.repository;
 
-import com._hateam.entity.Company;
+import com._hateam.feign.Company;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

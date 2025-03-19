@@ -16,14 +16,16 @@ import java.util.UUID;
         url = "http://localhost:8080/companies"
 )
 public interface CompanyController {
-    //    허브의 업체 조회
+    //    허브의 소속 특정 업체 조회
     @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ResponseDto<CompanyDto>> getCompany(@PathVariable UUID id);
 
+    //    허브의 소속 업체 전체 조회
     @GetMapping
-    ResponseEntity<ResponseDto<List<CompanyDto>>> getAllCompanies(
+    ResponseEntity<ResponseDto<List<CompanyDto>>> getCompaniesByHubId(
+            @RequestParam(value = "hubId", defaultValue = "0") UUID id,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
-            @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc);
+            @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) ;
 }

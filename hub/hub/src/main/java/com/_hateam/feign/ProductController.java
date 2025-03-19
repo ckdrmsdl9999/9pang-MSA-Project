@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.UUID;
 @FeignClient(
         name = "ProductController",
-        url = "http://localhost:8080/products"
+        url = "http://localhost:8080/companies/products"
 )
 public interface ProductController {
     //    허브의 업체 조회
