@@ -54,8 +54,8 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
     }
 
     @Override
-    public List<DeliverUser> findByDeliveryTypeAndDeletedAtIsNull(DeliverType deliveryType) {
-        return jpaDeliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(deliveryType);
+    public List<DeliverUser> findByDeliverTypeAndDeletedAtIsNull(DeliverType deliverType) {
+        return jpaDeliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(deliverType);
     }
 
 

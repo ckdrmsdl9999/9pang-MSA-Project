@@ -27,6 +27,6 @@ public interface DeliverUserRepository {
 
     Page<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId, Pageable pageable);
 
-    List<DeliverUser> findByDeliveryTypeAndDeletedAtIsNull(DeliverType deliveryType);
+    List<DeliverUser> findByDeliverTypeAndDeletedAtIsNull(DeliverType deliverType);
 
 }

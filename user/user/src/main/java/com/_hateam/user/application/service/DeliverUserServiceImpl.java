@@ -235,14 +235,14 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     //업체 배송담당자목록 조회(Feign)
     @Override
     public List<FeignInCompanyDeliverResDto> getCompanyDeliver() {
-        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(DeliverType.DELIVER_COMPANY);
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(DeliverType.DELIVER_COMPANY);
         return deliverUser.stream().map(FeignInCompanyDeliverResDto::from).collect(Collectors.toList());
     }
 
     //허브 배송담당자목록 조회(Feign)
     @Override
     public List<FeignInHubDeliverResDto> getHubDeliver() {
-        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliveryTypeAndDeletedAtIsNull(DeliverType.DELIVER_HUB);
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(DeliverType.DELIVER_HUB);
         return deliverUser.stream().map(FeignInHubDeliverResDto::from).collect(Collectors.toList());
     }
 

@@ -72,7 +72,7 @@ public class DeliverController {
     }
 
 
-    @GetMapping("/")//업체 소속 배달담당자 조회 Deliverer중 COM
+    @GetMapping("/delivery")//업체 소속 배달담당자 조회 Deliverer중 COM
     public ResponseEntity<?> getCompanyDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -80,7 +80,7 @@ public class DeliverController {
     }
 
 
-    @GetMapping("/")//허브 소속 배달담당자 조회 Deliverer중 HUB
+    @GetMapping("/hub-deliver")//허브 소속 배달담당자 조회 Deliverer중 HUB
     public ResponseEntity<?> getHubDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
 
         return ResponseEntity.status(HttpStatus.OK).body(
