@@ -1,8 +1,8 @@
-package com._hateam.common.aistudio.controller;
+package com._hateam.aistudio.controller;
 
-import com._hateam.common.aistudio.GeminiService;
-import com._hateam.common.aistudio.dto.CreatedGeminiResponseDto;
-import com._hateam.common.aistudio.dto.GeminiRequestDto;
+import com._hateam.aistudio.dto.GeminiRequestDto;
+import com._hateam.aistudio.GeminiService;
+import com._hateam.aistudio.dto.CreatedGeminiResponseDto;
 import com._hateam.common.dto.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/gemini")
+@RequestMapping("/hubs/gemini")
 public class GeminiController {
     private final GeminiService geminiService;
 

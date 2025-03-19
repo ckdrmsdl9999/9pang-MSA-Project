@@ -87,6 +87,18 @@ dependencies {
 	// ✅ PostgreSQL
 	runtimeOnly 'org.postgresql:postgresql'
 
+	// ✅ Spring Boot Redis Starter (Spring Data Redis + 기본 클라이언트 Lettuce 포함)
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// ✅ Date 타입 redis에 저장하기 위해 필요한 의존성
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+
+	// ✅ (선택) Jedis 클라이언트를 사용하려면 추가
+	implementation 'redis.clients:jedis:5.0.2'
+
+	// ✅ (선택) Spring Cache와 함께 사용 시 필요
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	// ✅ 테스트 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

@@ -1,4 +1,4 @@
-package com._hateam.common.aistudio.dto;
+package com._hateam.aistudio.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
