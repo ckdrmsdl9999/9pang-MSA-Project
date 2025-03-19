@@ -1,4 +1,4 @@
-package com._hateam.order.infrastructure.configuration;
+package com._hateam.order.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
