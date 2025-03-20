@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com._hateam.dto.CompanyDto.companyToCompanyDto;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class CompanyService {
         validateDuplicateCompany(requestDto);
         Company company = createCompanyEntity(requestDto);
         companyRepository.save(company);
-        return CompanyDto.companyToCompanyDto(company);
+        return companyToCompanyDto(company);
     }
 
     @Transactional(readOnly = true)
@@ -51,8 +53,34 @@ public class CompanyService {
     @Transactional(readOnly = true)
     public CompanyDto getCompany(UUID id) {
         Company company = findCompany(id);
-        return CompanyDto.companyToCompanyDto(company);
+        return companyToCompanyDto(company);
     }
+
+    @Transactional(readOnly = true)
+    public List<CompanyDto> getCompaniesByHubId(UUID hubId, int page, int size, String sortBy, boolean isAsc) {
+        // 페이지 사이즈가 10, 30, 50이 아니면 기본 10으로 설정
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
+        // 정렬 기준: sortBy가 "updatedAt"이면 updatedAt, 그 외는 createdAt
+        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
+                sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        // 해당 hubId를 가진 회사 목록을 페이지 단위로 조회
+        List<Company> companyList = companyRepository.findByHubId(hubId, pageable).getContent();
+        return companyList.stream()
+                .map(CompanyDto::companyToCompanyDto)
+                .collect(Collectors.toList());
+    }
+
+    public CompanyDto getCompanyByCompanyIdAndHubId(UUID companyId, UUID hubId) {
+        Company company = companyRepository.findByIdAndHubId(companyId, hubId);
+        if (company == null) {
+            throw new EntityNotFoundException();
+        }
+        return companyToCompanyDto(company);
+    }
+
 
     @Transactional
     public CompanyDto updateCompany(UUID id, CompanyRequestDto requestDto) {
@@ -62,7 +90,7 @@ public class CompanyService {
             validateDuplicateCompany(requestDto);
         }
         updateCompanyInfo(company, requestDto);
-        return CompanyDto.companyToCompanyDto(company);
+        return companyToCompanyDto(company);
     }
 
     @Transactional
@@ -104,4 +132,6 @@ public class CompanyService {
                     throw new IllegalArgumentException("중복된 회사가 존재합니다.");
                 });
     }
+
+
 }

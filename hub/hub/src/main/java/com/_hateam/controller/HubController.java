@@ -3,6 +3,8 @@ package com._hateam.controller;
 import com._hateam.common.dto.ResponseDto;
 import com._hateam.dto.HubDto;
 import com._hateam.dto.HubRequestDto;
+import com._hateam.feign.CompanyController;
+import com._hateam.feign.CompanyDto;
 import com._hateam.service.HubService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Slf4j
@@ -21,6 +24,7 @@ import java.util.UUID;
 public class HubController {
 
     private final HubService hubService;
+    private final CompanyController companyController;
 
     /**
      * 새로운 허브 생성
@@ -61,6 +65,22 @@ public class HubController {
                 .body(ResponseDto.success(HttpStatus.OK, hub));
     }
 
+    @GetMapping("/companies/{id}")
+    public ResponseEntity<ResponseDto<HubDto>> getHubByCompanyId(@PathVariable UUID id) {
+        HubDto hub = hubService.getHubByCompanyId(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, hub));
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ResponseDto<HubDto>> getHubByProductId(@PathVariable UUID id) {
+        HubDto hub = hubService.getHubByProductId(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, hub));
+    }
+
+
+
     /**
      * 특정 허브 수정
      */
@@ -82,4 +102,16 @@ public class HubController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Hub deleted successfully"));
     }
-}
+
+    @GetMapping("/test")
+    @ResponseBody
+    public ResponseEntity<ResponseDto<List<CompanyDto>>> test() {
+        List<HubDto> hubs = hubService.getAllHubs(0, 10, "createdAt", false);
+
+        Random random = new Random();
+        UUID hubId = hubs.get(random.nextInt(hubs.size())).getId();
+
+            List<CompanyDto> companyDtos = companyController.getCompaniesByHubId(hubId, 0, 10, "createdAt", false);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, companyDtos));
+    }}

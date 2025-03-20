@@ -43,12 +43,29 @@ public class CompanyController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
-
         List<CompanyDto> companies = companyService.getAllCompanies(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, companies));
     }
 
+    @GetMapping("/hub/{hubId}/{companyId}")
+    public CompanyDto getCompanyByCompanyIdAndHubId(
+            @PathVariable UUID hubId,
+            @PathVariable UUID companyId) {
+        CompanyDto company = companyService.getCompanyByCompanyIdAndHubId(companyId, hubId);
+        return company;
+    }
+
+    @GetMapping("/hub/{hubId}")
+    public List<CompanyDto> getCompaniesByHubId(
+            @PathVariable UUID hubId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
+        List<CompanyDto> companies = companyService.getCompaniesByHubId(hubId, page, size, sortBy, isAsc);
+        return companies;
+    }
 
     /**
      * 특정 업체 상세 조회

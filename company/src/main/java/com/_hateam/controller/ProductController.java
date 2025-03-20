@@ -59,7 +59,12 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
-
+    @GetMapping(value = "/hub/{hubId}")
+    ResponseEntity<ResponseDto<List<ProductDto>>> getProductsByHubId(@PathVariable UUID hubId){
+        List<ProductDto> productDto = productService.getProductsByHubId(hubId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, productDto));
+    }
     /**
      * 특정 상품 수정
      */

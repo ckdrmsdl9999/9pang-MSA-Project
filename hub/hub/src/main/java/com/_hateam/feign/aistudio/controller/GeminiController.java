@@ -1,8 +1,8 @@
-package com._hateam.aistudio.controller;
+package com._hateam.feign.aistudio.controller;
 
-import com._hateam.aistudio.dto.GeminiRequestDto;
-import com._hateam.aistudio.GeminiService;
-import com._hateam.aistudio.dto.CreatedGeminiResponseDto;
+import com._hateam.feign.aistudio.dto.GeminiRequestDto;
+import com._hateam.feign.aistudio.GeminiService;
+import com._hateam.feign.aistudio.dto.CreatedGeminiResponseDto;
 import com._hateam.common.dto.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

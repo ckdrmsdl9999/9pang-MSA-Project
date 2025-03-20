@@ -1,4 +1,4 @@
-package com._hateam.aistudio.config;
+package com._hateam.feign.aistudio.config;
 
 import feign.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Value;

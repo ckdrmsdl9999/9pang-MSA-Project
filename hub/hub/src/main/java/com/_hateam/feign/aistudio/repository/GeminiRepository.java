@@ -1,7 +1,7 @@
-package com._hateam.aistudio.repository;
+package com._hateam.feign.aistudio.repository;
 
 
-import com._hateam.aistudio.entity.Gemini;
+import com._hateam.feign.aistudio.entity.Gemini;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

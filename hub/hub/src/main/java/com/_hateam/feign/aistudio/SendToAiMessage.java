@@ -1,4 +1,4 @@
-package com._hateam.aistudio;
+package com._hateam.feign.aistudio;
 
 
 import lombok.AllArgsConstructor;

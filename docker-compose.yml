@@ -7,10 +7,28 @@ services:
       dockerfile: eureka/Dockerfile
     container_name: eureka-server
     ports:
-      - "8761:8761"  # 내부 8761 -> 호스트 8761
+      - "8761:8761"
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SERVER_PORT=8761
+      # 데이터베이스 설정: eureka-db 컨테이너를 사용
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://eureka-db:5432/eurekadb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      - eureka-db
+    networks:
+      - msanet
+
+  eureka-db:
+    image: postgres:14
+    container_name: eureka-db
+    environment:
+      - POSTGRES_DB=eurekadb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5432"
     networks:
       - msanet
 
@@ -24,10 +42,27 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SERVER_PORT=8080
-      # Eureka URL 내부 네트워크 사용
+      # 내부 네트워크에서 Eureka 서버 접근을 위해 서비스명 사용
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      # 데이터베이스 설정: gateway-db 컨테이너 사용
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://gateway-db:5432/gatewaydb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     depends_on:
+      - gateway-db
       - eureka-server
+    networks:
+      - msanet
+
+  gateway-db:
+    image: postgres:14
+    container_name: gateway-db
+    environment:
+      - POSTGRES_DB=gatewaydb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5434:5432"
     networks:
       - msanet
 
@@ -36,12 +71,74 @@ services:
       context: .
       dockerfile: hub/hub/Dockerfile
     container_name: hubs-service
-    # 외부에는 노출하지 않고, 내부 네트워크에서만 접근
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SERVER_PORT=8080
       - SPRING_APPLICATION_NAME=hubs-service
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      # 데이터베이스 설정: hubs-db 컨테이너 사용
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://hubs-db:5432/hubsdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      - hubs-db
+      - redis
+      - eureka-server
+    networks:
+      - msanet
+
+  hubs-db:
+    image: postgres:14
+    container_name: hubs-db
+    environment:
+      - POSTGRES_DB=hubsdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5435:5432"
+    networks:
+      - msanet
+
+  company-service:
+    build:
+      context: .
+      dockerfile: company/Dockerfile
+    container_name: company-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SERVER_PORT=8080
+      - SPRING_APPLICATION_NAME=company-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      # 데이터베이스 설정: company-db 컨테이너 사용
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://company-db:5432/companydb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      - company-db
+      - eureka-server
+    networks:
+      - msanet
+
+  company-db:
+    image: postgres:14
+    container_name: company-db
+    environment:
+      - POSTGRES_DB=companydb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5436:5432"
+    networks:
+      - msanet
+
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - msanet
 
