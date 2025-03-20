@@ -73,7 +73,7 @@ public class DeliverController {
 
 
     @GetMapping("/delivery")//업체 소속 배달담당자 조회 Deliverer중 COM
-    public ResponseEntity<?> getCompanyDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getCompanyDeliver() {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(deliverUserService.getCompanyDeliver()));
@@ -81,7 +81,7 @@ public class DeliverController {
 
 
     @GetMapping("/hub-deliver")//허브 소속 배달담당자 조회 Deliverer중 HUB
-    public ResponseEntity<?> getHubDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getHubDeliver() {
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(deliverUserService.getHubDeliver()));
@@ -90,9 +90,8 @@ public class DeliverController {
     // 배송 담당자 SlackId및 유저 조회
     @GetMapping("/{deliverId}/slack")
     public ResponseEntity<?> getDeliverSlackId(
-            @PathVariable UUID deliverId,
-            @AuthenticationPrincipal UserPrincipals userPrincipals) {
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverSlackUserById(deliverId, userPrincipals)));
+            @PathVariable UUID deliverId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverSlackUserById(deliverId)));
     }
 
 

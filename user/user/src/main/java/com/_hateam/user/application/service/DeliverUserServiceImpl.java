@@ -249,7 +249,7 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     // 배송담당자 슬랙 ID조회(Feign)
     @Override
     @Transactional(readOnly = true)
-    public FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId, UserPrincipals userPrincipals) {
+    public FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId) {
         // 권한 검증
         DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
                 .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(d). ID: " + deliverId));
