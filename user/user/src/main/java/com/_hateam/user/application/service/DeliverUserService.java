@@ -33,6 +33,6 @@ public interface DeliverUserService {
     //허브 배송 담당자목록 조회
     List<FeignInHubDeliverResDto> getHubDeliver();
 
-    FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId, UserPrincipals userPrincipals);
+    FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId);
 
 }

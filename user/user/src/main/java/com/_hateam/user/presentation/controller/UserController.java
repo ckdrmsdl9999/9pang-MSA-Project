@@ -80,21 +80,21 @@ public class UserController {
     }
 
     @GetMapping("/hub-admin")//허브의 관리자조회(Feign, ROLE=HUB)(
-    public ResponseEntity<?> getHubAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getHubAdmin() {
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+                ResponseDto.success(userService.getHub()));
     }
 
     @GetMapping("/company-admin")//업체 관리자 조회(Feign,ROLE=COMPANY)
-    public ResponseEntity<?> getCompanyAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getCompanyAdmin() {
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+                ResponseDto.success(userService.getCompany()));
     }
 
     @GetMapping("/api/users/{userId}/message")//사용자정보조회(Feign)
-    public ResponseEntity<?> getUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getUserByMessage(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUserByFeign(userId)));
     }
