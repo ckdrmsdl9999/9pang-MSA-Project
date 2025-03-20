@@ -1,4 +1,4 @@
-package com._hateam.order.infrastructure.configuration;
+package com._hateam.order.infrastructure.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;

@@ -32,7 +32,7 @@ public class DeliveryRepositoryCustom {
      * 관리자 배송 전체 조회
      */
     public Page<DeliveryResponseDto> findDeliveryListWithPage(final Pageable pageable) {
-        List<DeliveryResponseDto> content = getPaymentList(pageable);
+        List<DeliveryResponseDto> content = getDeliveryList(pageable);
         long total = getTotalDataCount();
 
         return new PageImpl<>(content, pageable, total);
@@ -43,7 +43,7 @@ public class DeliveryRepositoryCustom {
     public Page<DeliveryResponseDto> searchDeliveryListWithPage(final DeliveryStatus status,
                                                                 final String keyword,
                                                                 final Pageable pageable) {
-        List<DeliveryResponseDto> content = getPaymentList(pageable, status, keyword);
+        List<DeliveryResponseDto> content = getDeliveryList(pageable, status, keyword);
         long total = getTotalDataCount(status, keyword);
 
         return new PageImpl<>(content, pageable, total);
@@ -53,7 +53,7 @@ public class DeliveryRepositoryCustom {
     /**
      * 관리자 배송 전체 조회 메서드
      */
-    private List<DeliveryResponseDto> getPaymentList(final Pageable pageable) {
+    private List<DeliveryResponseDto> getDeliveryList(final Pageable pageable) {
         return jpaQueryFactory
                 .select(Projections.constructor(DeliveryResponseDto.class,
                         delivery.id,
@@ -64,7 +64,7 @@ public class DeliveryRepositoryCustom {
                         delivery.receiverAddress,
                         delivery.receiverName,
                         delivery.receiverSlackId,
-                        delivery.delivererUsername
+                        delivery.delivererId
                 ))
                 .from(delivery)
                 .where(getWhereConditions())
@@ -77,7 +77,7 @@ public class DeliveryRepositoryCustom {
     /**
      * 관리자 배송 검색 메서드
      */
-    private List<DeliveryResponseDto> getPaymentList(final Pageable pageable,
+    private List<DeliveryResponseDto> getDeliveryList(final Pageable pageable,
                                                      final DeliveryStatus status,
                                                      final String keyword) {
         return jpaQueryFactory
@@ -90,7 +90,7 @@ public class DeliveryRepositoryCustom {
                         delivery.receiverAddress,
                         delivery.receiverName,
                         delivery.receiverSlackId,
-                        delivery.delivererUsername
+                        delivery.delivererId
                 ))
                 .from(delivery)
                 .where(getWhereConditions(status, keyword))

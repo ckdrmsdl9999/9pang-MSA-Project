@@ -1,4 +1,4 @@
-package com._hateam.order.infrastructure.configuration;
+package com._hateam.order.infrastructure.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
