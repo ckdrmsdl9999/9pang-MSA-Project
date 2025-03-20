@@ -18,4 +18,6 @@ public interface JpaUserRepository extends JpaRepository<User,Long> {
     // 추가: 페이징 및 정렬을 위한 새로운 메서드
     Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable);
 
+    // UserRepository.java에 추가
+    List<User> findAllByUserRolesAndDeletedAtIsNull(UserRole userRole);
 }
