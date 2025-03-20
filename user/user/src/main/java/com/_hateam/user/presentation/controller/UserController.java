@@ -93,12 +93,17 @@ public class UserController {
                 ResponseDto.success(userService.getCompany()));
     }
 
-    @GetMapping("/api/users/{userId}/message")//사용자정보조회(Feign)
+    @GetMapping("/{userId}/message")//사용자정보조회(Feign)
     public ResponseEntity<?> getUserByMessage(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUserByFeign(userId)));
     }
 
+    @GetMapping("/verify/signin")//이름으로아이디,패스워드조회(Feign)
+    public ResponseEntity<?> findByUsername(@RequestParam String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.verifyUserFeign(username)));
+    }
 
 
 }

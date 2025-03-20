@@ -32,6 +32,7 @@ public interface UserService {
 
      UserResponseDto updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals);
 
-     public FeignUserResDto getUserByFeign(Long userId);
+     FeignUserResDto getUserByFeign(Long userId);
 
+     FeignVerifyResDto verifyUserFeign(String username);
 }
