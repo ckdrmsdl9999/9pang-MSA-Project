@@ -2,35 +2,30 @@ package com._hateam.user.application.service;
 
 import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
-import com._hateam.user.application.dto.DeliverUserCreateReqDto;
-import com._hateam.user.application.dto.DeliverUserResponseDto;
-import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
+import com._hateam.user.application.dto.*;
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.infrastructure.security.UserPrincipals;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
 public class DeliverUserServiceImpl implements DeliverUserService {
 
     private final DeliverUserRepository deliverUserRepository;
+
     private final UserRepository userRepository;
 
     @Override
@@ -41,6 +36,12 @@ public class DeliverUserServiceImpl implements DeliverUserService {
 
         DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
         DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
+
+
+        // User 배송담당자 여부 업데이트
+            user.setDeliver(true);
+            userRepository.save(user);
+
 
         return DeliverUserResponseDto.from(savedDeliverUser);
     }
@@ -231,5 +232,29 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     }
 
 
+    //업체 배송담당자목록 조회(Feign)
+    @Override
+    public List<FeignInCompanyDeliverResDto> getCompanyDeliver() {
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(DeliverType.DELIVER_COMPANY);
+        return deliverUser.stream().map(FeignInCompanyDeliverResDto::from).collect(Collectors.toList());
+    }
+
+    //허브 배송담당자목록 조회(Feign)
+    @Override
+    public List<FeignInHubDeliverResDto> getHubDeliver() {
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(DeliverType.DELIVER_HUB);
+        return deliverUser.stream().map(FeignInHubDeliverResDto::from).collect(Collectors.toList());
+    }
+
+    // 배송담당자 슬랙 ID조회(Feign)
+    @Override
+    @Transactional(readOnly = true)
+    public FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId, UserPrincipals userPrincipals) {
+        // 권한 검증
+        DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
+                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(d). ID: " + deliverId));
+
+        return FeignDeliverSlackIdResDto.from(deliverUser);
+    }
 
 }

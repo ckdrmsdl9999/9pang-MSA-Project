@@ -1,6 +1,5 @@
 package com._hateam.user.application.dto;
 
-import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import lombok.Builder;
 import lombok.Getter;

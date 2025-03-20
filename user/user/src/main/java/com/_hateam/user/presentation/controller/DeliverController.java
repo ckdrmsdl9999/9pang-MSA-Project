@@ -2,11 +2,8 @@ package com._hateam.user.presentation.controller;
 
 import com._hateam.common.dto.ResponseDto;
 import com._hateam.user.application.dto.DeliverUserCreateReqDto;
-import com._hateam.user.application.dto.DeliverUserResponseDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
 import com._hateam.user.application.service.DeliverUserService;
-import com._hateam.user.application.service.UserService;
-import com._hateam.user.domain.model.User;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -74,5 +70,32 @@ public class DeliverController {
         deliverUserService.deleteDeliverUser(deliverId, userPrincipals);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success("배송담당자 삭제 완료"));
     }
+
+
+    @GetMapping("/delivery")//업체 소속 배달담당자 조회 Deliverer중 COM
+    public ResponseEntity<?> getCompanyDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(deliverUserService.getCompanyDeliver()));
+    }
+
+
+    @GetMapping("/hub-deliver")//허브 소속 배달담당자 조회 Deliverer중 HUB
+    public ResponseEntity<?> getHubDeliver(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(deliverUserService.getHubDeliver()));
+    }
+
+    // 배송 담당자 SlackId및 유저 조회
+    @GetMapping("/{deliverId}/slack")
+    public ResponseEntity<?> getDeliverSlackId(
+            @PathVariable UUID deliverId,
+            @AuthenticationPrincipal UserPrincipals userPrincipals) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverSlackUserById(deliverId, userPrincipals)));
+    }
+
+
+
 
 }

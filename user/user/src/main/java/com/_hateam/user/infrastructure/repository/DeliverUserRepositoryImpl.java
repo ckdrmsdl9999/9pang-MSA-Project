@@ -1,8 +1,8 @@
 package com._hateam.user.infrastructure.repository;
 
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.repository.DeliverUserRepository;
-import com._hateam.user.domain.enums.DeliverType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,29 +29,13 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
     }
 
     @Override
-    public List<DeliverUser> findByHubId(UUID hubId) {
-        return jpaDeliverUserRepository.findByHubId(hubId);
-    }
-
-    @Override
     public Optional<DeliverUser> findByUser_UserId(Long userId) {
         return jpaDeliverUserRepository.findByUser_UserId(userId);
     }
 
     @Override
-    public List<DeliverUser> findAll() {
-        return jpaDeliverUserRepository.findAll();
-    }
-
-
-    @Override
     public List<DeliverUser> findByHubIdAndDeletedAtIsNull(UUID hubId) {
         return jpaDeliverUserRepository.findByHubIdAndDeletedAtIsNull(hubId);
-    }
-
-    @Override
-    public List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name) {
-        return jpaDeliverUserRepository.findByNameContainingAndDeletedAtIsNull(name);
     }
 
     @Override
@@ -69,4 +53,14 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
         return jpaDeliverUserRepository.findByNameContainingAndHubIdAndDeletedAtIsNull(name, hubId, pageable);
     }
 
+    @Override
+    public List<DeliverUser> findByDeliverTypeAndDeletedAtIsNull(DeliverType deliverType) {
+        return jpaDeliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(deliverType);
+    }
+
+
+
 }
+
+
+

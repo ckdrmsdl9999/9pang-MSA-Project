@@ -4,6 +4,7 @@ import com._hateam.common.entity.Timestamped;
 import com._hateam.user.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 

@@ -2,6 +2,8 @@ package com._hateam.user.domain.repository;
 
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -19,8 +21,13 @@ public interface UserRepository {
 
     List<User> findAllByDeletedAtIsNull();
 
-    List<User> findByUserRoles(UserRole role);
+    // 페이징 및 정렬을 위한 새로운 메서드
+    Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable);
 
-    List<User> findByNicknameContaining(String nickname);
+    List<User> findAllByUserRolesAndDeletedAtIsNull(UserRole userRole);
+
+
+
+
 
 }

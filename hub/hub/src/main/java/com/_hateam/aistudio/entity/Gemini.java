@@ -1,4 +1,4 @@
-package com._hateam.common.aistudio.entity;
+package com._hateam.aistudio.entity;
 
 import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;

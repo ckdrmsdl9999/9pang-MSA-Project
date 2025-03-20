@@ -1,10 +1,6 @@
 package com._hateam.user.application.service;
 
-
-
-import com._hateam.user.application.dto.DeliverUserCreateReqDto;
-import com._hateam.user.application.dto.DeliverUserResponseDto;
-import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
+import com._hateam.user.application.dto.*;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,16 +21,18 @@ public interface DeliverUserService {
     // 배송담당자 단일 조회
     DeliverUserResponseDto getDeliverUserById(UUID deliverId, UserPrincipals userPrincipals);
 
-    // 배송담당자 목록 조회 (허브별)
-//    List<DeliverUserResponseDto> getDeliverUsersByHubId(UUID hubId, UserPrincipals userPrincipals);
-
     // 배송담당자 수정
     DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, UserPrincipals userPrincipals);
 
     // 배송담당자 삭제
     void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals);
 
+    //업체 배송 담당자 목록 조회
+    List<FeignInCompanyDeliverResDto> getCompanyDeliver();
 
+    //허브 배송 담당자목록 조회
+    List<FeignInHubDeliverResDto> getHubDeliver();
 
+    FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId, UserPrincipals userPrincipals);
 
 }
