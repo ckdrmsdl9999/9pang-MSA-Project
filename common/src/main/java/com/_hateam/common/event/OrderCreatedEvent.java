@@ -1,4 +1,4 @@
-package com._hateam.message.event;
+package com._hateam.common.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

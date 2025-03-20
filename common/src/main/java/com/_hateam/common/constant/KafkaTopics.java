@@ -1,4 +1,4 @@
-package com._hateam.message.constant;
+package com._hateam.common.constant;
 
 public class KafkaTopics {
     public static final String ORDER_CREATED = "order-created";
