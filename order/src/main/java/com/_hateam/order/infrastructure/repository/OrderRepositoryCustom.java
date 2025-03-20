@@ -17,6 +17,7 @@ public interface OrderRepositoryCustom {
             LocalDateTime endDate,
             UUID companyId,
             UUID hubId,
+            UUID productId,
             int page,
             int size,
             String sort
@@ -29,6 +30,7 @@ public interface OrderRepositoryCustom {
             LocalDateTime startDate,
             LocalDateTime endDate,
             UUID companyId,
-            UUID hubId
+            UUID hubId,
+            UUID productId
     );
 }

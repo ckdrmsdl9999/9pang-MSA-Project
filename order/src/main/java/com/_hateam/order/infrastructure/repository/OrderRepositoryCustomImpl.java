@@ -3,10 +3,12 @@ package com._hateam.order.infrastructure.repository;
 import com._hateam.order.domain.model.Order;
 import com._hateam.order.domain.model.OrderStatus;
 import com._hateam.order.domain.model.QOrder;
+import com._hateam.order.domain.model.QOrderProduct;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -42,6 +44,22 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         return companyId != null ? order.companyId.eq(companyId) : null;
     }
 
+    // 상품 ID 조건 생성
+    private BooleanExpression hasProductId(QOrder order, UUID productId) {
+        if (productId == null) {
+            return null;
+        }
+
+        QOrderProduct orderProduct = QOrderProduct.orderProduct;
+
+        return JPAExpressions.selectOne()
+                .from(orderProduct)
+                .where(orderProduct.order.eq(order)
+                        .and(orderProduct.productId.eq(productId))
+                        .and(orderProduct.deletedAt.isNull()))
+                .exists();
+    }
+
     // 허브 ID 조건 생성
     private BooleanExpression hubIdEq(QOrder order, UUID hubId) {
         return hubId != null ? order.hubId.eq(hubId) : null;
@@ -73,6 +91,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             LocalDateTime endDate,
             UUID companyId,
             UUID hubId,
+            UUID productId,
             int page,
             int size,
             String sort) {
@@ -140,7 +159,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
             LocalDateTime startDate,
             LocalDateTime endDate,
             UUID companyId,
-            UUID hubId) {
+            UUID hubId,
+            UUID productId) {
 
         QOrder order = QOrder.order;
 
@@ -159,6 +179,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 
         BooleanExpression hubCondition = hubIdEq(order, hubId);
         if (hubCondition != null) builder.and(hubCondition);
+
+        BooleanExpression productCondition = hasProductId(order, productId);
+        if (productCondition != null) builder.and(productCondition);
 
         BooleanExpression dateCondition = betweenDeliveryDate(order, startDate, endDate);
         if (dateCondition != null) builder.and(dateCondition);
