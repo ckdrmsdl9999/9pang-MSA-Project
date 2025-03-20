@@ -66,25 +66,25 @@ public class DeliveryService {
     public URI registerDeliveryForMaster(RegisterDeliveryRequestDto registerDeliveryRequestDto) {
         // 이미 존재하는 값인지 확인
         checkDeliveryByOrderId(registerDeliveryRequestDto.getOrderId());
-        // todo: order 조회 구현, 임시로 orderResponse 구성, 별도로 분리하는 쪽이 좋을듯
-        OrderResponseDto orderResponseDto = new OrderResponseDto();
-        orderResponseDto.setOrderId(registerDeliveryRequestDto.getOrderId());
-        orderResponseDto.setHubId(UUID.randomUUID());
-        orderResponseDto.setCompanyId(UUID.randomUUID());
-        orderResponseDto.setOrderRequest("임시 요청입니다.");
-        orderResponseDto.setOrderStatus(OrderStatus.WAITING);
+        // todo: order 조회 구현, 임시로 orderResponse 구성, 별도로 분리하는 쪽이 좋을듯 order로 부터 요청값으로 받을 수도 있다 보류
+        OrderClientResponseDto orderClientResponseDto = new OrderClientResponseDto();
+        orderClientResponseDto.setOrderId(registerDeliveryRequestDto.getOrderId());
+        orderClientResponseDto.setHubId(UUID.randomUUID());
+        orderClientResponseDto.setCompanyId(UUID.randomUUID());
+        orderClientResponseDto.setOrderRequest("임시 요청입니다.");
+        orderClientResponseDto.setOrderStatus(OrderStatus.WAITING);
 
         // todo: company조회 구현, 임시 companyResponse 구성, 별도로 분리하는 쪽이 좋을듯
-        CompanyResponseDto companyResponseDto = new CompanyResponseDto();
-        companyResponseDto.setCompanyId(orderResponseDto.getCompanyId());
-        companyResponseDto.setCompanyAddress("임시 주소입니다.");
-        companyResponseDto.setUsername("tester");
+        CompanyClientResponseDto companyClientResponseDto = new CompanyClientResponseDto();
+        companyClientResponseDto.setCompanyId(orderClientResponseDto.getCompanyId());
+        companyClientResponseDto.setCompanyAddress("임시 주소입니다.");
+        companyClientResponseDto.setUsername("tester");
 
         // todo: user조회 구현, 임시 user 구성, 별도로 분리하는 쪽이 좋을듯
-        UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setUsername("tester");
-        userResponseDto.setSlackId("testerSlack");
-        userResponseDto.setUsernickname("테스트용");
+        UserClientResponseDto userClientResponseDto = new UserClientResponseDto();
+        userClientResponseDto.setUsername("tester");
+        userClientResponseDto.setSlackId("testerSlack");
+        userClientResponseDto.setUsernickname("테스트용");
 
         // todo: 현재 hub 기준 가장 가까운 허브 위치 찾기, 모든 주소를 저장하는 시점에 위 경도도 같이 저장될거라 우선 가정
         // todo: 그 위치기반으로 주변 위치 찾는 query가 있었는데... 그걸로 찾는다고 가정하고
@@ -93,7 +93,7 @@ public class DeliveryService {
         // todo: 배송담당자 배정 단순히 순번대로 배정해도 큰 문제 없을듯. 추후 업체 배송준비가 다 된 배송건들을 매일 아침에 알려주면 될듯
         UUID delivererId = UUID.randomUUID();
 
-        Delivery delivery = Delivery.addOf(orderResponseDto, companyResponseDto, userResponseDto, destHubId);
+        Delivery delivery = Delivery.addOf(orderClientResponseDto, companyClientResponseDto, userClientResponseDto, destHubId);
 
         // todo: sequence 확인 + 배송경로 생성
         // todo: sequence 조회
@@ -107,11 +107,11 @@ public class DeliveryService {
         for (int i = 0; i<sequnceArray.length-1; i++) {
             UUID startHubId = UUID.fromString(sequnceArray[i]);
             UUID endHubId = UUID.fromString(sequnceArray[i+1]);
-            HubResponseDto hubResponseDto = new HubResponseDto();
-            hubResponseDto.setSequence(i);
-            hubResponseDto.setDistanceKm((long) 25.51);
-            hubResponseDto.setEstimatedTimeMinutes(240);
-            DeliveryRoute deliveryRoute = DeliveryRoute.addOf(delivery, startHubId, endHubId, hubResponseDto);
+            HubClientResponseDto hubClientResponseDto = new HubClientResponseDto();
+            hubClientResponseDto.setSequence(i);
+            hubClientResponseDto.setDistanceKm((long) 25.51);
+            hubClientResponseDto.setEstimatedTimeMinutes(240);
+            DeliveryRoute deliveryRoute = DeliveryRoute.addOf(delivery, startHubId, endHubId, hubClientResponseDto);
             // 첫배송담당자 배정
             if (i == 0) deliveryRoute.updateDelivererId(delivererId);
 
