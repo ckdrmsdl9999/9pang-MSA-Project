@@ -12,10 +12,6 @@ import java.util.UUID;
 @Getter
 @Valid
 public class UpdateDeliveryRequestDto {
-
-    @NotNull(message = "배송정보의 id는 필수 입력 값입니다.")
-    private UUID id;
-
     @NotNull(message = "주문id는 필수 입력 값입니다.")
     private UUID orderId;
 
@@ -39,6 +35,6 @@ public class UpdateDeliveryRequestDto {
     @NotBlank(message = "수령인 슬랙id는 필수 입력 값입니다.")
     private String receiverSlackId;
 
-    @NotBlank(message = "배송담당자명은 필수 입력 값입니다.")
-    private String delivererUsername;
+//    @NotBlank(message = "배송담당자명은 필수 입력 값입니다.")
+    private UUID delivererId;
 }

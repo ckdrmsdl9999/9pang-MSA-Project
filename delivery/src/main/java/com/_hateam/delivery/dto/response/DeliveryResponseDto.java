@@ -18,13 +18,13 @@ public class DeliveryResponseDto {
     private String receiverAddress;
     private String receiverName;
     private String receiverSlackId;
-    private String delivererUsername; //todo: username or UUID
+    private UUID delivererId;
 
     @Builder
     public DeliveryResponseDto(UUID id, UUID orderId,
                                DeliveryStatus status, UUID startHubId, UUID endHubId,
                                String receiverAddress, String receiverName, String receiverSlackId,
-                               String delivererUsername) {
+                               UUID delivererId) {
         this.id = id;
         this.orderId = orderId;
         this.status = status;
@@ -33,7 +33,7 @@ public class DeliveryResponseDto {
         this.receiverAddress = receiverAddress;
         this.receiverName = receiverName;
         this.receiverSlackId = receiverSlackId;
-        this.delivererUsername = delivererUsername;
+        this.delivererId = delivererId;
     }
 
 
@@ -51,7 +51,7 @@ public class DeliveryResponseDto {
                 .receiverAddress(delivery.getReceiverAddress())
                 .receiverName(delivery.getReceiverName())
                 .receiverSlackId(delivery.getReceiverSlackId())
-                .delivererUsername(delivery.getDelivererUsername())
+                .delivererId(delivery.getDelivererId())
                 .build();
     }
 }

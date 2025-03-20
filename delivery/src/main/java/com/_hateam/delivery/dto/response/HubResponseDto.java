@@ -11,9 +11,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Setter // todo: 임시객체 생성을 위해 사용중, 나중에 삭제할것
 public class HubResponseDto {
-    private UUID orderId;
-    private UUID hubId;
-    private UUID companyId;
-    private String orderRequest;
-    private OrderStatus orderStatus;
+    private Integer sequence;
+    private Long distanceKm;
+    private Integer estimatedTimeMinutes;
 }
