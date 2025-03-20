@@ -81,6 +81,9 @@ public class OrderController {
             @Parameter(description = "허브 ID (UUID 형식)")
             @RequestParam(required = false) UUID hubId,
 
+            @Parameter(description = "상품 ID (UUID 형식)")
+            @RequestParam(required = false) UUID productId,
+
             @Parameter(description = "페이지 번호 (1부터 시작)")
             @RequestParam(defaultValue = "1") Integer page,
 
@@ -97,6 +100,7 @@ public class OrderController {
                 .endDateStr(endDateStr)
                 .companyId(companyId)
                 .hubId(hubId)
+                .productId(productId)
                 .page(page)
                 .size(size)
                 .sort(sort)

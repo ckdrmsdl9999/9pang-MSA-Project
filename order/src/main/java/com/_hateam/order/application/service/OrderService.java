@@ -106,6 +106,7 @@ public class OrderService {
                     searchDto.getEndDate(),
                     searchDto.getCompanyId(),
                     searchDto.getHubId(),
+                    searchDto.getProductId(),
                     searchDto.getPage(),
                     searchDto.getSize(),
                     searchDto.getSort()
@@ -118,7 +119,8 @@ public class OrderService {
                     searchDto.getStartDate(),
                     searchDto.getEndDate(),
                     searchDto.getCompanyId(),
-                    searchDto.getHubId()
+                    searchDto.getHubId(),
+                    searchDto.getProductId()
             );
 
             return orders.stream()
