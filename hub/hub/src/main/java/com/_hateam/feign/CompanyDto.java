@@ -1,7 +1,5 @@
 package com._hateam.feign;
 
-import com._hateam.CompanyType;
-import com._hateam.entity.Company;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

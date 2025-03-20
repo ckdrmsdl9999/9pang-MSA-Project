@@ -1,6 +1,6 @@
 package com._hateam.feign;
 
-import com._hateam.CompanyType;
+
 import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;

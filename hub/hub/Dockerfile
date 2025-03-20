@@ -7,13 +7,13 @@ COPY common /app/common/
 WORKDIR /app/common
 RUN gradle clean build publishToMavenLocal -x test
 
-# company 모듈 복사 및 빌드
+# hub 모듈 복사 및 빌드
 WORKDIR /app
-COPY company /app/company/
-# 변경: 내부의 'company' 폴더로 진입
-WORKDIR /app/company/company
+COPY hub /app/hub/
+# 변경: 내부의 'hub' 폴더로 진입
+WORKDIR /app/hub/hub
 RUN gradle clean bootJar -x test
 
 FROM eclipse-temurin:17-jre
-COPY --from=builder /app/company/company/build/libs/*.jar /app/app.jar
+COPY --from=builder /app/hub/hub/build/libs/*.jar /app/app.jar
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

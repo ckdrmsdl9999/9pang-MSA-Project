@@ -30,12 +30,10 @@ import java.util.Map;
 @EnableRedisRepositories
 public class RedisConfig {
 
-//    @Value("${spring.data.redis.host}")
-    @Value("localhost")
+    @Value("${spring.data.redis.host}")
     private String host;
 
-//    @Value("${spring.data.redis.port}")
-    @Value("6379")
+    @Value("${spring.data.redis.port}")
     private int port;
 
     @Bean

@@ -48,24 +48,23 @@ public class CompanyController {
                 .body(ResponseDto.success(HttpStatus.OK, companies));
     }
 
-    @GetMapping
-    ResponseEntity<ResponseDto<CompanyDto>> getCompanyByCompanyIdAndHubId(
-            @RequestParam(value = "hubId", defaultValue = "0") UUID hubId,
-            @RequestParam(value = "companyId", defaultValue = "0" ) UUID companyId){
-            CompanyDto company = companyService.getCompanyByCompanyIdAndHubId(companyId, hubId);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ResponseDto.success(HttpStatus.OK, company));
+    @GetMapping("/hub/{hubId}/{companyId}")
+    public CompanyDto getCompanyByCompanyIdAndHubId(
+            @PathVariable UUID hubId,
+            @PathVariable UUID companyId) {
+        CompanyDto company = companyService.getCompanyByCompanyIdAndHubId(companyId, hubId);
+        return company;
     }
-    @GetMapping
-    public ResponseEntity<ResponseDto<List<CompanyDto>>> getCompaniesByHubId(
-            @RequestParam(value = "hubId", defaultValue = "0") UUID id,
+
+    @GetMapping("/hub/{hubId}")
+    public List<CompanyDto> getCompaniesByHubId(
+            @PathVariable UUID hubId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
-        List<CompanyDto> companies = companyService.getCompaniesByHubId(id, page, size, sortBy, isAsc);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, companies));
+        List<CompanyDto> companies = companyService.getCompaniesByHubId(hubId, page, size, sortBy, isAsc);
+        return companies;
     }
 
     /**

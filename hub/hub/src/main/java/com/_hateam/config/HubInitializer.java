@@ -12,6 +12,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +31,11 @@ public class HubInitializer {
     private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
 
     @PostConstruct
+    @Order(1)
     @Transactional
     public void initializeHubs() {
         // 허브가 이미 존재하면 초기화를 건너뛰도록 할 수도 있음
-//        if (hubRepository.count() > 0) return;
+        if (hubRepository.count() > 0) return;
 
         // 정적 허브 데이터 목록 (이름은 HubGraph에 정의된 노드와 일치하도록)
         List<HubResponseDto> hubDataList = Arrays.asList(
