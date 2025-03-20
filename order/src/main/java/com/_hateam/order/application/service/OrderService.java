@@ -12,7 +12,7 @@ import com._hateam.order.domain.model.OrderStatus;
 import com._hateam.order.domain.repository.OrderRepository;
 import com._hateam.order.domain.service.OrderDomainService;
 import com._hateam.order.infrastructure.client.DeliveryClient;
-import com._hateam.order.infrastructure.client.ProductClient;
+import com._hateam.order.infrastructure.client.CompanyClient;
 import com._hateam.order.infrastructure.client.dto.DeliveryDto;
 import com._hateam.order.infrastructure.client.dto.ProductDto;
 import com._hateam.order.infrastructure.client.dto.ProductRequestDto;
@@ -32,7 +32,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDomainService orderDomainService;
-    private final ProductClient productClient;
+    private final CompanyClient companyClient;
     private final DeliveryClient deliveryClient;
 
     /**
@@ -60,7 +60,7 @@ public class OrderService {
             // 상품 정보 조회
             ProductDto product;
             try {
-                product = productClient.getProductById(productDto.getProductId()).getData();
+                product = companyClient.getProductById(productDto.getProductId()).getData();
             } catch (Exception e) {
                 throw new CustomConflictException("상품 정보 조회 중 오류가 발생했습니다: " + e.getMessage());
             }
@@ -89,7 +89,7 @@ public class OrderService {
                         .quantity(product.getQuantity() - productDto.getQuantity())
                         .build();
 
-                productClient.updateProduct(productDto.getProductId(), updateRequest);
+                companyClient.updateProduct(productDto.getProductId(), updateRequest);
             } catch (Exception e) {
                 throw new CustomConflictException("상품 재고 업데이트 중 오류가 발생했습니다: " + e.getMessage());
             }
@@ -234,7 +234,7 @@ public class OrderService {
             // 기존 주문 상품의 재고 복원
             for (OrderProduct orderProduct : order.getOrderProducts()) {
                 try {
-                    ProductDto product = productClient.getProductById(orderProduct.getProductId()).getData();
+                    ProductDto product = companyClient.getProductById(orderProduct.getProductId()).getData();
 
                     ProductRequestDto restoreRequest = ProductRequestDto.builder()
                             .companyId(product.getCompanyId())
@@ -244,7 +244,7 @@ public class OrderService {
                             .quantity(product.getQuantity() + orderProduct.getTotalQuantity())
                             .build();
 
-                    productClient.updateProduct(orderProduct.getProductId(), restoreRequest);
+                    companyClient.updateProduct(orderProduct.getProductId(), restoreRequest);
                 } catch (Exception e) {
                     throw new CustomConflictException("상품 재고 복원 중 오류가 발생했습니다: " + e.getMessage());
                 }
@@ -256,7 +256,7 @@ public class OrderService {
             // 새로운 주문 상품에 대한 재고 확인 및 차감
             for (OrderUpdateDto.OrderProductDto productDto : updateDto.getProducts()) {
                 try {
-                    ProductDto product = productClient.getProductById(productDto.getProductId()).getData();
+                    ProductDto product = companyClient.getProductById(productDto.getProductId()).getData();
 
                     // 재고 확인
                     if (product.getQuantity() < productDto.getQuantity()) {
@@ -273,7 +273,7 @@ public class OrderService {
                             .quantity(product.getQuantity() - productDto.getQuantity())
                             .build();
 
-                    productClient.updateProduct(productDto.getProductId(), updateRequest);
+                    companyClient.updateProduct(productDto.getProductId(), updateRequest);
 
                     // 새 주문 상품 생성
                     OrderProduct orderProduct = orderDomainService.createOrderProduct(
@@ -338,7 +338,7 @@ public class OrderService {
         // 주문 상품의 재고 복원
         for (OrderProduct orderProduct : order.getOrderProducts()) {
             try {
-                ProductDto product = productClient.getProductById(orderProduct.getProductId()).getData();
+                ProductDto product = companyClient.getProductById(orderProduct.getProductId()).getData();
 
                 // 재고 복원
                 ProductRequestDto updateRequest = ProductRequestDto.builder()
@@ -349,7 +349,7 @@ public class OrderService {
                         .quantity(product.getQuantity() + orderProduct.getTotalQuantity())
                         .build();
 
-                productClient.updateProduct(orderProduct.getProductId(), updateRequest);
+                companyClient.updateProduct(orderProduct.getProductId(), updateRequest);
             } catch (Exception e) {
                 throw new CustomConflictException("상품 재고 복원 중 오류가 발생했습니다: " + e.getMessage());
             }
