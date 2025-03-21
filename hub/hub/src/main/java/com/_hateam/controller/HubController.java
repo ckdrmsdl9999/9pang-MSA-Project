@@ -113,4 +113,6 @@ public class HubController {
             List<CompanyDto> companyDtos = companyController.getCompaniesByHubId(hubId, 0, 10, "createdAt", false);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, companyDtos));
-    }}
+    }
+
+}

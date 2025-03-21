@@ -11,6 +11,7 @@ import com._hateam.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TestDataInitializer {
+public class CompanyInitializer {
 
 
     private final HubRepository hubRepository;
@@ -38,6 +39,7 @@ public class TestDataInitializer {
     }
 
     @PostConstruct
+    @Order(2)
     @Transactional
     public void initTestData() {
 
