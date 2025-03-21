@@ -2,9 +2,8 @@ package com._hateam.user.application.service;
 
 import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
-import com._hateam.user.application.dto.DeliverUserCreateReqDto;
-import com._hateam.user.application.dto.DeliverUserResponseDto;
-import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
+import com._hateam.user.application.dto.*;
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.infrastructure.security.UserPrincipals;
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 public class DeliverUserServiceImpl implements DeliverUserService {
 
     private final DeliverUserRepository deliverUserRepository;
+
     private final UserRepository userRepository;
 
     @Override
@@ -232,5 +232,29 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPr
     }
 
 
+    //업체 배송담당자목록 조회(Feign)
+    @Override
+    public List<FeignInCompanyDeliverResDto> getCompanyDeliver() {
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(DeliverType.DELIVER_COMPANY);
+        return deliverUser.stream().map(FeignInCompanyDeliverResDto::from).collect(Collectors.toList());
+    }
+
+    //허브 배송담당자목록 조회(Feign)
+    @Override
+    public List<FeignInHubDeliverResDto> getHubDeliver() {
+        List<DeliverUser> deliverUser = deliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(DeliverType.DELIVER_HUB);
+        return deliverUser.stream().map(FeignInHubDeliverResDto::from).collect(Collectors.toList());
+    }
+
+    // 배송담당자 슬랙 ID조회(Feign)
+    @Override
+    @Transactional(readOnly = true)
+    public FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId) {
+        // 권한 검증
+        DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
+                .orElseThrow(() -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다(d). ID: " + deliverId));
+
+        return FeignDeliverSlackIdResDto.from(deliverUser);
+    }
 
 }

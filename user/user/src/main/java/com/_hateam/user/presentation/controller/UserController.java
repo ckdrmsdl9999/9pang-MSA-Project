@@ -29,7 +29,6 @@ public class UserController {
 
     @PostMapping("/signup")//회원가입
     public ResponseDto<?> addUser(@RequestBody @Valid UserSignUpReqDto signUpReqDto, BindingResult bindingResult) {
-
         return ResponseDto.success(HttpStatus.OK,userService.saveUser(signUpReqDto));
     }
 
@@ -38,10 +37,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
     }
 
-
-    @GetMapping("/")//회원조회(자기자신만)
+    @GetMapping("/getuser")//자기자신 회원조회
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUser(userPrincipals.getId())));
     }
@@ -69,11 +66,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getAllUsers(userPrincipals)));
     }
 
-
     @PatchMapping("/{userId}")  // 회원 수정(MASTER)
     public ResponseEntity<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,
                                      @AuthenticationPrincipal UserPrincipals userPrincipals) {
-
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));
     }
 
@@ -83,5 +78,27 @@ public class UserController {
         userService.deleteUser(userId,userPrincipals);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."));
     }
+
+    @GetMapping("/hub-admin")//허브의 관리자조회(Feign, ROLE=HUB)(
+    public ResponseEntity<?> getHubAdmin() {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getHub()));
+    }
+
+    @GetMapping("/company-admin")//업체 관리자 조회(Feign,ROLE=COMPANY)
+    public ResponseEntity<?> getCompanyAdmin() {
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getCompany()));
+    }
+
+    @GetMapping("/api/users/{userId}/message")//사용자정보조회(Feign)
+    public ResponseEntity<?> getUserByMessage(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUserByFeign(userId)));
+    }
+
+
 
 }

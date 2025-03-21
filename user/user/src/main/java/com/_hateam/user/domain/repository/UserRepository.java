@@ -24,5 +24,10 @@ public interface UserRepository {
     // 페이징 및 정렬을 위한 새로운 메서드
     Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable);
 
+    List<User> findAllByUserRolesAndDeletedAtIsNull(UserRole userRole);
+
+
+
+
 
 }

@@ -60,8 +60,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-
-
     @Override
     public List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals) {
         // 권한검증
@@ -77,8 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUser(Long userId){
-
+    public UserResponseDto getUser(Long userId){//추후 권한에 따라
         User user =userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
         return UserResponseDto.from(user);
@@ -113,7 +110,6 @@ public class UserServiceImpl implements UserService {
      return UserResponseDto.from(updatedUser);
     }
 
-
     @Transactional
     @Override
     public void deleteUser(Long userId, UserPrincipals userPrincipals) {
@@ -131,7 +127,6 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
     }
-
 
     @Override
     public Page<UserResponseDto> searchUser(String username, UserPrincipals userPrincipals,
@@ -169,8 +164,6 @@ public class UserServiceImpl implements UserService {
         return userPage.map(UserResponseDto::from);
     }
 
-
-
     @Transactional
     @Override
     public UserResponseDto updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals) {
@@ -189,6 +182,29 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public List<FeignCompanyAdminResDto> getCompany() {
+        List<User> companyUsers = userRepository.findAllByUserRolesAndDeletedAtIsNull(UserRole.COMPANY);
 
+        return companyUsers.stream()
+                .map(FeignCompanyAdminResDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FeignHubAdminResDto> getHub() {
+        List<User> hubUsers = userRepository.findAllByUserRolesAndDeletedAtIsNull(UserRole.HUB);
+
+        return hubUsers.stream()
+                .map(FeignHubAdminResDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public FeignUserResDto getUserByFeign(Long userId){//추후 권한에 따라
+        User user =userRepository.findById(userId)
+                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+        return FeignUserResDto.from(user);
+    }
 
 }
