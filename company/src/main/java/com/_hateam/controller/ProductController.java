@@ -28,7 +28,6 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ResponseDto<ProductDto>> createProduct(
             @RequestBody @Valid ProductRequestDto requestDto) {
-
         ProductDto productDto = productService.createProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.success(HttpStatus.CREATED, productDto));
@@ -43,13 +42,10 @@ public class ProductController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
-
         List<ProductDto> productDto = productService.getAllProducts(page, size, sortBy, isAsc);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
-
-
     /**
      * 특정 상품 상세 조회
      */
@@ -59,7 +55,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
-
     /**
      * 특정 상품 수정
      */
@@ -71,7 +66,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, productDto));
     }
-
     /**
      * 특정 상품 삭제
      */
@@ -81,4 +75,14 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.success(HttpStatus.OK, "Product deleted successfully"));
     }
+    /**
+     * feign client
+     */
+    @GetMapping(value = "/hub/{hubId}")
+    ResponseEntity<ResponseDto<List<ProductDto>>> getProductsByHubId(@PathVariable UUID hubId) {
+        List<ProductDto> productDto = productService.getProductsByHubId(hubId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, productDto));
+    }
+
 }
