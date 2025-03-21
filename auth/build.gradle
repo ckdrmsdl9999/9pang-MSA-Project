@@ -13,47 +13,38 @@ java {
 	}
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
-	mavenLocal()
 }
+
 ext {
-	set('springCloudVersion', "2024.0.0")
+	set('springCloudVersion', "2024.0.1")
 }
 
 dependencies {
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+//	implementation project(':common')//common
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	// ✅ QueryDSL
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
-	// ✅ OpenFeign (Spring Cloud)
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
-	// ✅ Spring Boot 기본 스타터
-
 	//implementation 'org.springframework.boot:spring-boot-starter-security'
 
-
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework:spring-context'
-
-	// ✅ Lombok
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// ✅ 공통 모듈
-	//implementation 'com.9hateam:common:0.0.1-SNAPSHOT'
-
-	// ✅ (선택) Spring Cache와 함께 사용 시 필요
-//	implementation 'org.springframework.boot:spring-boot-starter-cache'
-
-
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 
 }
 

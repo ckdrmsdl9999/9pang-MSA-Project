@@ -208,6 +208,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public FeignVerifyResDto verifyUserFeign(String username){//추후 권한에 따라
+        System.out.println("값확인하자"+username);
+        User user =userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다!! " + username));
+        System.out.println(user.getUserRoles()+"롤체크");
+        return FeignVerifyResDto.from(user);
+    }
+
+
+    @Override
     public UserResponseDto getUserByUsername(String username){
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + username));
