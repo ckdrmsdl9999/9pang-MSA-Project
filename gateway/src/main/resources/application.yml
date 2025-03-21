@@ -1,0 +1,95 @@
+#server:
+#  port: 8089  # 게이트웨이 서비스가 실행될 포트 번호
+#
+#spring:
+#  main:
+#    web-application-type: reactive  # Spring 애플리케이션이 리액티브 웹 애플리케이션으로 설정됨
+#  application:
+#    name: gateway-service  # 애플리케이션 이름을 'gateway-service'로 설정 기존'gateway'
+#  cloud:
+#    gateway:
+#      routes:  # Spring Cloud Gateway의 라우팅 설정
+#        - id: user  # 라우트 식별자
+#          uri: lb://user  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+#          predicates:
+#            - Path=/api/users/**  # /order/** 경로로 들어오는 요청을 이 라우트로 처리
+#
+#        - id: team-service  # 라우트 식별자
+#          uri: lb://team-service  # 'product-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+#          predicates:
+#            - Path=/api/team/**  # /product/** 경로로 들어오는 요청을 이 라우트로 처리
+#
+#        - id: auth-service  # 라우트 식별자
+#          uri: lb://auth-service  # 'auth-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+#          predicates:
+#            - Path=/auth/signIn  # /auth/signIn 경로로 들어오는 요청을 이 라우트로 처리
+#
+#        - id: auth-product  # 라우트 식별자
+#          uri: lb://auth-product  # 'auth-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+#          predicates:
+#            - Path=/product/**  # /auth/signIn 경로로 들어오는 요청을 이 라우트로 처리
+#      discovery:
+#        locator:
+#          enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/  # Eureka 서버의 URL을 지정
+#
+#service:
+#  jwt:
+#    secret-key: "L@4mV9eZ*R1z#3Tq6!P5jY2wF8xL7d$Q9%kH1xA6^bL0*H4mJ9!nT3zP6q^Y8uB7#xJ2vM4@fH5cT3r!D6sN+2NE1
+server:
+  port: 8089  # 서버 포트 설정
+
+spring:
+  main:
+    web-application-type: reactive  # Spring 애플리케이션을 리액티브 웹 애플리케이션으로 설정
+  application:
+    name: gateway-service  # 애플리케이션 이름 설정
+  cloud:
+    gateway:
+      routes:  # Spring Cloud Gateway의 라우팅 설정
+        - id: user  # 첫 번째 라우트 식별자
+          uri: lb://user  # user 서비스로 로드 밸런싱
+          predicates:
+            - Path=/api/users/**  # /api/users/** 경로로 들어오는 요청을 이 라우트로 처리
+        - id: team-service  # 두 번째 라우트 식별자
+          uri: lb://team-service  # team-service로 로드 밸런싱
+          predicates:
+            - Path=/api/team/**  # /api/team/** 경로로 들어오는 요청을 이 라우트로 처리
+        - id: auth-service  # 세 번째 라우트 식별자
+          uri: lb://auth-service  # auth-service로 로드 밸런싱
+          predicates:
+            - Path=/auth/signIn  # /auth/signIn 경로로 들어오는 요청을 이 라우트로 처리
+        - id: auth-product  # 네 번째 라우트 식별자
+          uri: lb://auth-product  # auth-product로 로드 밸런싱
+          predicates:
+            - Path=/product/**  # /product/** 경로로 들어오는 요청을 이 라우트로 처리
+      discovery:
+        locator:
+          enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
+  jwt:
+    accessTokenValidityInMilliseconds: 3600000  # JWT 액세스 토큰 유효 시간(1시간)
+    refreshTokenValidityInMilliseconds: 43200000  # JWT 리프레시 토큰 유효 시간(12시간)
+  security:
+#    enabled: false  # 스프링 시큐리티 비활성화
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/  # Eureka 서버의 URL
+#    register-with-eureka: true  # Eureka 서버에 서비스 등록
+#    fetch-registry: true  # Eureka 서버로부터 서비스 목록 가져오기
+
+service:
+  jwt:
+    secret-key: "L@4mV9eZ*R1z#3Tq6!P5jY2wF8xL7d$Q9%kH1xA6^bL0*H4mJ9!nT3zP6q^Y8uB7#xJ2vM4@fH5cT3r!D6sN+2NE1"
+
+
+logging:
+  level:
+    com._hateam: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    root: INFO

@@ -18,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -104,6 +106,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.verifyUserFeign(username)));
     }
-
+    @GetMapping("/headers")
+    public Map<String, String> getHeaders(@RequestHeader Map<String, String> headers) {
+        return headers;
+    }
 
 }
