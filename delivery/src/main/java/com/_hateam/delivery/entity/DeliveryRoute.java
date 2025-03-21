@@ -3,6 +3,7 @@ package com._hateam.delivery.entity;
 import com._hateam.common.entity.Timestamped;
 import com._hateam.delivery.dto.request.UpdateDeliveryRouteRequestDto;
 import com._hateam.delivery.dto.response.HubClientResponseDto;
+import com._hateam.delivery.dto.response.UserClientDeliverResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,7 +52,9 @@ public class DeliveryRoute extends Timestamped {
     // nullable
     private Integer realTime;
 
-    private UUID delivererId;
+    private UUID deliverId;
+
+    private String deliverSlackId;
 
 
     @Builder
@@ -96,8 +99,9 @@ public class DeliveryRoute extends Timestamped {
         this.realTime = requestDto.getRealTime();
     }
 
-    public void updateDelivererId(UUID delivererId) {
-        this.delivererId = delivererId;
+    public void updateDeliver(UserClientDeliverResponseDto responseDto) {
+        this.deliverId = responseDto.getDeliverId();
+        this.deliverSlackId = responseDto.getSlackId();
     }
 
     public void deleteOf(final String deletedBy) {

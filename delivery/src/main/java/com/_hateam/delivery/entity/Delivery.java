@@ -4,6 +4,7 @@ import com._hateam.common.entity.Timestamped;
 import com._hateam.delivery.dto.request.UpdateDeliveryRequestDto;
 import com._hateam.delivery.dto.response.CompanyClientResponseDto;
 import com._hateam.delivery.dto.response.OrderClientResponseDto;
+import com._hateam.delivery.dto.response.UserClientDeliverResponseDto;
 import com._hateam.delivery.dto.response.UserClientResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -51,7 +52,8 @@ public class Delivery extends Timestamped {
     private String receiverSlackId;
 
     // nullable
-    private UUID delivererId;
+    private UUID deliverId;
+    private String deliverSlackId;
 
     @OneToMany(fetch = LAZY, cascade = PERSIST)
     private List<DeliveryRoute> deliveryRouteList;
@@ -104,15 +106,16 @@ public class Delivery extends Timestamped {
         this.receiverAddress = requestDto.getReceiverAddress();
         this.receiverName = requestDto.getReceiverName();
         this.receiverSlackId = requestDto.getReceiverSlackId();
-        this.delivererId = requestDto.getDelivererId();
+        this.deliverId = requestDto.getDelivererId();
     }
 
     public void updateStatusOf(DeliveryStatus status) {
         this.status = status;
     }
 
-    public void updateDelivererId(UUID delivererId) {
-        this.delivererId = delivererId;
+    public void updateDeliver(UserClientDeliverResponseDto responseDto) {
+        this.deliverId = responseDto.getDeliverId();
+        this.deliverSlackId = responseDto.getSlackId();
     }
 
     public void deleteOf(final String deletedBy) {

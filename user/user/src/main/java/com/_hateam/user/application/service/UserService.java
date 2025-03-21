@@ -34,4 +34,5 @@ public interface UserService {
 
      public FeignUserResDto getUserByFeign(Long userId);
 
+     public UserResponseDto getUserByUsername(String username);
 }

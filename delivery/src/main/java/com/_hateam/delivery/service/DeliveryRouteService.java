@@ -3,6 +3,7 @@ package com._hateam.delivery.service;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.delivery.dto.request.UpdateDeliveryRouteRequestDto;
 import com._hateam.delivery.dto.response.DeiiveryRouteResponseDto;
+import com._hateam.delivery.dto.response.UserClientDeliverResponseDto;
 import com._hateam.delivery.entity.Delivery;
 import com._hateam.delivery.entity.DeliveryRoute;
 import com._hateam.delivery.entity.DeliveryStatus;
@@ -71,15 +72,23 @@ public class DeliveryRouteService {
                 if (nextDeliveryRoute != null) {
                     // nextDeliveryRoute에 배송담당자 배정
                     // todo: 다음 허브 배송담당자 조회
-                    UUID hubDelivererId = UUID.randomUUID();
-                    nextDeliveryRoute.updateDelivererId(hubDelivererId);
+                    UserClientDeliverResponseDto userClientDeliverResponseDto = new UserClientDeliverResponseDto();
+                    userClientDeliverResponseDto.setDeliverId(UUID.randomUUID());
+                    userClientDeliverResponseDto.setSlackId("slackIdForDeliver");
+                    // 다음 배송경로에 허브배송담당자 배정
+                    nextDeliveryRoute.updateDeliver(userClientDeliverResponseDto);
 
                 } else {
                     // hub배송 완료, 배송상태변경 + 업체 배송담당자 배정
                     // todo: 업체 배송담당자 조회
-                    UUID companyDelivererId = UUID.randomUUID();
+                    // 허브 배송 완료, 업체 배송 대기로 상태 변경
                     delivery.updateStatusOf(status);
-                    delivery.updateDelivererId(companyDelivererId);
+                    // todo: 업체 배송담당자 조회
+                    UserClientDeliverResponseDto userClientDeliverResponseDto = new UserClientDeliverResponseDto();
+                    userClientDeliverResponseDto.setDeliverId(UUID.randomUUID());
+                    userClientDeliverResponseDto.setSlackId("slackIdForDeliver");
+                    // 업체 배송담당자 배정
+                    delivery.updateDeliver(userClientDeliverResponseDto);
                 }
             }
         }

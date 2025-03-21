@@ -10,6 +10,9 @@ import com._hateam.delivery.entity.Delivery;
 import com._hateam.delivery.entity.DeliveryRoute;
 import com._hateam.delivery.entity.DeliveryStatus;
 import com._hateam.delivery.entity.OrderStatus;
+import com._hateam.delivery.feignClient.CompanyClient;
+import com._hateam.delivery.feignClient.HubClient;
+import com._hateam.delivery.feignClient.UserClient;
 import com._hateam.delivery.repository.DeliveryRepository;
 import com._hateam.delivery.repository.DeliveryRepositoryCustom;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,9 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryRepositoryCustom deliveryRepositoryCustom;
+    private final CompanyClient companyClient;
+    private final UserClient userClient;
+    private final HubClient hubClient;
 
     /**
      * querydsl 통한 전체 조회
@@ -79,19 +85,34 @@ public class DeliveryService {
         companyClientResponseDto.setCompanyId(orderClientResponseDto.getCompanyId());
         companyClientResponseDto.setCompanyAddress("임시 주소입니다.");
         companyClientResponseDto.setUsername("tester");
-
+//        CompanyClientResponseDto companyClientResponseDto = companyClient
+//                .getCompanyById(orderClientResponseDto.getCompanyId())
+//                .getBody()
+//                .getData();
         // todo: user조회 구현, 임시 user 구성, 별도로 분리하는 쪽이 좋을듯
         UserClientResponseDto userClientResponseDto = new UserClientResponseDto();
         userClientResponseDto.setUsername("tester");
         userClientResponseDto.setSlackId("testerSlack");
         userClientResponseDto.setUsernickname("테스트용");
+//        UserClientResponseDto userClientResponseDto = userClient
+//                .getUserByUsername(companyClientResponseDto.getUsername())
+//                .getBody()
+//                .getData();
 
         // todo: 현재 hub 기준 가장 가까운 허브 위치 찾기, 모든 주소를 저장하는 시점에 위 경도도 같이 저장될거라 우선 가정
         // todo: 그 위치기반으로 주변 위치 찾는 query가 있었는데... 그걸로 찾는다고 가정하고
-        UUID destHubId = UUID.randomUUID();
+//        HubClientHubResponseDto hubClientHubResponseDto = new HubClientHubResponseDto();
+//        hubClientHubResponseDto.setId(UUID.randomUUID());
+//        hubClientHubResponseDto.setName("경기북부");
 
-        // todo: 배송담당자 배정 단순히 순번대로 배정해도 큰 문제 없을듯. 추후 업체 배송준비가 다 된 배송건들을 매일 아침에 알려주면 될듯
-        UUID delivererId = UUID.randomUUID();
+        HubClientHubResponseDto hubClientHubResponseDto = hubClient
+                .getNearestHub(34.8492021, 126.4715102)
+                .getBody()
+                .getData();
+
+        System.out.println(hubClientHubResponseDto.getName());
+
+        UUID destHubId = hubClientHubResponseDto.getId();
 
         Delivery delivery = Delivery.addOf(orderClientResponseDto, companyClientResponseDto, userClientResponseDto, destHubId);
 
@@ -113,7 +134,12 @@ public class DeliveryService {
             hubClientResponseDto.setEstimatedTimeMinutes(240);
             DeliveryRoute deliveryRoute = DeliveryRoute.addOf(delivery, startHubId, endHubId, hubClientResponseDto);
             // 첫배송담당자 배정
-            if (i == 0) deliveryRoute.updateDelivererId(delivererId);
+            if (i == 0) {
+                UserClientDeliverResponseDto userClientDeliverResponseDto = new UserClientDeliverResponseDto();
+                userClientDeliverResponseDto.setDeliverId(UUID.randomUUID());
+                userClientDeliverResponseDto.setSlackId("slackForFirst");
+                deliveryRoute.updateDeliver(userClientDeliverResponseDto);
+            }
 
             deliveryRouteList.add(deliveryRoute);
         }
