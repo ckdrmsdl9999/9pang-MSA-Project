@@ -28,13 +28,14 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE; // 가장 높은 우선순위 설정
+//        return Ordered.LOWEST_PRECEDENCE; // 또는 다른 적절한 값
     }
     @Value("${service.jwt.secret-key}")
     private String secretKey;
 
     // JWT 토큰 검증을 제외할 경로 목록
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/auth/signin"
+            "/api/auth/signin"
     //      "/api/users/**"
               // 필요에 따라 추가/제거 가능
     );
@@ -82,11 +83,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         String userRole = claims.get("role", String.class);
 
         log.info("추출된 사용자 ID: {}, 역할: {}", userId, userRole);
-
+        System.out.println(userId+userRole+"롤");
         // 요청 헤더에 사용자 정보 추가 (userId를 문자열로 변환)
         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                .header("X-User-Id", userId != null ? userId.toString() : "")
-                .header("X-User-Role", userRole != null ? userRole : "")
+                .header("x-user-id", userId != null ? userId.toString() : "")
+                .header("x-user-role", userRole != null ? userRole : "")
                 .build();
 
         // 새 요청으로 교환 객체 업데이트

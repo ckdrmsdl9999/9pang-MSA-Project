@@ -59,10 +59,10 @@ spring:
           uri: lb://team-service  # team-service로 로드 밸런싱
           predicates:
             - Path=/api/team/**  # /api/team/** 경로로 들어오는 요청을 이 라우트로 처리
-        - id: auth-service  # 세 번째 라우트 식별자
-          uri: lb://auth-service  # auth-service로 로드 밸런싱
+        - id: auth  # 세 번째 라우트 식별자
+          uri: lb://auth  # auth-service로 로드 밸런싱
           predicates:
-            - Path=/auth/signIn  # /auth/signIn 경로로 들어오는 요청을 이 라우트로 처리
+            - Path=/api/auth/signin  # /auth/signin 경로로 들어오는 요청을 이 라우트로 처리
         - id: auth-product  # 네 번째 라우트 식별자
           uri: lb://auth-product  # auth-product로 로드 밸런싱
           predicates:
@@ -88,8 +88,14 @@ service:
     secret-key: "L@4mV9eZ*R1z#3Tq6!P5jY2wF8xL7d$Q9%kH1xA6^bL0*H4mJ9!nT3zP6q^Y8uB7#xJ2vM4@fH5cT3r!D6sN+2NE1"
 
 
+#logging:
+#  level:
+#    com._hateam: DEBUG
+#    org.springframework.cloud.gateway: DEBUG
+#    root: INFO
+# application.yml
 logging:
   level:
-    com._hateam: DEBUG
-    org.springframework.cloud.gateway: DEBUG
     root: INFO
+    com._hateam: DEBUG
+    com._hateam.filter: DEBUG

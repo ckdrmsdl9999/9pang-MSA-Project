@@ -25,7 +25,7 @@
 //                .httpBasic(AbstractHttpConfigurer::disable)
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .logout(AbstractHttpConfigurer::disable)
-//                .anonymous(anonymous -> anonymous.disable())
+//                //.anonymous(anonymous -> anonymous.disable())
 //                .authorizeHttpRequests(auth -> auth
 //                        .anyRequest().permitAll()
 //                );

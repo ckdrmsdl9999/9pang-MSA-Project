@@ -1,12 +1,15 @@
 package com._hateam.user.presentation.controller;
 
+import com._hateam.common.annotation.UserHeader;
 import com._hateam.common.dto.ResponseDto;
+import com._hateam.common.dto.UserHeaderInfo;
 import com._hateam.user.application.dto.RoleUpdateReqDto;
 import com._hateam.user.application.dto.UserSignInReqDto;
 import com._hateam.user.application.dto.UserSignUpReqDto;
 import com._hateam.user.application.dto.UserUpdateReqDto;
 import com._hateam.user.application.service.UserService;
 import com._hateam.user.infrastructure.security.UserPrincipals;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -106,9 +111,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.verifyUserFeign(username)));
     }
-    @GetMapping("/headers")
-    public Map<String, String> getHeaders(@RequestHeader Map<String, String> headers) {
-        return headers;
+
+
+    @GetMapping("/headers") //헤더값 확인용
+    public ResponseEntity<?> getDirectHeaders(HttpServletRequest request) {
+
+        String userId = request.getHeader("x-user-id");
+        String userRole = request.getHeader("x-user-role");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", userId);
+        result.put("userRole", userRole);
+
+        return ResponseEntity.ok(ResponseDto.success(result));
     }
 
 }
