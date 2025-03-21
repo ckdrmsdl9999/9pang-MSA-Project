@@ -2,7 +2,8 @@ package com._hateam.delivery.entity;
 
 import com._hateam.common.entity.Timestamped;
 import com._hateam.delivery.dto.request.UpdateDeliveryRouteRequestDto;
-import com._hateam.delivery.dto.response.HubResponseDto;
+import com._hateam.delivery.dto.response.HubClientResponseDto;
+import com._hateam.delivery.dto.response.UserClientDeliverResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,7 +52,9 @@ public class DeliveryRoute extends Timestamped {
     // nullable
     private Integer realTime;
 
-    private UUID delivererId;
+    private UUID deliverId;
+
+    private String deliverSlackId;
 
 
     @Builder
@@ -77,16 +80,16 @@ public class DeliveryRoute extends Timestamped {
     public static DeliveryRoute addOf(final Delivery delivery,
                                       final UUID startHubId,
                                       final UUID endHubId,
-                                      final HubResponseDto hubResponseDto
+                                      final HubClientResponseDto hubClientResponseDto
                                       ) {
         return DeliveryRoute.builder()
                 .delivery(delivery)
                 .status(DeliveryStatus.WAITING_AT_HUB)
-                .sequence(hubResponseDto.getSequence())
+                .sequence(hubClientResponseDto.getSequence())
                 .startHubId(startHubId)
                 .endHubId(endHubId)
-                .predicDistance(hubResponseDto.getDistanceKm())
-                .predicTime(hubResponseDto.getEstimatedTimeMinutes())
+                .predicDistance(hubClientResponseDto.getDistanceKm())
+                .predicTime(hubClientResponseDto.getEstimatedTimeMinutes())
                 .build();
     }
 
@@ -96,8 +99,9 @@ public class DeliveryRoute extends Timestamped {
         this.realTime = requestDto.getRealTime();
     }
 
-    public void updateDelivererId(UUID delivererId) {
-        this.delivererId = delivererId;
+    public void updateDeliver(UserClientDeliverResponseDto responseDto) {
+        this.deliverId = responseDto.getDeliverId();
+        this.deliverSlackId = responseDto.getSlackId();
     }
 
     public void deleteOf(final String deletedBy) {

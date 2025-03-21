@@ -106,10 +106,18 @@ public class UserController {
                 ResponseDto.success(userService.getUserByFeign(userId)));
     }
 
+
     @GetMapping("/verify/signin")//이름으로아이디,패스워드조회(Feign)
     public ResponseEntity<?> findByUsername(@RequestParam String username) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.verifyUserFeign(username)));
+
+    // userId는 외부로 나가면 안되는값, username을 대신 userid 처럼 사용
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUserByUsername(username)));
+
     }
 
 

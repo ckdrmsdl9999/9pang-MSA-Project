@@ -19,7 +19,7 @@ public class DeiiveryRouteResponseDto {
     private Integer predicTime;
     private Long realDistance;
     private Integer realTime;
-    private UUID delivererId;
+    private UUID deliverId;
 
     @Builder
     public DeiiveryRouteResponseDto(UUID id, UUID deliveryId,
@@ -27,7 +27,7 @@ public class DeiiveryRouteResponseDto {
                                     UUID startHubId, UUID endHubId,
                                     Long predicDistance, Integer predicTime,
                                     Long realDistance, Integer realTime,
-                                    UUID delivererId
+                                    UUID deliverId
     ) {
         this.id = id;
         this.deliveryId = deliveryId;
@@ -39,7 +39,7 @@ public class DeiiveryRouteResponseDto {
         this.predicTime = predicTime;
         this.realDistance = realDistance;
         this.realTime = realTime;
-        this.delivererId = delivererId;
+        this.deliverId = deliverId;
     }
 
 
@@ -59,7 +59,7 @@ public class DeiiveryRouteResponseDto {
                 .predicTime(deliveryRoute.getPredicTime())
                 .realDistance(deliveryRoute.getRealDistance())
                 .realTime(deliveryRoute.getRealTime())
-                .delivererId(deliveryRoute.getDelivererId())
+                .deliverId(deliveryRoute.getDeliverId())
                 .build();
     }
 }

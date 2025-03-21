@@ -64,7 +64,8 @@ public class DeliveryRepositoryCustom {
                         delivery.receiverAddress,
                         delivery.receiverName,
                         delivery.receiverSlackId,
-                        delivery.delivererId
+                        delivery.deliverId,
+                        delivery.deliverSlackId
                 ))
                 .from(delivery)
                 .where(getWhereConditions())
@@ -90,7 +91,8 @@ public class DeliveryRepositoryCustom {
                         delivery.receiverAddress,
                         delivery.receiverName,
                         delivery.receiverSlackId,
-                        delivery.delivererId
+                        delivery.deliverId,
+                        delivery.deliverSlackId
                 ))
                 .from(delivery)
                 .where(getWhereConditions(status, keyword))
