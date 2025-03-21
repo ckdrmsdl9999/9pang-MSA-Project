@@ -1,9 +1,12 @@
 package com._hateam.service;
 
+import com._hateam.common.dto.ResponseDto;
+import com._hateam.dto.HubDto;
 import com._hateam.dto.ProductDto;
 import com._hateam.dto.ProductRequestDto;
 import com._hateam.entity.Company;
 import com._hateam.entity.Product;
+import com._hateam.feign.HubController;
 import com._hateam.repository.CompanyRepository;
 import com._hateam.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +31,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository; // Product의 소속 Company를 조회하기 위해
+    private final HubController hubController;
 
     @Transactional
     public ProductDto createProduct(ProductRequestDto requestDto) {
         // 중복 상품 체크
         validateDuplicateProduct(requestDto);
+        // 소속 Company 존재 여부 검증
+        validateCompanyExists(requestDto.getCompanyId());
         Product product = createProductEntity(requestDto);
         productRepository.save(product);
         return ProductDto.productToProductDto(product);
@@ -58,28 +65,20 @@ public class ProductService {
     }
 
     public List<ProductDto> getProductsByHubId(UUID hubId) {
-        // 1. hubId를 사용하여 회사 목록을 찾습니다.
+        // 기존 로직 그대로 유지 (회사의 소속 허브에 따라 제품을 조회)
         List<Company> companies = companyRepository.findByHubId(hubId);
-
-        // 2. 회사 목록이 비어 있으면 null 또는 예외를 반환합니다.
         if (companies == null || companies.isEmpty()) {
-            return null; // 또는 throw new CompanyNotFoundException("Companies not found for hubId: " + hubId);
+            return new ArrayList<>();
         }
-
-        // 3. 모든 회사의 제품 목록을 하나의 목록으로 합칩니다.
         List<Product> allProducts = new ArrayList<>();
         for (Company company : companies) {
             allProducts.addAll(company.getProducts());
         }
-
-        // 4. 제품 목록을 ProductDto 목록으로 변환합니다.
-        List<ProductDto> productDtoList = allProducts.stream()
+        return allProducts.stream()
                 .map(ProductDto::productToProductDto)
                 .collect(Collectors.toList());
-
-        // 5. ProductDto 목록을 반환합니다.
-        return productDtoList;
     }
+
     @Transactional
     public ProductDto updateProduct(UUID id, ProductRequestDto requestDto) {
         Product product = findProduct(id);
@@ -88,10 +87,10 @@ public class ProductService {
         if (requestDto.getName() != null && !requestDto.getName().equals(product.getName())) {
             validateDuplicateProduct(requestDto);
         }
-
-        // 소속 Company 업데이트 (변경된 경우)
+        // 소속 Company가 변경되었으면 존재 여부 검증 후 업데이트
         if (requestDto.getCompanyId() != null &&
                 !requestDto.getCompanyId().equals(product.getCompany().getId())) {
+            validateCompanyExists(requestDto.getCompanyId());
             Company newCompany = companyRepository.findById(requestDto.getCompanyId())
                     .orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + requestDto.getCompanyId()));
             product.setCompany(newCompany);
@@ -112,20 +111,18 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    // 중복 상품 체크: 동일한 이름의 상품이 존재하면 예외 발생
-    private void validateDuplicateProduct(ProductRequestDto requestDto) {
-        productRepository.findByNameAndDeletedAtIsNull(requestDto.getName())
-                .ifPresent(p -> {
-                    throw new IllegalArgumentException("중복된 상품이 존재합니다.");
-                });
+    // 내부 메소드들
+
+    private Product findProduct(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
     }
 
     private Product createProductEntity(ProductRequestDto requestDto) {
-        // 소속 Company 조회
+        // 소속 Company 존재 여부 검증 (이미 처리됨)
         Company company = companyRepository.findById(requestDto.getCompanyId())
                 .orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + requestDto.getCompanyId()));
-
-        // Product 엔티티 생성: 요청 DTO의 값으로 빌더를 사용
+        validateHubExists(company.getHubId());
         return Product.builder()
                 .company(company)
                 .name(requestDto.getName())
@@ -135,10 +132,29 @@ public class ProductService {
                 .build();
     }
 
-    private Product findProduct(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+    // 중복 상품 체크: 동일한 이름의 상품이 존재하면 예외 발생
+    private void validateDuplicateProduct(ProductRequestDto requestDto) {
+        productRepository.findByNameAndDeletedAtIsNull(requestDto.getName())
+                .ifPresent(p -> {
+                    throw new IllegalArgumentException("중복된 상품이 존재합니다.");
+                });
     }
 
+    /**
+     * 소속 Company의 존재 여부를 검증합니다.
+     *
+     * @param companyId 검증할 회사 ID
+     */
+    private void validateCompanyExists(UUID companyId) {
+        if (!companyRepository.existsById(companyId)) {
+            throw new EntityNotFoundException("Company not found with id: " + companyId);
+        }
+    }
 
+    private void validateHubExists(UUID hubId) {
+        ResponseEntity<ResponseDto<HubDto>> response = hubController.getHub(hubId);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null || response.getBody().getData() == null) {
+            throw new EntityNotFoundException("관리 허브가 존재하지 않습니다. hubId: " + hubId);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com._hateam.common.redis.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -66,7 +67,14 @@ public class RedisConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());  // Time API 지원
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);  // 알려지지 않은 프로퍼티(필드)가 있을 때 실패하지 않고 무시
-//        objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL); // 기본 타이핑 활성화 및 다형성 타입 검증 설정
+        objectMapper.activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfSubType(Object.class)
+                        .build(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
+        objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL); // 기본 타이핑 활성화 및 다형성 타입 검증 설정
 //        objectMapper.deactivateDefaultTyping();// 기본 타이핑 비활성화: 타입 정보가 포함되지 않음.
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);  // enum을 문자열로 쓰기
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);  // 문자열을 enum으로 읽기
@@ -78,11 +86,19 @@ public class RedisConfig {
                 .entryTtl(Duration.ofHours(1L))  // 캐시 유효 시간 설정(적절하게 바꿔서 사용하세요)
                 .computePrefixWith(CacheKeyPrefix.simple())  // 캐시 키의 접두어를 간단하게 계산 EX) UserCacheStore::Key 의 형태로 저장
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))  // 키의 직렬화 방식 설정
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(genericJackson2JsonRedisSerializer));  // 값의 직렬화 방식 설정
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer( RedisSerializer.json()));  // 값의 직렬화 방식 설정
+
+        RedisCacheConfiguration hubRedisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                .disableCachingNullValues()  // null 값은 캐싱X
+                .entryTtl(Duration.ofHours(1L))  // 캐시 유효 시간 설정(적절하게 바꿔서 사용하세요)
+                .computePrefixWith(CacheKeyPrefix.simple())  // 캐시 키의 접두어를 간단하게 계산 EX) UserCacheStore::Key 의 형태로 저장
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))  // 키의 직렬화 방식 설정
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer( genericJackson2JsonRedisSerializer));  // 값의 직렬화 방식 설정
+
 
         // 캐시 이름 설정 담아주기(적절하게 바꿔서 사용하세요)
         Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>();
-        redisCacheConfigurationMap.put("hub", redisCacheConfiguration);
+        redisCacheConfigurationMap.put("hub", hubRedisCacheConfiguration);
         redisCacheConfigurationMap.put("hub-route", redisCacheConfiguration);
 
         // RedisCacheManager 리턴

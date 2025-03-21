@@ -1,8 +1,11 @@
 package com._hateam.service;
 
+import com._hateam.common.dto.ResponseDto;
 import com._hateam.dto.CompanyDto;
 import com._hateam.dto.CompanyRequestDto;
+import com._hateam.dto.HubDto;
 import com._hateam.entity.Company;
+import com._hateam.feign.HubController;
 import com._hateam.repository.CompanyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +29,12 @@ import static com._hateam.dto.CompanyDto.companyToCompanyDto;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final HubController hubController; // Feign Client로 허브 조회
 
     @Transactional
     public CompanyDto createCompany(CompanyRequestDto requestDto) {
+        // 관리 허브 존재 여부 검증
+        validateHubExists(requestDto.getHubId());
         // 중복 회사 존재 여부 검증
         validateDuplicateCompany(requestDto);
         Company company = createCompanyEntity(requestDto);
@@ -85,12 +92,14 @@ public class CompanyService {
     @Transactional
     public CompanyDto updateCompany(UUID id, CompanyRequestDto requestDto) {
         Company company = findCompany(id);
-        // 회사 이름이 변경되면 중복 검증 수행 (필요한 경우)
+        // 회사 이름이 변경되면 중복 검증 수행
         if (!company.getName().equals(requestDto.getCompanyName())) {
             validateDuplicateCompany(requestDto);
         }
+        // 관리 허브 존재 여부 검증
+        validateHubExists(requestDto.getHubId());
         updateCompanyInfo(company, requestDto);
-        return companyToCompanyDto(company);
+        return CompanyDto.companyToCompanyDto(company);
     }
 
     @Transactional
@@ -132,6 +141,11 @@ public class CompanyService {
                     throw new IllegalArgumentException("중복된 회사가 존재합니다.");
                 });
     }
-
+    private void validateHubExists(UUID hubId) {
+        ResponseEntity<ResponseDto<HubDto>> response = hubController.getHub(hubId);
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null || response.getBody().getData() == null) {
+            throw new EntityNotFoundException("관리 허브가 존재하지 않습니다. hubId: " + hubId);
+        }
+    }
 
 }

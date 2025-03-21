@@ -1,5 +1,6 @@
 package com._hateam.config;
 
+
 import com._hateam.entity.Hub;
 import com._hateam.feign.Company;
 import com._hateam.feign.CompanyType;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TestDataInitializer {
+public class CompanyInitializer {
 
 
     private final HubRepository hubRepository;

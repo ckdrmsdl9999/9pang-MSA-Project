@@ -13,6 +13,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
     Optional<Object> findByNameAndDeletedAtIsNull(String name);
 
     Page<Company> findByHubId(UUID hubId, Pageable pageable);
+
     List<Company> findByHubId(UUID hubId);
 
     Company findByIdAndHubId(UUID id, UUID hubId);

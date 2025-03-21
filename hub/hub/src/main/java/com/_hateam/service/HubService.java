@@ -1,7 +1,6 @@
 package com._hateam.service;
 
 
-
 import com._hateam.dto.HubDto;
 import com._hateam.dto.HubRequestDto;
 import com._hateam.entity.Hub;
@@ -52,6 +51,7 @@ public class HubService {
     @Transactional(readOnly = true)
     @Cacheable(key = "'allHubs_' + #page + '_' + #size + '_' + #sortBy + '_' + #isAsc")
     public List<HubDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
+
         List<Hub> hubList = hubInfoPaging(page, size, sortBy, isAsc);
         return hubList.stream()
                 .map(HubDto::hubToHubDto)
@@ -86,8 +86,6 @@ public class HubService {
         // Hub 엔티티를 HubDto로 변환하여 반환 (회사와 허브 정보를 API 응답용 DTO로 전환)
         return HubDto.hubToHubDto(hub);
     }
-
-
 
 
     @Transactional(readOnly = true)
