@@ -207,4 +207,11 @@ public class UserServiceImpl implements UserService {
         return FeignUserResDto.from(user);
     }
 
+    @Override
+    public UserResponseDto getUserByUsername(String username){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + username));
+        return UserResponseDto.from(user);
+    }
+
 }

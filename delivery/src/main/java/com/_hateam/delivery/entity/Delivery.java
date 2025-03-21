@@ -2,9 +2,10 @@ package com._hateam.delivery.entity;
 
 import com._hateam.common.entity.Timestamped;
 import com._hateam.delivery.dto.request.UpdateDeliveryRequestDto;
-import com._hateam.delivery.dto.response.CompanyResponseDto;
-import com._hateam.delivery.dto.response.OrderResponseDto;
-import com._hateam.delivery.dto.response.UserResponseDto;
+import com._hateam.delivery.dto.response.CompanyClientResponseDto;
+import com._hateam.delivery.dto.response.OrderClientResponseDto;
+import com._hateam.delivery.dto.response.UserClientDeliverResponseDto;
+import com._hateam.delivery.dto.response.UserClientResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,7 +52,8 @@ public class Delivery extends Timestamped {
     private String receiverSlackId;
 
     // nullable
-    private UUID delivererId;
+    private UUID deliverId;
+    private String deliverSlackId;
 
     @OneToMany(fetch = LAZY, cascade = PERSIST)
     private List<DeliveryRoute> deliveryRouteList;
@@ -77,18 +79,18 @@ public class Delivery extends Timestamped {
     /**
      * todo: mapper로 분리,
      */
-    public static Delivery addOf(final OrderResponseDto orderResponseDto,
-                                 final CompanyResponseDto companyResponseDto,
-                                 final UserResponseDto userResponseDto,
+    public static Delivery addOf(final OrderClientResponseDto orderClientResponseDto,
+                                 final CompanyClientResponseDto companyClientResponseDto,
+                                 final UserClientResponseDto userClientResponseDto,
                                  final UUID destHubId) {
         return Delivery.builder()
-                .orderId(orderResponseDto.getOrderId())
+                .orderId(orderClientResponseDto.getOrderId())
                 .status(DeliveryStatus.WAITING_AT_HUB)
-                .startHubId(orderResponseDto.getHubId())
+                .startHubId(orderClientResponseDto.getHubId())
                 .endHubId(destHubId) // 현재 랜덤 uuid를 넣도록 함
-                .receiverAddress(companyResponseDto.getCompanyAddress())
-                .receiverName(companyResponseDto.getUsername())
-                .receiverSlackId(userResponseDto.getSlackId())
+                .receiverAddress(companyClientResponseDto.getCompanyAddress())
+                .receiverName(companyClientResponseDto.getUsername())
+                .receiverSlackId(userClientResponseDto.getSlackId())
                 .build();
     }
 
@@ -104,15 +106,16 @@ public class Delivery extends Timestamped {
         this.receiverAddress = requestDto.getReceiverAddress();
         this.receiverName = requestDto.getReceiverName();
         this.receiverSlackId = requestDto.getReceiverSlackId();
-        this.delivererId = requestDto.getDelivererId();
+        this.deliverId = requestDto.getDelivererId();
     }
 
     public void updateStatusOf(DeliveryStatus status) {
         this.status = status;
     }
 
-    public void updateDelivererId(UUID delivererId) {
-        this.delivererId = delivererId;
+    public void updateDeliver(UserClientDeliverResponseDto responseDto) {
+        this.deliverId = responseDto.getDeliverId();
+        this.deliverSlackId = responseDto.getSlackId();
     }
 
     public void deleteOf(final String deletedBy) {
