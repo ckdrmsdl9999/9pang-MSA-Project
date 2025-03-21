@@ -1,13 +1,15 @@
 package com._hateam.service;
 
 import com._hateam.entity.Hub;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
+import static java.util.Collections.singletonList;
 
 public class GraphPathFinder {
 
     private final HubGraph hubGraph;
-    // hubMap: 허브 이름과 Hub 엔티티를 매핑한 맵 (DB 조회 대신 이미 초기화된 데이터를 사용)
+    // hubMap: 허브 이름과 Hub 엔티티를 매핑한 맵 (이미 초기화된 데이터를 사용)
     private final Map<String, Hub> hubMap;
 
     public GraphPathFinder(HubGraph hubGraph, Map<String, Hub> hubMap) {
@@ -16,35 +18,20 @@ public class GraphPathFinder {
     }
 
     /**
-     * 각 간선의 비용은 Haversine 거리이며, 시작 노드를 제외한 각 이동마다 30km의 패널티를 추가합니다.
+     * 수정된 다익스트라 알고리즘:
+     * 각 간선의 비용은 Haversine 거리이며, 시작 노드를 제외한 각 이동마다 30km의 페널티를 추가합니다.
+     * 추가로, 각 노드까지 누적된 실제 거리를 기록하여, 각 간선(세그먼트) 별 실제 거리도 계산합니다.
      *
      * @param start 시작 허브 이름
      * @param end   도착 허브 이름
-     * @return 최단 경로 결과 (경로 노드 리스트, 실제 거리, 패널티, 총 비용)
+     * @return 최단 경로 결과 (경로, 누적 실제 거리, 패널티, 총 비용, 그리고 각 간선의 실제 거리 목록)
      */
     public PathResult findMinimumCostPath(String start, String end) {
-        // 각 노드까지의 최소 총 비용 저장
         Map<String, Double> totalCostMap = new HashMap<>();
-        // 각 노드까지의 실제 거리 합 저장
-        Map<String, Double> distanceMap = new HashMap<>();
-        // 각 노드까지의 패널티 합 저장
-        Map<String, Double> penaltyMap = new HashMap<>();
-        // 경로 저장
-        Map<String, List<String>> paths = new HashMap<>();
-
-        // 초기화: 모든 노드에 대해 최대값 설정
-        for (String node : hubGraph.getGraph().keySet()) {
-            totalCostMap.put(node, Double.MAX_VALUE);
-            distanceMap.put(node, Double.MAX_VALUE);
-            penaltyMap.put(node, Double.MAX_VALUE);
-        }
+        // 초기 상태: 시작 노드의 비용, 누적 거리, 패널티는 모두 0, 경로=[start], 누적 거리 리스트=[0.0]
         totalCostMap.put(start, 0.0);
-        distanceMap.put(start, 0.0);
-        penaltyMap.put(start, 0.0);
-        paths.put(start, new ArrayList<>(Collections.singletonList(start)));
-
         PriorityQueue<NodeState> queue = new PriorityQueue<>(Comparator.comparingDouble(NodeState::getCost));
-        queue.add(new NodeState(start, 0.0, 0.0, 0.0, new ArrayList<>(Collections.singletonList(start))));
+        queue.add(new NodeState(start, 0.0, 0.0, 0.0, new ArrayList<>(singletonList(start)), new ArrayList<>(singletonList(0.0))));
 
         while (!queue.isEmpty()) {
             NodeState current = queue.poll();
@@ -52,8 +39,8 @@ public class GraphPathFinder {
             double currentCost = current.getCost();
 
             if (currentNode.equals(end)) {
-                // 반환할 결과: 경로, 실제 거리, 패널티, 총 비용
-                return new PathResult(current.getPath(), current.getActualDistance(), current.getPenalty(), currentCost);
+                // 최종 누적 거리 리스트(current.nodeDistances)를 이용해 세그먼트별 거리를 계산하여 반환
+                return new PathResult(current.getPath(), current.getActualDistance(), current.getPenalty(), currentCost, current.getNodeDistances());
             }
             if (currentCost > totalCostMap.getOrDefault(currentNode, Double.MAX_VALUE)) {
                 continue;
@@ -74,20 +61,19 @@ public class GraphPathFinder {
                 } catch (NumberFormatException e) {
                     continue;
                 }
-                // 패널티: 시작 노드에서는 0, 그 외에는 30km
-                double additionalPenalty = currentNode.equals(start) ? 0 : 30.0;
+                // 시작 노드는 패널티 없이, 그 외에는 30km의 추가 페널티 적용
+                double additionalPenalty = currentNode.equals(start) ? 0.0 : 30.0;
                 double newActualDistance = current.getActualDistance() + edgeDistance;
                 double newPenalty = current.getPenalty() + additionalPenalty;
                 double newCost = newActualDistance + newPenalty;
 
                 if (newCost < totalCostMap.getOrDefault(neighbor, Double.MAX_VALUE)) {
                     totalCostMap.put(neighbor, newCost);
-                    distanceMap.put(neighbor, newActualDistance);
-                    penaltyMap.put(neighbor, newPenalty);
                     List<String> newPath = new ArrayList<>(current.getPath());
                     newPath.add(neighbor);
-                    paths.put(neighbor, newPath);
-                    queue.add(new NodeState(neighbor, newCost, newActualDistance, newPenalty, newPath));
+                    List<Double> newCumulativeDistances = new ArrayList<>(current.getNodeDistances());
+                    newCumulativeDistances.add(newActualDistance);
+                    queue.add(new NodeState(neighbor, newCost, newActualDistance, newPenalty, newPath, newCumulativeDistances));
                 }
             }
         }
@@ -95,17 +81,17 @@ public class GraphPathFinder {
     }
 
     /**
-     * Haversine 공식으로 두 좌표 사이의 거리를 계산 (킬로미터 단위)
+     * Haversine 공식으로 두 좌표 사이의 거리를 킬로미터 단위로 계산합니다.
      */
     public double haversine(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371;
+        final int R = 6371; // 지구의 평균 반지름 (킬로미터)
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return (double) (Math.round(R * c) * 100) / 100;
     }
 
     public static class NodeState {
@@ -114,13 +100,15 @@ public class GraphPathFinder {
         private final double actualDistance;
         private final double penalty;
         private final List<String> path;
+        private final List<Double> nodeDistances; // 시작부터 해당 노드까지의 누적 실제 거리
 
-        public NodeState(String node, double cost, double actualDistance, double penalty, List<String> path) {
+        public NodeState(String node, double cost, double actualDistance, double penalty, List<String> path, List<Double> nodeDistances) {
             this.node = node;
             this.cost = cost;
             this.actualDistance = actualDistance;
             this.penalty = penalty;
             this.path = path;
+            this.nodeDistances = nodeDistances;
         }
 
         public String getNode() {
@@ -142,19 +130,47 @@ public class GraphPathFinder {
         public List<String> getPath() {
             return path;
         }
+
+        public List<Double> getNodeDistances() {
+            return nodeDistances;
+        }
     }
 
     public static class PathResult {
+        @JsonProperty
         private final List<String> path;
+
+        @JsonProperty("actualDistance")
         private final double actualDistance;
+
+        @JsonProperty("penaltyDistance")
         private final double penalty;
+
+        @JsonProperty("totalCost")
         private final double totalCost;
 
-        public PathResult(List<String> path, double actualDistance, double penalty, double totalCost) {
+        @JsonProperty
+        private final List<Double> nodeDistances;    // Cumulative distances (e.g., [0, d1, d1+d2, ...])
+
+        @JsonProperty
+        private final List<Double> segmentDistances; // Segment distances (e.g., [d1, d2, ...])
+
+        // Constructor – Jackson will use this if default typing is activated
+        public PathResult(List<String> path, double actualDistance, double penalty, double totalCost, List<Double> nodeDistances) {
             this.path = path;
             this.actualDistance = actualDistance;
             this.penalty = penalty;
             this.totalCost = totalCost;
+            this.nodeDistances = nodeDistances;
+            this.segmentDistances = computeSegmentDistances(nodeDistances);
+        }
+
+        private List<Double> computeSegmentDistances(List<Double> cumulativeDistances) {
+            List<Double> segments = new ArrayList<>();
+            for (int i = 1; i < cumulativeDistances.size(); i++) {
+                segments.add(cumulativeDistances.get(i) - cumulativeDistances.get(i - 1));
+            }
+            return segments;
         }
 
         public List<String> getPath() {
@@ -171,6 +187,14 @@ public class GraphPathFinder {
 
         public double getTotalCost() {
             return totalCost;
+        }
+
+        public List<Double> getNodeDistances() {
+            return nodeDistances;
+        }
+
+        public List<Double> getSegmentDistances() {
+            return segmentDistances;
         }
     }
 }

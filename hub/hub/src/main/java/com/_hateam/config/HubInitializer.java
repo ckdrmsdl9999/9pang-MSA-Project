@@ -107,10 +107,12 @@ public class HubInitializer {
                     if (result != null) {
                         // 최종 결과: 총 비용과 경로 리스트를 함께 저장 (예: JSON 형식의 Map으로 저장)
                         Map<String, Object> routeResult = new HashMap<>();
-                        routeResult.put("actualDistance", result.getActualDistance());
-                        routeResult.put("penaltyDistance", result.getPenalty());
-                        routeResult.put("totalCost", result.getTotalCost());
-                        routeResult.put("path", result.getPath());
+                        routeResult.put("실제 거리", result.getActualDistance());
+                        routeResult.put("노드간 개별 거리",result.getSegmentDistances());
+                        routeResult.put("누적 거리",result.getNodeDistances());
+                        routeResult.put("패널티 거리", result.getPenalty());
+                        routeResult.put("총 비용", result.getTotalCost());
+                        routeResult.put("경로", result.getPath());
                         String key = "route:" + start + ":" + end;
                         redisTemplate.opsForValue().set(key, routeResult);
                         log.info("Route from {} to {}: {} km, Path: {}", start, end, result.getTotalCost(), result.getPath());
