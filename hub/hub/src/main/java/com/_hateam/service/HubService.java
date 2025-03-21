@@ -1,7 +1,6 @@
 package com._hateam.service;
 
 
-
 import com._hateam.dto.HubDto;
 import com._hateam.dto.HubRequestDto;
 import com._hateam.entity.Hub;
@@ -10,16 +9,12 @@ import com._hateam.feign.Product;
 import com._hateam.repository.CompanyRepository;
 import com._hateam.repository.HubRepository;
 import com._hateam.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,8 +82,6 @@ public class HubService {
         // Hub 엔티티를 HubDto로 변환하여 반환 (회사와 허브 정보를 API 응답용 DTO로 전환)
         return HubDto.hubToHubDto(hub);
     }
-
-
 
 
     @Transactional(readOnly = true)
