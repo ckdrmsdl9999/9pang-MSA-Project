@@ -52,6 +52,7 @@ public class HubService {
     @Transactional(readOnly = true)
     @Cacheable(key = "'allHubs_' + #page + '_' + #size + '_' + #sortBy + '_' + #isAsc")
     public List<HubDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
+
         List<Hub> hubList = hubInfoPaging(page, size, sortBy, isAsc);
         return hubList.stream()
                 .map(HubDto::hubToHubDto)

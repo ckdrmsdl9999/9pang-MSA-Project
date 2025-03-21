@@ -1,6 +1,5 @@
 package com._hateam.config;
 
-import com._hateam.feign.aistudio.feign.GeminiClient;
 import com._hateam.dto.HubResponseDto;
 import com._hateam.entity.Hub;
 import com._hateam.entity.HubRoute;
@@ -27,7 +26,7 @@ public class HubInitializer {
 
     private final HubRepository hubRepository;
     private final HubRouteRepository hubRouteRepository;
-    private final GeminiClient geminiClient; // Feign Client 주입
+//    private final GeminiClient geminiClient; // Feign Client 주입
     private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
 
     @PostConstruct

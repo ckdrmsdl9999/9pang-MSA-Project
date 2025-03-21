@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.UUID;
 
 @FeignClient(
-        name = "HubController",
+        name = "hubs-service",
         url = "http://localhost:8080/hubs"
 )
 public interface HubController {

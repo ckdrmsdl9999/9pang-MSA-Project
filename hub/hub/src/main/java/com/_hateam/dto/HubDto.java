@@ -9,13 +9,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HubDto {
+public class HubDto implements Serializable { // Serializable 인터페이스 구현
 
     @NotNull(message = "허브 ID는 필수입니다.")
     private UUID id;
@@ -46,5 +47,4 @@ public class HubDto {
                 .longitude(hub.getLongitude())
                 .build();
     }
-
 }

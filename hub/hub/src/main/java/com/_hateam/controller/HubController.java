@@ -107,7 +107,6 @@ public class HubController {
     @ResponseBody
     public ResponseEntity<ResponseDto<List<CompanyDto>>> test() {
         List<HubDto> hubs = hubService.getAllHubs(0, 10, "createdAt", false);
-
         Random random = new Random();
         UUID hubId = hubs.get(random.nextInt(hubs.size())).getId();
 

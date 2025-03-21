@@ -1,5 +1,6 @@
 package com._hateam.config;
 
+
 import com._hateam.entity.Hub;
 import com._hateam.feign.Company;
 import com._hateam.feign.CompanyType;
@@ -10,7 +11,6 @@ import com._hateam.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +38,6 @@ public class TestDataInitializer {
     }
 
     @PostConstruct
-    @Order(2)
     @Transactional
     public void initTestData() {
 
