@@ -35,7 +35,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	// ✅ Spring Boot 기본 스타터
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//implementation 'org.springframework.boot:spring-boot-starter-security'
+
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework:spring-context'
 
@@ -43,23 +46,11 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// ✅ PostgreSQL
-	runtimeOnly 'org.postgresql:postgresql'
-
 	// ✅ 공통 모듈
-	implementation 'com.9hateam:common:0.0.1-SNAPSHOT'
-
-	// ✅ Spring Boot Redis Starter (Spring Data Redis + 기본 클라이언트 Lettuce 포함)
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	// ✅ Date 타입 redis에 저장하기 위해 필요한 의존성
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
-
-	// ✅ (선택) Jedis 클라이언트를 사용하려면 추가
-	implementation 'redis.clients:jedis:5.0.2'
+	//implementation 'com.9hateam:common:0.0.1-SNAPSHOT'
 
 	// ✅ (선택) Spring Cache와 함께 사용 시 필요
-	implementation 'org.springframework.boot:spring-boot-starter-cache'
+//	implementation 'org.springframework.boot:spring-boot-starter-cache'
 
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

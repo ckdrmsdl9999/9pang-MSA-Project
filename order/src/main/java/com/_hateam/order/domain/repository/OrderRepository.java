@@ -22,6 +22,7 @@ public interface OrderRepository {
             LocalDateTime endDate,
             UUID companyId,
             UUID hubId,
+            UUID productId,
             int page,
             int size,
             String sort
@@ -34,7 +35,8 @@ public interface OrderRepository {
             LocalDateTime startDate,
             LocalDateTime endDate,
             UUID companyId,
-            UUID hubId
+            UUID hubId,
+            UUID productId
     );
 
     void delete(Order order);

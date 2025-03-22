@@ -1,9 +1,14 @@
 package com._hateam.service;
 
+
 import com._hateam.dto.HubDto;
 import com._hateam.dto.HubRequestDto;
 import com._hateam.entity.Hub;
+import com._hateam.feign.Company;
+import com._hateam.feign.Product;
+import com._hateam.repository.CompanyRepository;
 import com._hateam.repository.HubRepository;
+import com._hateam.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +35,8 @@ public class HubService {
 
 
     private final HubRepository hubRepository;
+    private final CompanyRepository companyRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
     @CachePut(key = "#result.id")
@@ -44,10 +51,40 @@ public class HubService {
     @Transactional(readOnly = true)
     @Cacheable(key = "'allHubs_' + #page + '_' + #size + '_' + #sortBy + '_' + #isAsc")
     public List<HubDto> getAllHubs(int page, int size, String sortBy, boolean isAsc) {
+
         List<Hub> hubList = hubInfoPaging(page, size, sortBy, isAsc);
         return hubList.stream()
                 .map(HubDto::hubToHubDto)
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
+    public HubDto getHubByCompanyId(UUID companyId) {
+        // CompanyRepository에서 업체 조회
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + companyId));
+
+        // Company 엔티티에 저장된 hub_id로 HubRepository에서 허브 조회
+        UUID hubId = company.getHubId();
+        Hub hub = hubRepository.findById(hubId)
+                .orElseThrow(() -> new EntityNotFoundException("Hub not found for company with id: " + companyId));
+
+        // Hub 엔티티를 HubDto로 변환하여 반환 (회사와 허브 정보를 API 응답용 DTO로 전환)
+        return HubDto.hubToHubDto(hub);
+    }
+
+    @Transactional(readOnly = true)
+    public HubDto getHubByProductId(UUID productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + productId));
+
+        UUID hubId = product.getCompany().getHubId();
+        Hub hub = hubRepository.findById(hubId)
+                .orElseThrow(() -> new EntityNotFoundException("Hub not found for company with id: " + product.getCompany().getId()));
+
+        // Hub 엔티티를 HubDto로 변환하여 반환 (회사와 허브 정보를 API 응답용 DTO로 전환)
+        return HubDto.hubToHubDto(hub);
     }
 
 
@@ -126,4 +163,6 @@ public class HubService {
         hub.setLatitude(requestDto.getLatitude());
         hub.setLongitude(requestDto.getLongitude());
     }
+
+
 }

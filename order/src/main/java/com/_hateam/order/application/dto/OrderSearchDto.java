@@ -27,6 +27,7 @@ public class OrderSearchDto {
     private LocalDateTime endDate;
     private UUID companyId;
     private UUID hubId;
+    private UUID productId;
     private Integer page;
     private Integer size;
     private String sort;

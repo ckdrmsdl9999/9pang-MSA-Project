@@ -1,4 +1,4 @@
-package com._hateam.message.config;
+package com._hateam.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

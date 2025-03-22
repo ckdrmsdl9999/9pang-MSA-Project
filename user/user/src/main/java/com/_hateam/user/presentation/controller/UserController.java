@@ -1,12 +1,15 @@
 package com._hateam.user.presentation.controller;
 
+import com._hateam.common.annotation.UserHeader;
 import com._hateam.common.dto.ResponseDto;
+import com._hateam.common.dto.UserHeaderInfo;
 import com._hateam.user.application.dto.RoleUpdateReqDto;
 import com._hateam.user.application.dto.UserSignInReqDto;
 import com._hateam.user.application.dto.UserSignUpReqDto;
 import com._hateam.user.application.dto.UserUpdateReqDto;
 import com._hateam.user.application.service.UserService;
 import com._hateam.user.infrastructure.security.UserPrincipals;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -80,25 +87,51 @@ public class UserController {
     }
 
     @GetMapping("/hub-admin")//허브의 관리자조회(Feign, ROLE=HUB)(
-    public ResponseEntity<?> getHubAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getHubAdmin() {
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+                ResponseDto.success(userService.getHub()));
     }
 
     @GetMapping("/company-admin")//업체 관리자 조회(Feign,ROLE=COMPANY)
-    public ResponseEntity<?> getCompanyAdmin(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getCompanyAdmin() {
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+                ResponseDto.success(userService.getCompany()));
     }
 
-    @GetMapping("/api/users/{userId}/message")//사용자정보조회(Feign)
-    public ResponseEntity<?> getUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    @GetMapping("/{userId}/message")//사용자정보조회(Feign)
+    public ResponseEntity<?> getUserByMessage(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUserByFeign(userId)));
     }
 
 
+    @GetMapping("/verify/signin")//이름으로아이디,패스워드조회(Feign)
+    public ResponseEntity<?> findByUsername(@RequestParam String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.verifyUserFeign(username)));
+
+    // userId는 외부로 나가면 안되는값, username을 대신 userid 처럼 사용
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUserByUsername(username)));
+
+    }
+
+
+    @GetMapping("/headers") //헤더값 확인용
+    public ResponseEntity<?> getDirectHeaders(HttpServletRequest request) {
+
+        String userId = request.getHeader("x-user-id");
+        String userRole = request.getHeader("x-user-role");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", userId);
+        result.put("userRole", userRole);
+
+        return ResponseEntity.ok(ResponseDto.success(result));
+    }
 
 }

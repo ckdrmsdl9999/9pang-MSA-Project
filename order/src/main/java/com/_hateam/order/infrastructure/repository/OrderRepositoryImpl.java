@@ -49,13 +49,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> search(String searchTerm, OrderStatus status,
                               LocalDateTime startDate, LocalDateTime endDate,
-                              UUID companyId, UUID hubId,
+                              UUID companyId, UUID hubId, UUID productId,
                               int page, int size, String sort) {
         int limitedSize = limitSize(size);
 
         try {
             return jpaOrderRepository.searchByDynamicCondition(
-                    searchTerm, status, startDate, endDate, companyId, hubId,
+                    searchTerm, status, startDate, endDate, companyId, hubId, productId,
                     page, limitedSize, sort
             );
         } catch (Exception e) {
@@ -67,10 +67,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public long countSearchResults(String searchTerm, OrderStatus status,
                                    LocalDateTime startDate, LocalDateTime endDate,
-                                   UUID companyId, UUID hubId) {
+                                   UUID companyId, UUID hubId, UUID productId) {
         try {
             return jpaOrderRepository.countByDynamicCondition(
-                    searchTerm, status, startDate, endDate, companyId, hubId
+                    searchTerm, status, startDate, endDate, companyId, hubId, productId
             );
         } catch (Exception e) {
             e.printStackTrace();
