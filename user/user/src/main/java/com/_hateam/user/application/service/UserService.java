@@ -14,7 +14,7 @@ public interface UserService {
 
      UserResponseDto saveUser(UserSignUpReqDto userSignUpReqDto);
 
-     List<UserResponseDto> getAllUsers(UserPrincipals userPrincipals);
+     List<UserResponseDto> getAllUsers(String userRole);
 
      List<FeignCompanyAdminResDto> getCompany();
 
@@ -22,15 +22,15 @@ public interface UserService {
 
      UserResponseDto getUser(Long userId);
 
-     UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, UserPrincipals userPrincipals);
+     UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, String userRole);
 
-     void deleteUser(Long userId,UserPrincipals userPrincipals);
+     void deleteUser(Long userId, String userRole);
 
-     Page<UserResponseDto> searchUser(String username, UserPrincipals userPrincipals, String sortBy, String order, Pageable pageable);
+     Page<UserResponseDto> searchUser(String username, String userRole, String userId, String sortBy, String order, Pageable pageable);
 
      AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto);
 
-     UserResponseDto updateUserRole(Long userId, UserRole role,UserPrincipals userPrincipals);
+     UserResponseDto updateUserRole(Long userId, UserRole role, String userRole);
 
      FeignUserResDto getUserByFeign(Long userId);
 

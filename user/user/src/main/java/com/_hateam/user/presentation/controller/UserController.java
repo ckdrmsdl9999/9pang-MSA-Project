@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/signin")//로그인
-    public ResponseEntity<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto,BindingResult bindingResult) {
+    public ResponseEntity<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto, BindingResult bindingResult) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
     }
 
@@ -57,32 +57,39 @@ public class UserController {
     }
 
 
-    @PatchMapping("/roles/{userId}") // 권한 수정(MASTER)
-    public ResponseEntity<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,@AuthenticationPrincipal UserPrincipals userPrincipals) {
-    return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(userService.updateUserRole(userId, roleUpdateDto.getRole(),userPrincipals)));
+    @PutMapping("/roles/{userId}") // 권한 수정(MASTER)
+    public ResponseEntity<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,HttpServletRequest request) {
+        String userRole = request.getHeader("x-user-role");
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(userService.updateUserRole(userId, roleUpdateDto.getRole(), userRole)));
     }
 
     @GetMapping("/search") // 유저 검색(권한에 따라)
     public ResponseEntity<?> userSearch(@RequestParam String username, @RequestParam(defaultValue = "createdAt") String sortBy,
-                                        @RequestParam(defaultValue = "desc") String order, @PageableDefault(page = 0, size = 10) Pageable pageable, @AuthenticationPrincipal UserPrincipals userPrincipals) {
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userPrincipals,sortBy,order,pageable)));
+                                        @RequestParam(defaultValue = "desc") String order, @PageableDefault(page = 0, size = 10) Pageable pageable,
+                                        HttpServletRequest request) {
+        String userId = request.getHeader("x-user-id");
+        String userRole = request.getHeader("x-user-role");
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.searchUser(username,userRole,
+                userId,sortBy,order,pageable)));
     }
 
     @GetMapping("/getusers")//회원목록 조회(DELIVERY,HUB,MASTER)
-    public ResponseEntity<?> getAllUser(@AuthenticationPrincipal UserPrincipals userPrincipals){
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getAllUsers(userPrincipals)));
+    public ResponseEntity<?> getAllUser(HttpServletRequest request){
+        String userRole = request.getHeader("x-user-role");
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getAllUsers(userRole)));
     }
 
-    @PatchMapping("/{userId}")  // 회원 수정(MASTER)
-    public ResponseEntity<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,
-                                     @AuthenticationPrincipal UserPrincipals userPrincipals) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userPrincipals));
+    @PutMapping("/{userId}")  // 회원 수정(MASTER)
+    public ResponseEntity<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,HttpServletRequest request) {
+        String userRole = request.getHeader("x-user-role");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userRole));
     }
 
     @DeleteMapping("/{userId}")  // 회원 탈퇴(MASTER)
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId,
-                                     @AuthenticationPrincipal UserPrincipals userPrincipals) {
-        userService.deleteUser(userId,userPrincipals);
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
+        String userRole = request.getHeader("x-user-role");
+        userService.deleteUser(userId,userRole);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."));
     }
 
@@ -111,7 +118,7 @@ public class UserController {
     public ResponseEntity<?> findByUsername(@RequestParam String username) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.verifyUserFeign(username)));
-
+    }
     // userId는 외부로 나가면 안되는값, username을 대신 userid 처럼 사용
     @GetMapping("/username/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
@@ -133,5 +140,4 @@ public class UserController {
 
         return ResponseEntity.ok(ResponseDto.success(result));
     }
-
 }
