@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -35,7 +36,6 @@ public class SlackMessageController {
 
     @Operation(summary = "슬랙 메시지 발송", description = "슬랙 메시지를 지정된 수신자에게 발송합니다.")
     @PostMapping("/messages")
-//    @PreAuthorize("isAuthenticated()")
     public ResponseDto<SlackMessageResponse> sendMessage(
             @Valid @RequestBody SlackMessageRequest request) {
 
@@ -46,7 +46,6 @@ public class SlackMessageController {
 
     @Operation(summary = "배송 경로 메시지 발송", description = "배송 경로 정보가 포함된 슬랙 메시지를 발송합니다.")
     @PostMapping("/messages/delivery-route")
-//    @PreAuthorize("isAuthenticated()")
     public ResponseDto<SlackMessageResponse> sendDeliveryRouteMessage(
             @Valid @RequestBody SlackMessageRequest request) {
 
@@ -57,7 +56,6 @@ public class SlackMessageController {
 
     @Operation(summary = "슬랙 메시지 목록 조회", description = "전체 슬랙 메시지 목록을 페이징 처리하여 조회합니다.")
     @GetMapping("/messages")
-//    @PreAuthorize("isAuthenticated()")
     public PageResponseDto<SlackMessageResponse> getMessages(
             @Parameter(description = "페이지 번호 (0부터 시작)")
             @RequestParam(defaultValue = "0") int page,
@@ -110,20 +108,7 @@ public class SlackMessageController {
         searchRequest.setReceiverId(receiverId);
         searchRequest.setKeyword(keyword);
 
-        try {
-            if (startDateStr != null && !startDateStr.isEmpty()) {
-                LocalDate startDate = LocalDate.parse(startDateStr);
-                searchRequest.setStartDate(startDate.atStartOfDay());
-            }
-
-            if (endDateStr != null && !endDateStr.isEmpty()) {
-                LocalDate endDate = LocalDate.parse(endDateStr);
-                searchRequest.setEndDate(endDate.atTime(23, 59, 59));
-            }
-        } catch (Exception e) {
-            log.error("날짜 형식 변환 오류: {}", e.getMessage());
-            // TODO: 날짜 형식 오류가 예외 처리하기
-        }
+        slackMessageService.setSearchDates(searchRequest, startDateStr, endDateStr);
 
         Page<SlackMessageResponse> messages = slackMessageService.searchMessages(searchRequest, pageable);
         return PageResponseDto.success(HttpStatus.OK, messages, "메시지 검색 결과");
@@ -131,7 +116,6 @@ public class SlackMessageController {
 
     @Operation(summary = "슬랙 메시지 상세 조회", description = "메시지 ID를 통해 특정 슬랙 메시지의 상세 정보를 조회합니다.")
     @GetMapping("/messages/{messageId}")
-//    @PreAuthorize("isAuthenticated()")
     public ResponseDto<SlackMessageResponse> getMessage(
             @PathVariable UUID messageId) {
 
@@ -140,12 +124,12 @@ public class SlackMessageController {
     }
 
     @Operation(summary = "일일 배송 알림 발송", description = "지정된 허브의 배송 담당자들에게 일일 배송 알림 메시지를 발송합니다.")
-    @PostMapping("/messages/deliver")
-//    @PreAuthorize("hasRole('MASTER')")
+    @PostMapping("/messages/daily-delivery")
     public ResponseDto<SlackMessageDailyDeliveryResponse> sendDailyDeliveryNotice(
             @Valid @RequestBody SlackMessageDailyDeliveryRequest request) {
 
-        log.info("일일 배송 알림 발송 요청. Hub ID: {}", request.getHubId());
+        log.info("일일 배송 알림 발송 요청. Hub ID: {}, 배송 담당자 ID: {}",
+                request.getHubId(), request.getDelivererId());
         SlackMessageDailyDeliveryResponse response = slackMessageService.sendDailyDeliveryNotice(request);
         return ResponseDto.success(HttpStatus.OK, response);
     }
