@@ -13,19 +13,19 @@ public interface DeliverUserService {
     DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto requestDTO);
 
     // 권한별 배송담당자 검색 (이름으로 검색)
-    Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, UserPrincipals userPrincipals, String sortBy, String order, Pageable pageable);
+    Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String userId, String userRole, String sortBy, String order, Pageable pageable);
 
     // 배송담당자 관리자 조회 (전체 목록)
-    List<DeliverUserResponseDto> getAllDeliverUsers(UserPrincipals userPrincipals);
+    List<DeliverUserResponseDto> getAllDeliverUsers(String userId, String userRole);
 
     // 배송담당자 단일 조회
-    DeliverUserResponseDto getDeliverUserById(UUID deliverId, UserPrincipals userPrincipals);
+    DeliverUserResponseDto getDeliverUserById(UUID deliverId, String userId, String userRole);
 
     // 배송담당자 수정
-    DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, UserPrincipals userPrincipals);
+    DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, String userId, String userRole);
 
     // 배송담당자 삭제
-    void deleteDeliverUser(UUID deliverId, UserPrincipals userPrincipals);
+    void deleteDeliverUser(UUID deliverId, String userId, String userRole);
 
     //업체 배송 담당자 목록 조회
     List<FeignInCompanyDeliverResDto> getCompanyDeliver();

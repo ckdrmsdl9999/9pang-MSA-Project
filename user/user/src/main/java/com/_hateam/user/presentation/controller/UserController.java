@@ -60,6 +60,7 @@ public class UserController {
     @PutMapping("/roles/{userId}") // 권한 수정(MASTER)
     public ResponseEntity<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
+        System.out.println(userRole+"권한학인11");
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(userService.updateUserRole(userId, roleUpdateDto.getRole(), userRole)));
     }
 
