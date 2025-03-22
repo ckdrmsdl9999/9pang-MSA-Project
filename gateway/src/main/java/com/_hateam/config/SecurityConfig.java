@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((exchange, ex) -> {
                             ServerHttpResponse response = exchange.getResponse();
                             response.setStatusCode(HttpStatus.FORBIDDEN);
-                            String errorMessage = "{\"message\":\"적절하지 않은 사용자입니다.\"}";
+                            String errorMessage = "{\"message\":\"적절하지 않은 토큰입니다.\"}";
                             DataBuffer buffer = response.bufferFactory().wrap(errorMessage.getBytes(StandardCharsets.UTF_8));
                             return response.writeWith(Mono.just(buffer));
                         })
