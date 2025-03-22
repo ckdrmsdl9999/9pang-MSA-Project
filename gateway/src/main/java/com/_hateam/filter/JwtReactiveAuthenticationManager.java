@@ -1,4 +1,4 @@
-package com._hateam.test;
+package com._hateam.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -37,9 +37,7 @@ public class JwtReactiveAuthenticationManager implements ReactiveAuthenticationM
             // 파싱된 Claims 출력 (디버깅용)
             log.info("Parsed JWT Claims: {}", claims);
 
-     //     String userId = claims.get("userId", String.class);//여기서예외발생
-            Long userId2 = claims.get("userId", Long.class);//여기서예외발생해서 바로 return값으로가졋음 String,Long구분
-     //     String role = claims.get("role", String.class);
+            Long userId2 = claims.get("userId", Long.class);
             String role = claims.get("role", String.class);
 
 
