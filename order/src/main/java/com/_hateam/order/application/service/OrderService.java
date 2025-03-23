@@ -1,5 +1,7 @@
 package com._hateam.order.application.service;
 
+import com._hateam.common.constant.KafkaTopics;
+import com._hateam.common.event.OrderCreatedForSlackEvent;
 import com._hateam.common.exception.CustomConflictException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.order.application.dto.OrderRequestDto;
@@ -11,14 +13,15 @@ import com._hateam.order.domain.model.OrderProduct;
 import com._hateam.order.domain.model.OrderStatus;
 import com._hateam.order.domain.repository.OrderRepository;
 import com._hateam.order.domain.service.OrderDomainService;
-import com._hateam.order.infrastructure.client.DeliveryClient;
 import com._hateam.order.infrastructure.client.CompanyClient;
-import com._hateam.order.infrastructure.client.dto.DeliveryDto;
-import com._hateam.order.infrastructure.client.dto.ProductDto;
-import com._hateam.order.infrastructure.client.dto.ProductRequestDto;
+import com._hateam.order.infrastructure.client.DeliveryClient;
+import com._hateam.order.infrastructure.client.HubClient;
+import com._hateam.order.infrastructure.client.UserClient;
+import com._hateam.order.infrastructure.client.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,13 +37,16 @@ public class OrderService {
     private final OrderDomainService orderDomainService;
     private final CompanyClient companyClient;
     private final DeliveryClient deliveryClient;
+    private final HubClient hubClient;
+    private final UserClient userClient;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     /**
      * 새로운 주문을 생성합니다.
      *
      * @param requestDto 주문 생성 요청 DTO
      * @return 생성된 주문 정보 응답 DTO
-     * @throws CustomConflictException 재고가 부족하거나 서비스 연동 중 에러 발생 시
+     * @throws CustomConflictException  재고가 부족하거나 서비스 연동 중 에러 발생 시
      * @throws IllegalArgumentException 요청 데이터가 유효하지 않은 경우
      */
     @Transactional
@@ -100,7 +106,58 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        sendOrderCreatedSlackNotification(savedOrder);
+
         return OrderResponseDto.from(savedOrder);
+    }
+
+    // 슬랙 알림을 위한 이벤트 발행 메서드
+    private void sendOrderCreatedSlackNotification(Order order) {
+        try {
+            // 업체 정보 조회
+            CompanyDto company = companyClient.getCompanyById(order.getCompanyId()).getData();
+
+            // 상품 정보 조회 - 첫 번째 상품만 예시로 표시
+            OrderProduct firstProduct = order.getOrderProducts().get(0);
+            ProductDto product = companyClient.getProductById(firstProduct.getProductId()).getData();
+
+            // 배송 경로 정보 조회
+            DeliveryDto delivery = deliveryClient.getDelivery(order.getDeliverId()).getData();
+
+            // 허브 정보 조회
+            HubDto startHub = hubClient.getHubById(delivery.getStartHubId()).getData();
+
+            // 허브 경로 정보 조회
+            List<String> viaHubs = new ArrayList<>();
+            // TODO: 배송 경로 정보를 조회하여 허브 경로 목록 설정
+            viaHubs.add("대전광역시 센터");
+            viaHubs.add("부산광역시 센터");
+
+            // 배송 담당자 정보 조회
+            DeliverUserDto deliverer = userClient.getDeliverUserById(delivery.getDelivererId()).getData();
+
+            OrderCreatedForSlackEvent event = OrderCreatedForSlackEvent.builder()
+                    .orderId(order.getOrderId())
+                    .orderNumber(order.getOrderId().toString().substring(0, 8)) // 간략화된 주문번호
+                    .customerName(company.getCompanyName())
+                    .customerEmail("example@company.com") // 예시 이메일
+                    .productInfo(product.getName() + " " + firstProduct.getTotalQuantity() + "박스")
+                    .requestInfo(order.getOrderRequest())
+                    .startHub(startHub.getName())
+                    .viaHubs(viaHubs)
+                    .destination(delivery.getReceiverAddress())
+                    .delivererName(deliverer.getName())
+                    .delivererSlackId(deliverer.getSlackId())
+                    .deliveryDeadline(order.getDeliveryDeadline())
+                    .build();
+
+            kafkaTemplate.send(KafkaTopics.ORDER_CREATED_FOR_SLACK, event);
+
+            log.info("주문 생성 슬랙 알림 이벤트 발행 완료. 주문 ID: {}", order.getOrderId());
+        } catch (Exception e) {
+            log.error("주문 생성 슬랙 알림 이벤트 발행 중 오류 발생: {}", e.getMessage(), e);
+            // 주문 처리는 계속 진행하고 알림만 실패하도록 예외를 던지지 않음
+        }
     }
 
     /**
@@ -178,7 +235,7 @@ public class OrderService {
     /**
      * 주문을 업데이트합니다.
      *
-     * @param orderId 업데이트할 주문 ID
+     * @param orderId   업데이트할 주문 ID
      * @param updateDto 주문 업데이트 DTO
      * @return 업데이트된 주문 정보 응답 DTO
      * @throws CustomNotFoundException 주문이 존재하지 않는 경우
@@ -362,7 +419,7 @@ public class OrderService {
     /**
      * 주문 상태만 업데이트합니다. (Kafka Consumer에서 사용)
      *
-     * @param orderId 업데이트할 주문 ID
+     * @param orderId   업데이트할 주문 ID
      * @param newStatus 새로운 주문 상태
      * @throws CustomNotFoundException 주문이 존재하지 않는 경우
      */
