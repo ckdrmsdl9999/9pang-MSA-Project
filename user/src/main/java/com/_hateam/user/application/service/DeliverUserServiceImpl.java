@@ -1,5 +1,6 @@
 package com._hateam.user.application.service;
 
+import com._hateam.common.dto.ResponseDto;
 import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
@@ -7,14 +8,18 @@ import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.Status;
 import com._hateam.user.domain.model.DeliverAssignPointer;
 import com._hateam.user.domain.model.DeliverUser;
+import com._hateam.user.infrastructure.feign.HubClient;
 import com._hateam.user.infrastructure.repository.DeliverAssignPointerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +33,7 @@ public class DeliverUserServiceImpl implements DeliverUserService {
     private final DeliverUserRepository deliverUserRepository;
     private final DeliverAssignPointerRepository pointerRepository;
     private final UserRepository userRepository;
+    private final HubClient hubClient;
 
 //    @Override
 //    @Transactional//배송 담당자 생성
@@ -330,6 +336,13 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
         User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
                 .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
 
+//        if(user.getUserRoles().equals("COMPANY_DELIVER")) { //소속허브가 존재하지 않을경우 예외발생(주석해제예정)
+//            ResponseDto<FeignHubDto> response = hubClient.getHub(user.getHubId());
+//            if (response.getData() == null) {
+//                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 허브가 존재하지 않습니다.");
+//            }
+//        }
+
         // 2) (deliverType, hubId)로 이미 등록된 DeliverUser들 중 가장 큰 rotationOrder 찾기
         DeliverType deliverType = deliverUserCreateReqDto.getDeliverType();
         UUID hubId = deliverUserCreateReqDto.getHubId(); // DELIVER_HUB인 경우 null일 수도 있음
@@ -360,9 +373,6 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
 
         return DeliverUserResponseDto.from(savedDeliverUser);
     }
-
-
-
 
 
 

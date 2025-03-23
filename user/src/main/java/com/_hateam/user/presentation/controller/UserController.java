@@ -1,14 +1,11 @@
 package com._hateam.user.presentation.controller;
 
-import com._hateam.common.annotation.UserHeader;
 import com._hateam.common.dto.ResponseDto;
-import com._hateam.common.dto.UserHeaderInfo;
 import com._hateam.user.application.dto.RoleUpdateReqDto;
 import com._hateam.user.application.dto.UserSignInReqDto;
 import com._hateam.user.application.dto.UserSignUpReqDto;
 import com._hateam.user.application.dto.UserUpdateReqDto;
 import com._hateam.user.application.service.UserService;
-import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,14 +39,15 @@ public class UserController {
     }
 
     @GetMapping("/getuser")//자기자신 회원조회
-    public ResponseEntity<?> getUser(@AuthenticationPrincipal UserPrincipals userPrincipals) {
+    public ResponseEntity<?> getUser(HttpServletRequest request) {
+        String userId = request.getHeader("x-user-id");
         return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.success(userService.getUser(userPrincipals.getId())));
+                ResponseDto.success(userService.getUser(Long.parseLong(userId))));
     }
 
-    @GetMapping("/admin/{userId}")//관리자단일조회(MASTER), 스프링시큐리티로 권한 제어 예정
-    public ResponseEntity<?> getAdminUser(@PathVariable Long userId,@AuthenticationPrincipal UserPrincipals userPrincipals) {
-        System.out.println(userPrincipals.getId()+"테스토");
+    @GetMapping("/admin/{userId}")//관리자단일조회(MASTER), 스프링시큐리티로 권한 제어
+    public ResponseEntity<?> getAdminUser(@PathVariable Long userId, HttpServletRequest request) {
+
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getUser(userId)));
     }
 
