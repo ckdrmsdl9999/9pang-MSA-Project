@@ -1,5 +1,5 @@
 rootProject.name = 'user'
-includeBuild('../../common') {
+includeBuild('../common') {
     dependencySubstitution {
         substitute(module('com.9hateam:common')).using(project(':'))
     }
