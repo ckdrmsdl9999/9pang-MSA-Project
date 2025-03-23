@@ -13,16 +13,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signIn")
+    @PostMapping("/signin")
     public ResponseEntity<ResponseDto<UserSignInResDto>> verifyUser(@RequestBody UserSignInReqDto userSignInReqDto) {
         ResponseDto<UserSignInResDto> response = authService.authenticate(userSignInReqDto);
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/signin")
-//    public ResponseEntity<ResponseDto<FeignVerifyResDto>> verifyUser(@RequestBody UserSignInReqDto userSignInReqDto) {
-//        ResponseDto<FeignVerifyResDto> response = authService.authenticate(userSignInReqDto);
-//        return ResponseEntity.ok(response);
-//    }
 
 }

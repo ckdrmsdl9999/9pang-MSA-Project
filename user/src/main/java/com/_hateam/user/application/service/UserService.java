@@ -3,7 +3,6 @@ package com._hateam.user.application.service;
 
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
-import com._hateam.user.infrastructure.security.UserPrincipals;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,7 +21,7 @@ public interface UserService {
 
      UserResponseDto getUser(Long userId);
 
-     UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, String userRole);
+     UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto,String userMyId, Long userId, String userRole);
 
      void deleteUser(Long userId, String userRole);
 

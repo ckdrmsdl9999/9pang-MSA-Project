@@ -201,7 +201,7 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
             deliverUser.setStatus(updateDto.getStatus());
         }
 
-//        deliverUser.setUpdatedBy(userPrincipals.getUsername());
+        deliverUser.setUpdatedBy(userId);
         deliverUser.setUpdatedAt(LocalDateTime.now());
 
         DeliverUser updatedDeliverUser = deliverUserRepository.save(deliverUser);
@@ -224,11 +224,10 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
         if (deliverUser.getDeletedAt() != null) {
             throw new CustomNotFoundException("이미 삭제된 배송담당자입니다.");
         }
-        User adminUser = userRepository.findById(Long.parseLong(userId)).orElseThrow(() -> new CustomNotFoundException("유저정보를 차증ㄹ수 없습니다 ID: " + Long.parseLong(userId)));
 
         // 논리적 삭제 처리
         deliverUser.setDeletedAt(LocalDateTime.now());
-        deliverUser.setDeletedBy(adminUser.getUsername());
+        deliverUser.setDeletedBy(userId);
         deliverUserRepository.save(deliverUser);
 
         // 관련 User 엔티티 업데이트

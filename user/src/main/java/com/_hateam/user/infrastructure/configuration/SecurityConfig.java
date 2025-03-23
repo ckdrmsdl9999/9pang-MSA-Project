@@ -1,7 +1,7 @@
 package com._hateam.user.infrastructure.configuration;
 
 
-//import com._hateam.user.infrastructure.security.JwtAuthenticationFilter;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
