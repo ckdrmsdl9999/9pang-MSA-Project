@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryCreatedEvent {
+public class DeliveryCreatedEvent implements KafkaEvent {
     private UUID deliveryId;
 
     private UUID orderId;

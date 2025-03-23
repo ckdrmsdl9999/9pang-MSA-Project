@@ -1,6 +1,7 @@
 package com._hateam.delivery.entity;
 
 import com._hateam.common.entity.Timestamped;
+import com._hateam.common.event.OrderCreatedEvent;
 import com._hateam.delivery.dto.request.UpdateDeliveryRequestDto;
 import com._hateam.delivery.dto.response.CompanyClientResponseDto;
 import com._hateam.delivery.dto.response.OrderClientResponseDto;
@@ -87,6 +88,21 @@ public class Delivery extends Timestamped {
                 .orderId(orderClientResponseDto.getOrderId())
                 .status(DeliveryStatus.WAITING_AT_HUB)
                 .startHubId(orderClientResponseDto.getHubId())
+                .endHubId(destHubId) // 현재 랜덤 uuid를 넣도록 함
+                .receiverAddress(companyClientResponseDto.getCompanyAddress())
+                .receiverName(companyClientResponseDto.getUsername())
+                .receiverSlackId(userClientResponseDto.getSlackId())
+                .build();
+    }
+
+    public static Delivery addOf(final OrderCreatedEvent event,
+                                 final CompanyClientResponseDto companyClientResponseDto,
+                                 final UserClientResponseDto userClientResponseDto,
+                                 final UUID destHubId) {
+        return Delivery.builder()
+                .orderId(event.getOrderId())
+                .status(DeliveryStatus.WAITING_AT_HUB)
+                .startHubId(event.getHubId())
                 .endHubId(destHubId) // 현재 랜덤 uuid를 넣도록 함
                 .receiverAddress(companyClientResponseDto.getCompanyAddress())
                 .receiverName(companyClientResponseDto.getUsername())
