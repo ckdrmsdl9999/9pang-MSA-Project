@@ -2,6 +2,8 @@ package com._hateam.config;
 
 import com._hateam.filter.JwtReactiveAuthenticationManager;
 import com._hateam.filter.JwtSecurityContextRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,18 +22,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import lombok.extern.slf4j.Slf4j;
 
+
+@RequiredArgsConstructor
 @Configuration
 @EnableWebFluxSecurity
 @Slf4j
 public class SecurityConfig {
+
     private final JwtReactiveAuthenticationManager authenticationManager;
     private final JwtSecurityContextRepository contextRepository;
-
-    public SecurityConfig(JwtReactiveAuthenticationManager authenticationManager,
-                          JwtSecurityContextRepository contextRepository) {
-        this.authenticationManager = authenticationManager;
-        this.contextRepository = contextRepository;
-    }
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
@@ -94,6 +93,9 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/users/signup").permitAll()
+                        .pathMatchers("/api/users/signin").permitAll()
+                        .pathMatchers("/hubs/**").permitAll()
+                        .pathMatchers("/companies/**").permitAll()
                         .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority("ADMIN")
                         .anyExchange().authenticated()
                 )
