@@ -141,10 +141,10 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SERVER_PORT=8080
-      - SPRING_APPLICATION_NAME=hubs-service
+      - SPRING_APPLICATION_NAME=user-service
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       # 데이터베이스 설정: hubs-db 컨테이너 사용
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://hubs-db:5432/hubsdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/userdb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_DATA_REDIS_HOST=redis
@@ -176,7 +176,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
       - SERVER_PORT=8080
-      - SPRING_APPLICATION_NAME=hubs-service
+      - SPRING_APPLICATION_NAME=auth-service
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       # 데이터베이스 설정: hubs-db 컨테이너 사용
       - SPRING_DATA_REDIS_HOST=redis

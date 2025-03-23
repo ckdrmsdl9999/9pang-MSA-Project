@@ -52,6 +52,9 @@ public class CompanyService {
                 Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
                         sortBy.equals("updatedAt") ? "updatedAt" : "createdAt"));
         List<Company> companyList = companyRepository.findAll(pageable).getContent();
+        for (Company company : companyList) {
+            log.info("Finding Company Id : " + company.getId().toString());
+        }
         return companyList.stream()
                 .map(CompanyDto::companyToCompanyDto)
                 .collect(Collectors.toList());
@@ -141,6 +144,7 @@ public class CompanyService {
                     throw new IllegalArgumentException("중복된 회사가 존재합니다.");
                 });
     }
+
     private void validateHubExists(UUID hubId) {
         ResponseEntity<ResponseDto<HubDto>> response = hubController.getHub(hubId);
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null || response.getBody().getData() == null) {
