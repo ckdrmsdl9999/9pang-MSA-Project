@@ -1,5 +1,6 @@
 package com._hateam.config;
 
+
 import com._hateam.CompanyType;
 import com._hateam.entity.Company;
 import com._hateam.entity.Hub;
@@ -10,6 +11,7 @@ import com._hateam.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +20,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@DependsOn("hubInitializer")
 public class CompanyInitializer {
 
 
