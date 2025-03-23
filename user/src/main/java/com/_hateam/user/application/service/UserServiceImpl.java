@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, String userRole) {
+    public UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto,String userMyId, Long userId, String userRole) {
         // 권한검증
         if(userRole.equals("ADMIN")) {
 
@@ -106,6 +106,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User updatedUser = userRepository.save(existingUser);
+        updatedUser.setUpdatedBy(userMyId);
+        updatedUser.setUpdatedAt(LocalDateTime.now());
         return UserResponseDto.from(updatedUser);
     }
 

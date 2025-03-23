@@ -33,10 +33,10 @@ public class UserController {
         return ResponseDto.success(HttpStatus.OK,userService.saveUser(signUpReqDto));
     }
 
-    @PostMapping("/signin")//로그인
-    public ResponseEntity<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto, BindingResult bindingResult) {
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
-    }
+//    @PostMapping("/signin")//로그인
+//    public ResponseEntity<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto, BindingResult bindingResult) {
+//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
+//    }
 
     @GetMapping("/getuser")//자기자신 회원조회
     public ResponseEntity<?> getUser(HttpServletRequest request) {
@@ -79,7 +79,8 @@ public class UserController {
     @PutMapping("/{userId}")  // 회원 수정(MASTER)
     public ResponseEntity<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto,Long.parseLong(userId),userRole));
+        String userMyId = request.getHeader("x-user-id");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto, userMyId, Long.parseLong(userId), userRole));
     }
 
     @DeleteMapping("/{userId}")  // 회원 탈퇴(MASTER)

@@ -17,15 +17,6 @@ public class AuthService {
     private final UserClient userClient;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-//
-//    @Value("${spring.jwt.secret}")
-//    private String secret;
-//
-//    @Value("${spring.jwt.accessTokenValidityInMilliseconds}")
-//    private long accessTokenValidity; // 액세스 토큰 유효 시간 (밀리초)
-//
-//    @Value("${spring.jwt.refreshTokenValidityInMilliseconds}")
-//    private long refreshTokenValidity; // 리
 
 
     public ResponseDto<UserSignInResDto> authenticate(UserSignInReqDto userSignInReqDto) {
