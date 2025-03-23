@@ -19,10 +19,5 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/signin")
-//    public ResponseEntity<ResponseDto<FeignVerifyResDto>> verifyUser(@RequestBody UserSignInReqDto userSignInReqDto) {
-//        ResponseDto<FeignVerifyResDto> response = authService.authenticate(userSignInReqDto);
-//        return ResponseEntity.ok(response);
-//    }
 
 }
