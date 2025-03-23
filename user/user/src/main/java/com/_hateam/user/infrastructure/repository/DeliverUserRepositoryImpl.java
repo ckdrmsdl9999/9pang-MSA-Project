@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+import com._hateam.user.domain.enums.Status;
 @Repository
 @RequiredArgsConstructor
-public class DeliverUserRepositoryImpl implements DeliverUserRepository{
+public class DeliverUserRepositoryImpl implements DeliverUserRepository {
 
     private final JpaDeliverUserRepository jpaDeliverUserRepository;
 
@@ -57,6 +57,30 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository{
     public List<DeliverUser> findByDeliverTypeAndDeletedAtIsNull(DeliverType deliverType) {
         return jpaDeliverUserRepository.findByDeliverTypeAndDeletedAtIsNull(deliverType);
     }
+
+    @Override
+    public List<DeliverUser> findByStatusAndDeliverTypeOrderByRotationOrderAsc
+            (Status status, DeliverType deliverType) {
+        return jpaDeliverUserRepository.findByStatusAndDeliverTypeOrderByRotationOrderAsc
+                (status,deliverType);
+    }
+
+    @Override
+    public List<DeliverUser> findByStatusAndDeliverTypeAndHubIdOrderByRotationOrderAsc
+            (Status status, DeliverType deliverType, UUID hubId) {
+        return jpaDeliverUserRepository.findByStatusAndDeliverTypeAndHubIdOrderByRotationOrderAsc(
+                status, deliverType, hubId);
+    }
+ ///////////
+
+
+
+ // 추가: (deliverType, hubId)별로 rotationOrder 중 가장 큰 값 조회
+ @Override
+ public Integer findMaxRotationOrder(DeliverType deliverType, UUID hubId) {
+     return jpaDeliverUserRepository.findMaxRotationOrder(deliverType, hubId);
+ }
+
 
 
 

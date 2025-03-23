@@ -1,6 +1,7 @@
 package com._hateam.user.application.service;
 
 import com._hateam.user.application.dto.*;
+import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.infrastructure.security.UserPrincipals;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +35,11 @@ public interface DeliverUserService {
     List<FeignInHubDeliverResDto> getHubDeliver();
 
     FeignDeliverSlackIdResDto getDeliverSlackUserById(UUID deliverId);
+
+
+    UUID assignNextDeliverUser(DeliverType deliverType, UUID hubId);
+
+//    DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto deliverUserCreateReqDto);
+
 
 }

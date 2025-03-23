@@ -20,4 +20,8 @@ public interface JpaUserRepository extends JpaRepository<User,Long> {
 
     // UserRepository.java에 추가
     List<User> findAllByUserRolesAndDeletedAtIsNull(UserRole userRole);
+
+
+
+
 }

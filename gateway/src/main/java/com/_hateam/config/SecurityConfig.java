@@ -93,6 +93,7 @@ public class SecurityConfig {
 
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/api/auth/**").permitAll()
+                        .pathMatchers("/api/users/signup").permitAll()
                         .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority("ADMIN")
                         .anyExchange().authenticated()
                 )

@@ -4,7 +4,10 @@ import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.DeliverType;
+import com._hateam.user.domain.enums.Status;
+import com._hateam.user.domain.model.DeliverAssignPointer;
 import com._hateam.user.domain.model.DeliverUser;
+import com._hateam.user.infrastructure.repository.DeliverAssignPointerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -23,26 +26,26 @@ import java.util.stream.Collectors;
 public class DeliverUserServiceImpl implements DeliverUserService {
 
     private final DeliverUserRepository deliverUserRepository;
-
+    private final DeliverAssignPointerRepository pointerRepository;
     private final UserRepository userRepository;
 
-    @Override
-    @Transactional//배송 담당자 생성
-    public DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto deliverUserCreateReqDto) {
-        User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
-                .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
-
-        DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
-        DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
-
-
-        // User 배송담당자 여부 업데이트
-            user.setDeliver(true);
-            userRepository.save(user);
-
-
-        return DeliverUserResponseDto.from(savedDeliverUser);
-    }
+//    @Override
+//    @Transactional//배송 담당자 생성
+//    public DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto deliverUserCreateReqDto) {
+//        User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
+//                .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
+//
+//        DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
+//        DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
+//
+//
+//        // User 배송담당자 여부 업데이트
+//            user.setDeliver(true);
+//            userRepository.save(user);
+//
+//
+//        return DeliverUserResponseDto.from(savedDeliverUser);
+//    }
 
 @Override//권한별 담당자 검색
 @Transactional(readOnly = true)
@@ -255,5 +258,112 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
 
         return FeignDeliverSlackIdResDto.from(deliverUser);
     }
+
+
+    /**
+     * (deliverType, hubId)를 기준으로,
+     * - HUB이면 hubId가 null이 될 수도 있음
+     * - COMPANY이면 반드시 hubId가 존재
+     * 1) (deliverType, hubId)에 해당하는 담당자 목록 조회
+     * 2) Pointer에서 "마지막 배정된 rotationOrder" 읽어옴
+     * 3) 그 다음 순번을 찾아서 배정
+     * 4) pointer 업데이트 & 결과 반환
+     */
+    public UUID assignNextDeliverUser(DeliverType deliverType, UUID hubId) {
+        // 1) (deliverType, hubId)에 맞는 ACTIVE 담당자 목록 조회
+        List<DeliverUser> users = getActiveDeliverUsers(deliverType, hubId);
+        if (users.isEmpty()) {
+            throw new IllegalStateException("배정 가능한 ACTIVE 상태의 배송담당자가 없습니다. " +
+                    "[deliverType=" + deliverType + ", hubId=" + hubId + "]");
+        }
+
+        // 2) pointer 조회 (없으면 신규 생성)
+        DeliverAssignPointer pointer = pointerRepository.findByDeliverTypeAndHubId(deliverType, hubId)
+                .orElseGet(() -> {
+                    // 처음엔 lastAssignedRotationOrder를 -1 등으로 초기화
+                    return pointerRepository.save(
+                            DeliverAssignPointer.builder()
+                                    .deliverType(deliverType)
+                                    .hubId(hubId)
+                                    .lastAssignedRotationOrder(-1)
+                                    .build()
+                    );
+                });
+
+        int lastAssigned = pointer.getLastAssignedRotationOrder();
+
+        // 3) 다음 rotationOrder를 가진 담당자를 찾는다.
+        //    “lastAssigned”보다 큰 rotationOrder 중 가장 작은 값 → 없으면 리스트의 첫 번째
+        DeliverUser nextUser = users.stream()
+                .filter(u -> u.getRotationOrder() > lastAssigned)
+                .findFirst()
+                .orElse(users.get(0)); // 못 찾으면 첫 번째
+
+        // 4) pointer 갱신 & 저장
+        pointer.setLastAssignedRotationOrder(nextUser.getRotationOrder());
+        pointerRepository.save(pointer);
+
+        return nextUser.getDeliverId();
+    }
+
+    /**
+     * deliverType / hubId 조합에 따라 ACTIVE인 배송담당자들을 rotationOrder asc 로 조회
+     */
+    private List<DeliverUser> getActiveDeliverUsers(DeliverType deliverType, UUID hubId) {
+        if (deliverType == DeliverType.DELIVER_HUB) {
+            // 허브 담당자 → hubId가 없는(또는 의미 없는) 10명
+            return deliverUserRepository.findByStatusAndDeliverTypeOrderByRotationOrderAsc(
+                    Status.ACTIVE, DeliverType.DELIVER_HUB
+            );
+        } else {
+            // COMPANY → 업체 담당자. hubId가 반드시 있어야 함
+            return deliverUserRepository.findByStatusAndDeliverTypeAndHubIdOrderByRotationOrderAsc(
+                    Status.ACTIVE, DeliverType.DELIVER_COMPANY, hubId
+            );
+        }
+    }
+
+    @Override
+    @Transactional
+    public DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto deliverUserCreateReqDto) {
+        // 1) User 존재 검사
+        User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
+                .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
+
+        // 2) (deliverType, hubId)로 이미 등록된 DeliverUser들 중 가장 큰 rotationOrder 찾기
+        DeliverType deliverType = deliverUserCreateReqDto.getDeliverType();
+        UUID hubId = deliverUserCreateReqDto.getHubId(); // DELIVER_HUB인 경우 null일 수도 있음
+        Integer maxRotation = deliverUserRepository.findMaxRotationOrder(deliverType, hubId);
+
+        // 3) 없으면 -1로 보고, +1 해서 새 담당자 rotationOrder 결정
+        int newRotation = (maxRotation == null ? -1 : maxRotation) + 1;
+
+        // 4) Entity 생성
+        DeliverUser deliverUser = DeliverUser.builder()
+                .deliverId(UUID.randomUUID())
+                .user(user)
+                .hubId(hubId)
+                .slackId(deliverUserCreateReqDto.getSlackId())
+                .name(deliverUserCreateReqDto.getName())
+                .deliverType(deliverType)
+                .contactNumber(deliverUserCreateReqDto.getContactNumber())
+                .status(deliverUserCreateReqDto.getStatus())
+                .rotationOrder(newRotation)   // <-- 여기서 반영
+                .build();
+
+        // 5) 저장
+        DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
+
+        // 6) User 엔티티에 “배송담당자 여부” 세팅
+        user.setDeliver(true);
+        userRepository.save(user);
+
+        return DeliverUserResponseDto.from(savedDeliverUser);
+    }
+
+
+
+
+
 
 }
