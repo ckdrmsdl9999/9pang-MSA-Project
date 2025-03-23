@@ -22,7 +22,7 @@ public interface UserService {
 
      UserResponseDto getUser(Long userId);
 
-     UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto, Long userId, String userRole);
+     UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto,String userMyId, Long userId, String userRole);
 
      void deleteUser(Long userId, String userRole);
 
