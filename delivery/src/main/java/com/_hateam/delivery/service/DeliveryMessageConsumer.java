@@ -23,7 +23,7 @@ public class DeliveryMessageConsumer {
     private final DeliveryService deliveryService;
     private final DeliveryKafkaService deliveryKafkaService;
 
-    @KafkaListener(topics = KafkaTopics.ORDER_CREATED)
+    @KafkaListener(topics = KafkaTopics.ORDER_CREATED, groupId = "delivery_group")
     public void handleDeliveryStatusChanged(OrderCreatedEvent event) {
         log.info("주문생성 이벤트 수신: {}", event);
 
