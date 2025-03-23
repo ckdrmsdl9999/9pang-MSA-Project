@@ -1,5 +1,4 @@
 package com._hateam.config;
-
 import com._hateam.dto.HubResponseDto;
 import com._hateam.entity.Hub;
 import com._hateam.entity.HubRoute;
