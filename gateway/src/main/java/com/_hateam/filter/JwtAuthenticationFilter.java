@@ -28,15 +28,15 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE; // 가장 높은 우선순위 설정
-//        return Ordered.LOWEST_PRECEDENCE; // 또는 다른 적절한 값
+//        return Ordered.LOWEST_PRECEDENCE; // 또는 다른 적절한 값it st
     }
     @Value("${service.jwt.secret-key}")
     private String secretKey;
 
     // JWT 토큰 검증을 제외할 경로 목록
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/api/auth/signIn"
-    //      "/api/users/**"
+            "/api/auth/signIn",
+          "/api/users/signup"
               // 필요에 따라 추가/제거 가능
     );
 
