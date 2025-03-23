@@ -7,7 +7,6 @@ import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.UserRepository;
 import com._hateam.user.infrastructure.security.JwtUtil;
-import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

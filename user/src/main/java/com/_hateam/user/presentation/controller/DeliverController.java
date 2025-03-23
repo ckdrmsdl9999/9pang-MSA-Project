@@ -4,14 +4,12 @@ import com._hateam.common.dto.ResponseDto;
 import com._hateam.user.application.dto.DeliverUserCreateReqDto;
 import com._hateam.user.application.dto.DeliverUserUpdateReqDto;
 import com._hateam.user.application.service.DeliverUserService;
-import com._hateam.user.infrastructure.security.UserPrincipals;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;

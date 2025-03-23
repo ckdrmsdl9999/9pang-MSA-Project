@@ -60,16 +60,16 @@ public class JwtUtil {
 //        final String username = extractUsername(token);
 //        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 //    }
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        // 토큰에서 userId 추출
-        final Long userId = extractUserId(token);
-
-        // UserDetails가 UserPrincipal 타입인지 확인하고 ID 일치 여부 검증
-        if (userDetails instanceof UserPrincipals) {
-            return (userId.equals(((UserPrincipals) userDetails).getId()) && !isTokenExpired(token));
-        }
-        return false;
-    }
+//    public Boolean validateToken(String token, UserDetails userDetails) {
+//        // 토큰에서 userId 추출
+//        final Long userId = extractUserId(token);
+//
+//        // UserDetails가 UserPrincipal 타입인지 확인하고 ID 일치 여부 검증
+//        if (userDetails instanceof UserPrincipals) {
+//            return (userId.equals(((UserPrincipals) userDetails).getId()) && !isTokenExpired(token));
+//        }
+//        return false;
+//    }
     // 이름 추출
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
