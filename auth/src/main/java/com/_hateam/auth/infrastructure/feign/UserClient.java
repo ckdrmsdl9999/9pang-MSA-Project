@@ -14,13 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
-@FeignClient(name="user",url="${services.user.url}")
+//@FeignClient(name="user",url="${services.user.url}")
+@FeignClient(name="user-service")
 public interface UserClient {
 
     @GetMapping("/api/users/verify/signin")
     ResponseEntity<ResponseDto<FeignVerifyResDto>> findByUsername(@RequestParam String username);
 //    ResponseEntity<ResponseDto<FeignVerifyResDto>> findByUsername(UserSignInReqDto userSignInReqDto);
-    //dto자체생성
-
-
+//dto자체생성
 }

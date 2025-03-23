@@ -10,7 +10,7 @@ import com._hateam.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@DependsOn("hubInitializer")
 public class CompanyInitializer {
 
 
@@ -39,7 +39,6 @@ public class CompanyInitializer {
     }
 
     @PostConstruct
-    @Order(2)
     @Transactional
     public void initTestData() {
 
@@ -110,6 +109,11 @@ public class CompanyInitializer {
                 .price(3000)
                 .build();
         productRepository.save(product4);
+
+        List<Company> companyList = companyRepository.findAll();
+        for(Company company : companyList){
+            log.info("Company Id : " + company.getId().toString());
+        }
 
         log.info("Test data initialized: {} hubs, {} companies, {} products",
                 hubRepository.count(), companyRepository.count(), productRepository.count());

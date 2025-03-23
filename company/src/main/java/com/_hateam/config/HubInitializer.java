@@ -1,5 +1,4 @@
 package com._hateam.config;
-
 import com._hateam.dto.HubResponseDto;
 import com._hateam.entity.Hub;
 import com._hateam.entity.HubRoute;
@@ -30,7 +29,6 @@ public class HubInitializer {
     private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
 
     @PostConstruct
-    @Order(1)
     @Transactional
     public void initializeHubs() {
 //        // 허브가 이미 존재하면 초기화를 건너뛰도록 할 수도 있음
