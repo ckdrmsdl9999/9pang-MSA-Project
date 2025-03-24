@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @FeignClient(name = "user-service")
-public interface UserClient {s
+public interface UserClient {
 
       @GetMapping("/api/delivery-users/{deliverId}/slack")
       ResponseDto<DeliverUserDto> getDeliverUserById(@PathVariable("deliverId") UUID deliverId);
