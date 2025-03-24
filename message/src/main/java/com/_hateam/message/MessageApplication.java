@@ -1,13 +1,13 @@
 package com._hateam.message;
 
+import com._hateam.common.config.CommonApplication;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@CommonApplication
 public class MessageApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MessageApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MessageApplication.class, args);
+    }
 
 }

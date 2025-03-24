@@ -94,6 +94,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/users/signin").permitAll()
                         .pathMatchers("/hubs/**").permitAll()
                         .pathMatchers("/companies/**").permitAll()
+                        .pathMatchers("/api/orders/**").permitAll()
+                        .pathMatchers("/api/slack/**").permitAll()
                         .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority("ADMIN")
                         .anyExchange().authenticated()
                 )
