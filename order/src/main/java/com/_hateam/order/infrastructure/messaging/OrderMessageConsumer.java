@@ -1,7 +1,6 @@
 package com._hateam.order.infrastructure.messaging;
 
-import com._hateam.message.constant.KafkaTopics;
-import com._hateam.message.event.DeliveryStatusChangedEvent;
+import com._hateam.common.event.DeliveryStatusChangedEvent;
 import com._hateam.order.application.service.OrderService;
 import com._hateam.order.domain.model.OrderStatus;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +15,13 @@ public class OrderMessageConsumer {
 
     private final OrderService orderService;
 
-    @KafkaListener(topics = KafkaTopics.DELIVERY_STATUS_CHANGED)
+    @KafkaListener(topics = "${kafka.topics.delivery-status-changed}")
     public void handleDeliveryStatusChanged(DeliveryStatusChangedEvent event) {
         log.info("배송 상태 변경 이벤트 수신: {}", event);
 
         try {
             // 배송 상태에 따라 주문 상태 업데이트
-            switch(event.getNewStatus()) {
+            switch (event.getNewStatus()) {
                 case "WAITING_AT_HUB":
                     // 배송 전
                     break;

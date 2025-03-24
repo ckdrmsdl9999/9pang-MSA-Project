@@ -52,7 +52,7 @@ public class OrderService {
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto requestDto) {
         Order order = orderDomainService.createOrder(
-                requestDto.getDeliverId(),
+                null, // deliveryId를 null로 설정
                 requestDto.getHubId(),
                 requestDto.getCompanyId(),
                 requestDto.getOrderRequest(),
