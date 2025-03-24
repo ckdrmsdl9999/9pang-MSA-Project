@@ -1,6 +1,10 @@
 package com._hateam.delivery.service;
 
+import com._hateam.common.constant.KafkaTopics;
 import com._hateam.common.dto.ResponseDto;
+import com._hateam.common.event.DeliveryStatusChangedEvent;
+import com._hateam.common.event.KafkaEvent;
+import com._hateam.common.event.OrderCreatedEvent;
 import com._hateam.common.exception.CustomConflictException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.delivery.dto.request.RegisterDeliveryRequestDto;
@@ -18,11 +22,13 @@ import com._hateam.delivery.repository.DeliveryRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +42,7 @@ public class DeliveryService {
     private final CompanyClient companyClient;
     private final UserClient userClient;
     private final HubClient hubClient;
+    private final DeliveryKafkaService deliveryKafkaService;
 
     /**
      * querydsl 통한 전체 조회
@@ -157,6 +164,71 @@ public class DeliveryService {
     }
 
     /**
+     * order로 부터 message 수신시 배송생성
+     */
+    public Delivery registerDeliveryAuto(OrderCreatedEvent event) {
+        // 이미 존재하는 값인지 확인
+        checkDeliveryByOrderId(event.getOrderId());
+        // 받아온 order로 회사 조회
+        CompanyClientResponseDto companyClientResponseDto = companyClient
+                .getCompanyById(event.getCompanyId())
+                .getBody()
+                .getData();
+        // company로 user 조회
+        UserClientResponseDto userClientResponseDto = userClient
+                .getUserByUsername(companyClientResponseDto.getUsername())
+                .getBody()
+                .getData();
+        // company의 위도 경도 값을 통해 가장 근처 hub 탐색
+        // todo: company에  위도경도 추가
+        HubClientHubResponseDto hubClientHubResponseDto = hubClient
+                .getNearestHub(34.8492021, 126.4715102)
+                .getBody()
+                .getData();
+
+        UUID destHubId = hubClientHubResponseDto.getId();
+
+        Delivery delivery = Delivery.addOf(event, companyClientResponseDto, userClientResponseDto, destHubId);
+
+        // todo: sequence 확인 + 배송경로 생성
+        // todo: sequence 조회
+        String sequence =
+                "b22ec476-39f7-49c3-8760-22cf3bd04d68, b22ec476-39f7-78c3-8760-22cf3bd04d43, b22ec476-39f0-49c3-8760-22cf3bd04d43";
+        // todo: 조회된 sequence의 각 배송경로 생성
+        // todo: 생성시점에서 배송경로에 맞는 배송 담당자 배정? 단순하게는 그냥 순번대로 배정
+        //  -> 매일 각 허브에서 현재 본인 허브에 도착한 배송을 조회하여 도착허브에 따라 분류하여 배정
+        List<DeliveryRoute> deliveryRouteList = new ArrayList<>();
+        String[] sequnceArray = sequence.split(", ");
+        for (int i = 0; i<sequnceArray.length-1; i++) {
+            UUID startHubId = UUID.fromString(sequnceArray[i]);
+            UUID endHubId = UUID.fromString(sequnceArray[i+1]);
+            HubClientResponseDto hubClientResponseDto = new HubClientResponseDto();
+            hubClientResponseDto.setSequence(i);
+            hubClientResponseDto.setDistanceKm((long) 25.51);
+            hubClientResponseDto.setEstimatedTimeMinutes(240);
+            DeliveryRoute deliveryRoute = DeliveryRoute.addOf(delivery, startHubId, endHubId, hubClientResponseDto);
+            // 첫배송담당자 배정
+            if (i == 0) {
+                // hub 배송자 순번 확인
+                UserClientDeliverResponseDto userClientDeliverResponseDto = userClient
+                        .getDeliverAssign("DELIVER_HUB", null)
+                        .getBody()
+                        .getData();
+                deliveryRoute.updateDeliver(userClientDeliverResponseDto);
+            }
+
+            deliveryRouteList.add(deliveryRoute);
+        }
+
+        delivery.addDeliveyRouteListFrom(deliveryRouteList);
+
+
+        deliveryRepository.save(delivery);
+
+        return delivery;
+    }
+
+    /**
      * 배송정보 상세 조회
      * todo: deliveryRoute가 추가되면서 n+1 발생가능, querydsl로 join 처리 필요
      */
@@ -193,7 +265,7 @@ public class DeliveryService {
         delivery.updateStatusOf(status);
 
         if (status == DeliveryStatus.DELIVERY_COMPLETED) {
-            orderUpdate(OrderStatus.DONE);
+            deliveryKafkaService.orderUpdateByKafka(delivery);
         }
 
         return ServletUriComponentsBuilder
@@ -202,15 +274,6 @@ public class DeliveryService {
                 .buildAndExpand(delivery.getId())
                 .toUri();
     }
-
-    /**
-     * todo: feignclient or 카프카 통한 수정요청
-     */
-    public ResponseDto<?> orderUpdate(OrderStatus status) {
-        System.out.println("------------주문상태 수정 요청------------");
-        return null;
-    }
-
 
     /**
      * 배송정보 삭제
