@@ -68,7 +68,7 @@ dependencies {
 	implementation 'com.9hateam:common:0.0.1-SNAPSHOT'
 
 	// security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// kafka
 	implementation 'org.springframework.kafka:spring-kafka'
