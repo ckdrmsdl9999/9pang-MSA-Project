@@ -71,6 +71,7 @@ docker-compose up --build
 |------------------------------------|-------------------|
 | Gateway 401 Unauthorized           |  Common 모듈에 Security 설정이 되어있는 것이 원인이었으며, spring-boot-starter-security 의존성이 들어가 있다면 기본 Spring Security 설정 상태에서 인증정보(JWT 토큰 등) 없이 보호된 엔드포인트 호출 시 401에러가 발생 - > Common 모듈과 Security 설정이 필요 없는 모듈의 의존성 제거로 해결 |
 | Eureka 서버 서비스 발견 실패          | Eureka 설정 파일에 service-url 주소 오기입되어 있었으며, 내부 도커 네트워크 서비스 이름으로 변경하여 해결 |
+| commonModule globalException 처리    | 기본적으로 @SpringBootApplication이 있는 클래스와 그 하위 패키지만 컴포넌트 스캔됨.<br>의존성으로 받은 commonmodule의 GlobalExceptionHandler는 스캔되지 않아 작동하지 않음.<br>해결책으로 @ComponentScan이나 @Import를 사용해 필요한 컴포넌트를 스캔하도록 함.<br>@Import는 필요한 컴포넌트만 가져와 스캔 범위를 줄일 수 있음.|
 
 ## 📌 API Docs (선택사항)
 
