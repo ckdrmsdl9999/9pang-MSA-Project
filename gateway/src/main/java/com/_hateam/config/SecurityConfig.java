@@ -94,7 +94,13 @@ public class SecurityConfig {
                         .pathMatchers("/api/users/signin").permitAll()
                         .pathMatchers("/hubs/**").permitAll()
                         .pathMatchers("/companies/**").permitAll()
+                        .pathMatchers(HttpMethod.PUT,"/api/users/getusers").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority("ADMIN")
+                        .pathMatchers(HttpMethod.PUT,"/api/users/**").hasAuthority("ADMIN")
+                        .pathMatchers(HttpMethod.PUT,"/api/delivery-users/**").hasAuthority("ADMIN")
+                        .pathMatchers(HttpMethod.POST,"/api/delivery-users/add").hasAuthority("ADMIN")
+                        .pathMatchers(HttpMethod.DELETE,"/api/delivery-users/**").hasAuthority("ADMIN")
+                        .pathMatchers(HttpMethod.DELETE,"/api/users/**").hasAuthority("ADMIN")
                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling

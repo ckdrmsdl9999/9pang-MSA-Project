@@ -64,7 +64,7 @@ public class DeliverController {
 
 
     // 배송담당자 수정(관리자만)
-    @PostMapping("/{deliverId}")
+    @PutMapping("/{deliverId}")
     public ResponseEntity<?> updateDeliverUser(
             @PathVariable UUID deliverId,
             @RequestBody DeliverUserUpdateReqDto updateDto,
