@@ -109,10 +109,7 @@ public class HubController {
         List<HubDto> hubs = hubService.getAllHubs(0, 10, "createdAt", false);
         Random random = new Random();
         UUID hubId = hubs.get(random.nextInt(hubs.size())).getId();
-
-            List<CompanyDto> companyDtos = companyController.getCompaniesByHubId(hubId, 0, 10, "createdAt", false);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.success(HttpStatus.OK, companyDtos));
+        return companyController.getCompaniesByHubId(hubId, 0, 10, "createdAt", false);
     }
 
 }

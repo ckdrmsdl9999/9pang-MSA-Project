@@ -92,6 +92,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/users/signup").permitAll()
                         .pathMatchers("/api/users/signin").permitAll()
+                        .pathMatchers("/redis/**").permitAll()
                         .pathMatchers("/hubs/**").permitAll()
                         .pathMatchers("/companies/**").permitAll()
                         .pathMatchers("/api/orders/**").permitAll()

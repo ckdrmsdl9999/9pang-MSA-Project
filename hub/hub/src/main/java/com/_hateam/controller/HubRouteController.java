@@ -61,6 +61,14 @@ public class HubRouteController {
                 .body(ResponseDto.success(HttpStatus.OK, hubRouteDto));
     }
 
+    @GetMapping("/cache")
+    public ResponseEntity<ResponseDto<HubRouteDto>> getHubRoute(@RequestParam("sourceHub") String sourceHub,
+                                                                @RequestParam("destinationHub") String destinationHub) {
+        HubRouteDto hubRouteDto = hubRouteService.getHubRoute(sourceHub, destinationHub);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, hubRouteDto));
+    }
+
     /**
      * 특정 허브 루트 수정
      */
