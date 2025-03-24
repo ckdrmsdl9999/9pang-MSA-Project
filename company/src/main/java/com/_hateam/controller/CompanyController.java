@@ -83,20 +83,24 @@ public class CompanyController {
      * feign client
      */
     @GetMapping("/hub/{hubId}/{companyId}")
-    public CompanyDto getCompanyByCompanyIdAndHubId(
+    public ResponseEntity<ResponseDto<CompanyDto>> getCompanyByCompanyIdAndHubId(
             @PathVariable UUID hubId,
             @PathVariable UUID companyId) {
-        return companyService.getCompanyByCompanyIdAndHubId(companyId, hubId);
+        CompanyDto companyDto = companyService.getCompanyByCompanyIdAndHubId(companyId, hubId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, companyDto));
     }
 
     @GetMapping("/hub/{hubId}")
-    public List<CompanyDto> getCompaniesByHubId(
+    public ResponseEntity<ResponseDto<List<CompanyDto>>> getCompaniesByHubId(
             @PathVariable UUID hubId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "isAsc", defaultValue = "false") boolean isAsc) {
-        return companyService.getCompaniesByHubId(hubId, page, size, sortBy, isAsc);
+        List<CompanyDto> companies = companyService.getAllCompanies(page, size, sortBy, isAsc);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.success(HttpStatus.OK, companies));
     }
 
 }
