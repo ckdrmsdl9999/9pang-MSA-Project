@@ -19,7 +19,7 @@ public interface UserService {
 
      List<FeignHubAdminResDto> getHub();
 
-     UserResponseDto getUser(Long userId);
+     UserResponseDto getUser(Long userId, String myId, String userRole);
 
      UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto,String userMyId, Long userId, String userRole);
 
@@ -33,9 +33,8 @@ public interface UserService {
 
      FeignUserResDto getUserByFeign(Long userId);
 
-
      FeignVerifyResDto verifyUserFeign(String username);
 
-     public UserResponseDto getUserByUsername(String username);
+     UserResponseDto getUserByUsername(String username);
 
 }

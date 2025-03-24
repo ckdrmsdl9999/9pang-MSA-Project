@@ -47,6 +47,13 @@ dependencies {//
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	//zipkin
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.github.openfeign:feign-micrometer'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+	
+
 
 	//annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 	//annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"

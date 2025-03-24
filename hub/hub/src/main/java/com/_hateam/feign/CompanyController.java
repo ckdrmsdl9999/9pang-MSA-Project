@@ -19,13 +19,13 @@ import java.util.UUID;
 public interface CompanyController {
     //    허브의 소속 특정 업체 조회
     @GetMapping("/hub/{hubId}/{companyId}")
-    CompanyDto getCompanyByCompanyIdAndHubId(
+    ResponseEntity<ResponseDto<CompanyDto>> getCompanyByCompanyIdAndHubId(
             @PathVariable UUID hubId,
             @PathVariable UUID companyId);
 
     //    허브의 소속 업체 전체 조회
     @GetMapping(value = "/hub/{hubId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    List<CompanyDto> getCompaniesByHubId(
+    ResponseEntity<ResponseDto<List<CompanyDto>>> getCompaniesByHubId(
             @PathVariable UUID hubId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,

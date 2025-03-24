@@ -1,21 +1,16 @@
 server:
   port: 8080
-
 spring:
   main:
     web-application-type: reactive
-
   webflux:
     csrf:
       enabled: false
-
   application:
     name: gateway-service
-
   jwt:
     accessTokenValidityInMilliseconds: 3600000
     refreshTokenValidityInMilliseconds: 43200000
-
   cloud:
     gateway:
       routes:
@@ -46,19 +41,31 @@ spring:
       discovery:
         locator:
           enabled: true
-
+  zipkin:
+    base-url: http://zipkin:9411
+    sender:
+      type: web
+tracing:
+  sampling:
+    probability: 1.0
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-
+      defaultZone: http://eureka-server:8761/eureka/
 service:
   jwt:
     secret-key: L@4mV9eZ*R1z#3Tq6!P5jY2wF8xL7d$Q9%kH1xA6^bL0*H4mJ9!nT3zP6q^Y8uB7#xJ2vM4@fH5cT3r!D6sN+2NE1
-
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
     reactor.netty: DEBUG
     com._hateam: TRACE
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    enabled: true
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans

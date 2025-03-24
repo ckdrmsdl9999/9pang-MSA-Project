@@ -28,7 +28,6 @@ public class AuthService {
             throw new RuntimeException("사용자 정보를 찾을 수 없습니다.");
         }
 
-
         FeignVerifyResDto userData = response.getBody().getData();
 
         // 3. 비밀번호 검증
@@ -45,7 +44,7 @@ public class AuthService {
         // 5. 응답 데이터 생성 (정적 팩토리 메서드 사용)
         UserSignInResDto userSignInResDto = UserSignInResDto.from(
                 userData.getUserId(),
-                userData.getUsername(),
+              //userData.getUsername(),
                 userData.getUserRole().name(),
                 tokenInfo
         );

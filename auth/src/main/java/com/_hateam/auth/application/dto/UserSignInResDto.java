@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserSignInResDto {
     private Long userId;
-    private String username;
+   // private String username;
     private String role;
     private String accessToken;
     private String refreshToken;
 
     // 정적 팩토리 메서드
-    public static UserSignInResDto from(Long userId, String username, String role, TokenInfo tokenInfo) {
+    public static UserSignInResDto from(Long userId,  String role, TokenInfo tokenInfo) {
         return UserSignInResDto.builder()
                 .userId(userId)
-                .username(username)
+              //.username(username)
                 .role(role)
                 .accessToken("Bearer "+tokenInfo.getAccessToken())
                 .refreshToken(tokenInfo.getRefreshToken())

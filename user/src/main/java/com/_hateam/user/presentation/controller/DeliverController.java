@@ -26,11 +26,6 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.createDeliverUser(deliverUserCreateReqDto)));
     }
 
-    //배송 담당자 추가
-    @GetMapping("/test")
-    public ResponseEntity<?> testUser() {
-        return ResponseEntity.status(HttpStatus.OK).body("hello iam changgeun");
-    }
 
 
     // 검색(페이징추가, 권한별 분리)
@@ -92,16 +87,6 @@ public class DeliverController {
     }
 
 
-//    // 배송 담당자 단일 조회(권한별 분리)
-//    @GetMapping("/rotate")
-//    public ResponseEntity<?> getRotationDeliverUser(HttpServletRequest request) {
-//        String userId = request.getHeader("x-user-id");
-//        String userRole = request.getHeader("x-user-role");
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverUserById(deliverId, userId, userRole)));
-//    }
-
-
     @GetMapping("/delivery")//업체 소속 배달담당자 조회 Deliverer중 COM
     public ResponseEntity<?> getCompanyDeliver() {
 
@@ -124,6 +109,11 @@ public class DeliverController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverSlackUserById(deliverId)));
     }
 
+    //통신테스트 Api
+    @GetMapping("/test")
+    public ResponseEntity<?> testUser() {
+        return ResponseEntity.status(HttpStatus.OK).body("Communication Test..");
+    }
 
 
 
