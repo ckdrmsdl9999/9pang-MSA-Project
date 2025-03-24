@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/deliver-assign")
+@RequestMapping("/api/delivery-users")
 public class DeliverUserController {
 
     private final DeliverUserService deliverUserService;
@@ -26,7 +26,7 @@ public class DeliverUserController {
      * [GET] /api/v1/deliver-assign?deliverType=HUB
      * [GET] /api/v1/deliver-assign?deliverType=COMPANY&hubId={some-uuid}
      */
-    @GetMapping
+    @GetMapping("/assign")
     public UUID assignDeliverUser(
             @RequestParam("deliverType") DeliverType deliverType,
             @RequestParam(value = "hubId", required = false) UUID hubId
