@@ -27,7 +27,7 @@ public class SwaggerConfig {
                                 .name("Creative Commons Attribution-NonCommercial 4.0 International")
                                 .url("https://creativecommons.org/licenses/by-nc/4.0/")))
                 .servers(List.of(
-                        new Server().url("http://localhost:8082").description("Local Server"),
+                        new Server().url("http://localhost:8080").description("Local Server"),
                         new Server().url("http://dev.9hateam.com").description("Development Server")
                 ));
     }
