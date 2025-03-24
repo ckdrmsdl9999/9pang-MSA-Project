@@ -16,4 +16,6 @@ public class OrderClientResponseDto {
     private UUID companyId;
     private String orderRequest;
     private OrderStatus orderStatus;
+
+
 }

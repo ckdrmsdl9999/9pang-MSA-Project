@@ -7,6 +7,7 @@ import com._hateam.delivery.dto.response.UserClientDeliverResponseDto;
 import com._hateam.delivery.entity.Delivery;
 import com._hateam.delivery.entity.DeliveryRoute;
 import com._hateam.delivery.entity.DeliveryStatus;
+import com._hateam.delivery.feignClient.UserClient;
 import com._hateam.delivery.repository.DeliveryRouteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class DeliveryRouteService {
 
     private final DeliveryRouteRepository deliveryRouteRepository;
     private final DeliveryService deliveryService;
+    private final UserClient userClient;
+    private final DeliveryKafkaService deliveryKafkaService;
 
     /**
      * 배송 경로 생성 - x
@@ -61,6 +64,7 @@ public class DeliveryRouteService {
                 // todo: order상태 변경
                 if (deliveryStatus != DeliveryStatus.MOVING_TO_HUB) {
                     delivery.updateStatusOf(status);
+                    deliveryKafkaService.orderUpdateByKafka(delivery);
                 }
             }
             case ARRIVED_AT_DEST_HUB -> {
@@ -71,23 +75,23 @@ public class DeliveryRouteService {
 
                 if (nextDeliveryRoute != null) {
                     // nextDeliveryRoute에 배송담당자 배정
-                    // todo: 다음 허브 배송담당자 조회
-                    UserClientDeliverResponseDto userClientDeliverResponseDto = new UserClientDeliverResponseDto();
-                    userClientDeliverResponseDto.setDeliverId(UUID.randomUUID());
-                    userClientDeliverResponseDto.setSlackId("slackIdForDeliver");
-                    // 다음 배송경로에 허브배송담당자 배정
+                    UserClientDeliverResponseDto userClientDeliverResponseDto = userClient
+                            .getDeliverAssign("DELIVER_HUB", null)
+                            .getBody()
+                            .getData();
+
                     nextDeliveryRoute.updateDeliver(userClientDeliverResponseDto);
 
                 } else {
                     // hub배송 완료, 배송상태변경 + 업체 배송담당자 배정
-                    // todo: 업체 배송담당자 조회
                     // 허브 배송 완료, 업체 배송 대기로 상태 변경
                     delivery.updateStatusOf(status);
-                    // todo: 업체 배송담당자 조회
-                    UserClientDeliverResponseDto userClientDeliverResponseDto = new UserClientDeliverResponseDto();
-                    userClientDeliverResponseDto.setDeliverId(UUID.randomUUID());
-                    userClientDeliverResponseDto.setSlackId("slackIdForDeliver");
                     // 업체 배송담당자 배정
+                    UserClientDeliverResponseDto userClientDeliverResponseDto = userClient
+                            .getDeliverAssign("DELIVER_COMPANY", delivery.getEndHubId())
+                            .getBody()
+                            .getData();
+
                     delivery.updateDeliver(userClientDeliverResponseDto);
                 }
             }
