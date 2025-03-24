@@ -71,17 +71,12 @@ public class DeliverUserRepositoryImpl implements DeliverUserRepository {
         return jpaDeliverUserRepository.findByStatusAndDeliverTypeAndHubIdOrderByRotationOrderAsc(
                 status, deliverType, hubId);
     }
- ///////////
-
-
 
  // 추가: (deliverType, hubId)별로 rotationOrder 중 가장 큰 값 조회
- @Override
- public Integer findMaxRotationOrder(DeliverType deliverType, UUID hubId) {
-     return jpaDeliverUserRepository.findMaxRotationOrder(deliverType, hubId);
- }
-
-
+     @Override
+     public Integer findMaxRotationOrder(DeliverType deliverType, UUID hubId) {
+         return jpaDeliverUserRepository.findMaxRotationOrder(deliverType, hubId);
+    }
 
 
 }

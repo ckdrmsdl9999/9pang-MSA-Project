@@ -18,19 +18,19 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
 
     Optional<DeliverUser> findByDeliverId(UUID deliverId);
 
-    List<DeliverUser> findByHubId(UUID hubId);
+    //List<DeliverUser> findByHubId(UUID hubId);
 
     Optional<DeliverUser> findByUser_UserId(Long userId);
 
-    List<DeliverUser> findByDeliverType(DeliverType deliverType);
+    //List<DeliverUser> findByDeliverType(DeliverType deliverType);
 
-    List<DeliverUser> findAllByOrderByRotationOrderAsc();
+    //List<DeliverUser> findAllByOrderByRotationOrderAsc();
 
-    boolean existsByContactNumber(String contactNumber);
+    //boolean existsByContactNumber(String contactNumber);
 
     List<DeliverUser> findByHubIdAndDeletedAtIsNull(UUID hubId);
 
-    List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
+    //List<DeliverUser> findByNameContainingAndDeletedAtIsNull(String name);
 
     List<DeliverUser> findByDeletedAtIsNull();
 
@@ -39,7 +39,7 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
     Page<DeliverUser> findByNameContainingAndHubIdAndDeletedAtIsNull(String name, UUID hubId, Pageable pageable);
 
     List<DeliverUser> findByDeliverTypeAndDeletedAtIsNull(DeliverType deliverType);
-    //user도메인
+
 
     // 1) HUB인 애들만 rotationOrder asc 로 전부 조회
     List<DeliverUser> findByStatusAndDeliverTypeOrderByRotationOrderAsc(Status status, DeliverType deliverType);
@@ -47,10 +47,6 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
     // 2) COMPANY면서 특정 hubId인 애들만 rotationOrder asc 로 전부 조회
     List<DeliverUser> findByStatusAndDeliverTypeAndHubIdOrderByRotationOrderAsc(
             Status status, DeliverType deliverType, UUID hubId);
-
-//
-//    @Query("SELECT d FROM DeliverUser d WHERE d.deliverId = :deliverId")
-//    Optional<DeliverUser> findByDeliverId(@Param("deliverId") UUID deliverId);
 
     // (deliverType, hubId)별 최대 rotationOrder 조회
     @Query("""
@@ -65,8 +61,5 @@ public interface JpaDeliverUserRepository  extends JpaRepository<DeliverUser, UU
     Integer findMaxRotationOrder(@Param("deliverType") DeliverType deliverType,
                                  @Param("hubId") UUID hubId);
 
-//    // 예시) (deliverType, hubId) & status=ACTIVE 목록
-//    List<DeliverUser> findByStatusAndDeliverTypeOrderByRotationOrderAsc(Status status, DeliverType deliverType);
-//    List<DeliverUser> findByStatusAndDeliverTypeAndHubIdOrderByRotationOrderAsc(Status status, DeliverType deliverType, UUID hubId);
 
 }

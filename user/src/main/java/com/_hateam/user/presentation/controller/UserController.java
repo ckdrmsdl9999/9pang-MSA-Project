@@ -33,33 +33,29 @@ public class UserController {
         return ResponseDto.success(HttpStatus.OK,userService.saveUser(signUpReqDto));
     }
 
-//    @PostMapping("/signin")//로그인
-//    public ResponseEntity<?> signIn(@RequestBody @Valid UserSignInReqDto userSignInReqDto, BindingResult bindingResult) {
-//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.authenticateUser(userSignInReqDto)));
+    @GetMapping("/getuser")//자기자신 회원조회(내부에서 권한에따라)
+    public ResponseEntity<?> getUser(HttpServletRequest request) {
+        String myId = request.getHeader("x-user-id");
+        String userRole = request.getHeader("x-user-role");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.success(userService.getUser(Long.parseLong(myId),myId,userRole)));
+    }
+
+//    @GetMapping("/admin/{userId}")//관리자단일조회(ADMIN)
+//    public ResponseEntity<?> getAdminUser(@PathVariable Long userId, HttpServletRequest request) {
+//        String myId = request.getHeader("x-user-id");
+//        String userRole = request.getHeader("x-user-role");
+//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getUser(userId,myId,userRole)));
 //    }
 
-    @GetMapping("/getuser")//자기자신 회원조회
-    public ResponseEntity<?> getUser(HttpServletRequest request) {
-        String userId = request.getHeader("x-user-id");
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.success(userService.getUser(Long.parseLong(userId))));
-    }
 
-    @GetMapping("/admin/{userId}")//관리자단일조회(MASTER), 스프링시큐리티로 권한 제어
-    public ResponseEntity<?> getAdminUser(@PathVariable Long userId, HttpServletRequest request) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getUser(userId)));
-    }
-
-
-    @PutMapping("/roles/{userId}") // 권한 수정(MASTER)
+    @PutMapping("/roles/{userId}") // 권한 수정(ADMIN)
     public ResponseEntity<?> updateRole(@PathVariable Long userId, @RequestBody RoleUpdateReqDto roleUpdateDto,HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
-        System.out.println(userRole+"권한학인11");
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(userService.updateUserRole(userId, roleUpdateDto.getRole(), userRole)));
     }
 
-    @GetMapping("/search") // 유저 검색(권한에 따라)
+    @GetMapping("/search") // 유저 검색(내부에서 권한에 따라)
     public ResponseEntity<?> userSearch(@RequestParam String username, @RequestParam(defaultValue = "createdAt") String sortBy,
                                         @RequestParam(defaultValue = "desc") String order, @PageableDefault(page = 0, size = 10) Pageable pageable,
                                         HttpServletRequest request) {
@@ -70,20 +66,20 @@ public class UserController {
                 userId,sortBy,order,pageable)));
     }
 
-    @GetMapping("/getusers")//회원목록 조회(DELIVERY,HUB,MASTER)
+    @GetMapping("/getusers")//회원목록 조회(ADMIN)
     public ResponseEntity<?> getAllUser(HttpServletRequest request){
         String userRole = request.getHeader("x-user-role");
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getAllUsers(userRole)));
     }
 
-    @PutMapping("/{userId}")  // 회원 수정(MASTER)
+    @PutMapping("/{userId}")  // 회원 수정(ADMIN)
     public ResponseEntity<?> updateUser(@PathVariable String userId,@RequestBody @Valid UserUpdateReqDto userUpdateReqDto,HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
         String userMyId = request.getHeader("x-user-id");
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userUpdateReqDto, userMyId, Long.parseLong(userId), userRole));
     }
 
-    @DeleteMapping("/{userId}")  // 회원 탈퇴(MASTER)
+    @DeleteMapping("/{userId}")  // 회원 탈퇴(ADMIN)
     public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
         userService.deleteUser(userId,userRole);
@@ -121,16 +117,12 @@ public class UserController {
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.success(userService.getUserByUsername(username)));
-
     }
 
-
-    @GetMapping("/headers") //헤더값 확인용
+    @GetMapping("/headers") //헤더값 테스트 API
     public ResponseEntity<?> getDirectHeaders(HttpServletRequest request) {
-
         String userId = request.getHeader("x-user-id");
         String userRole = request.getHeader("x-user-role");
-
         Map<String, Object> result = new HashMap<>();
         result.put("userId", userId);
         result.put("userRole", userRole);

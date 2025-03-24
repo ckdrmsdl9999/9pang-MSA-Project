@@ -76,9 +76,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUser(Long userId){//추후 권한에 따라
-        User user =userRepository.findById(userId)
+    public UserResponseDto getUser(Long userId, String myId, String userRole){//추후 권한에 따라
+        User user;
+        if(userRole.equals("ADMIN")) {
+        user =userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+        }
+        else {
+            user =userRepository.findById(Long.parseLong(myId))
+                    .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+        }
+
         return UserResponseDto.from(user);
     }
 
@@ -215,7 +223,6 @@ public class UserServiceImpl implements UserService {
 
         return FeignVerifyResDto.from(user);
     }
-
 
     @Override
     public UserResponseDto getUserByUsername(String username){

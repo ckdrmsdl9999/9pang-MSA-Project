@@ -48,6 +48,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://gateway-db:5432/gatewaydb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+      - MANAGEMENT_TRACING_SAMPLING_PROBABILITY=1.0
     depends_on:
       - gateway-db
       - eureka-server
@@ -149,6 +152,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+      - SPRING_SLEUTH_SAMPLER_PROBABILITY=1.0
     depends_on:
       - user-db
       - redis
@@ -194,6 +199,15 @@ services:
       - "6379:6379"
     networks:
       - msanet
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - msanet
+
 
 networks:
   msanet:
