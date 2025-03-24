@@ -8,8 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.SecurityContextHolder;
 import java.time.LocalDateTime;
 
 @Getter
@@ -48,10 +48,10 @@ public abstract class Timestamped {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public Timestamped() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            createdBy = authentication.getName();
-        }
-    }
+//    public Timestamped() { Security기능쓰는거라, 인증정보에 Name없으므로 id값으로대체(수정,삭제권한관리자)
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            createdBy = authentication.getName();
+//        }
+//    }
 }
