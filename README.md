@@ -14,7 +14,7 @@
 |------|------|
 | 팀원1 | 백엔드 개발 및 서비스 설계 |
 | 팀원2 | 프론트엔드 개발 및 UI/UX |
-| 팀원3 | 데이터베이스 설계 및 관리 |
+| 김승수 | 배송관련 서비스 개발, 공통모듈 기여 |
 | 윤창근 | 사용자(유저,배송담당자), 인증서버(Auth)와 게이트웨이(Gateway)의 Jwt토큰 생성 및 검증 작업과 Security 설정 |
 
 ## 📌 서비스 구성 및 실행 방법
@@ -27,6 +27,8 @@
 - Company Service
 - Hub Service
 - Auth Service
+- Delivery Service
+- Order Service
 - Redis Cache
 - PostgreSQL DB
 
@@ -44,6 +46,8 @@ docker-compose up --build
 | Company Service | `/companies/**` |
 | Hub Service     | `/hubs/**` |
 | Auth Service    | `/api/auth/signin` |
+| Order Service    | `/api/orders/**` |
+| Delivery Service  | `/api/deliveries/**`, `/api/delivery-routes/**` |
 
 ## 📌 ERD
 
@@ -58,7 +62,7 @@ docker-compose up --build
 - Backend: Java, Spring Boot, Spring Cloud (Eureka, Gateway)
 - Frontend: React.js (Optional)
 - Database: PostgreSQL, Redis
-- Infrastructure: Docker, Docker Compose
+- Infrastructure: Docker, Docker Compose, Kafka
 - Authentication: JWT
 
 ## 📌 트러블슈팅
