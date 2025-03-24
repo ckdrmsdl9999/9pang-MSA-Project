@@ -15,7 +15,7 @@
 | 팀원1 | 백엔드 개발 및 서비스 설계 |
 | 팀원2 | 프론트엔드 개발 및 UI/UX |
 | 팀원3 | 데이터베이스 설계 및 관리 |
-| 팀원4 | 인프라 구축 및 CI/CD |
+| 윤창근 | 사용자(유저,배송담당자), 인증서버(Auth)와 게이트웨이(Gateway)의 Jwt토큰 생성 및 검증 작업과 Security 설정 |
 
 ## 📌 서비스 구성 및 실행 방법
 
@@ -49,6 +49,9 @@ docker-compose up --build
 
 ![ERD 이미지 링크](여기에_ERD_이미지_링크)
 
+## 인프라 설계도
+![ERD 이미지 링크](여기에_ERD_이미지_링크)
+
 ## 📌 기술 스택
 
 - Backend: Java, Spring Boot, Spring Cloud (Eureka, Gateway)
@@ -61,7 +64,7 @@ docker-compose up --build
 
 | 문제 상황                             | 원인 및 해결 방법 |
 |------------------------------------|-------------------|
-| Gateway 401 Unauthorized           | JWT 헤더 처리 및 SecurityContext 설정 문제였으며, JWT 필터 순서 재조정 및 SecurityContextRepository 수정하여 해결 |
+| Gateway 401 Unauthorized           | COMMON 모듈에 Security설정이 되어있는 것이 원인이였으며, spring-boot-starter-security 의존성이 들어가 있다면 기본 Spring Security설정 상태에서 인증정보(JWT토큰 등) 없이 보호된 엔드포인트호출시 401에러가 발생 -> Common모듈과 Security설정이 필요 없는 모듈의 의존성 제거로 해결 |
 | Eureka 서버 서비스 발견 실패          | Eureka 설정 파일에 service-url 주소 오기입되어 있었으며, 내부 도커 네트워크 서비스 이름으로 변경하여 해결 |
 
 ## 📌 API Docs (선택사항)
