@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    web-application-type: reactive
+
+  webflux:
+    csrf:
+      enabled: false
+
+  application:
+    name: gateway-service
+
+  jwt:
+    accessTokenValidityInMilliseconds: 3600000
+    refreshTokenValidityInMilliseconds: 43200000
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**,/api/delivery-users/**
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: hubs-service
+          uri: lb://hubs-service
+          predicates:
+            - Path=/hubs/**
+        - id: company-service
+          uri: lb://company-service
+          predicates:
+            - Path=/companies
+      discovery:
+        locator:
+          enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+service:
+  jwt:
+    secret-key: L@4mV9eZ*R1z#3Tq6!P5jY2wF8xL7d$Q9%kH1xA6^bL0*H4mJ9!nT3zP6q^Y8uB7#xJ2vM4@fH5cT3r!D6sN+2NE1
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    reactor.netty: DEBUG
+    com._hateam: TRACE
