@@ -12,7 +12,7 @@
 
 | 이름 | 역할 |
 |------|------|
-| 팀원1 | 백엔드 개발 및 서비스 설계 |
+| 유남규 | 허브와 허브 경로 관리, 허브 경로 알고리즘, 업체 관리, 상품 관리, Docker + Eureka 로 MSA 구성 |
 | 팀원2 | 프론트엔드 개발 및 UI/UX |
 | 김승수 | 배송관련 서비스 개발, 공통모듈 기여 |
 | 윤창근 | 사용자(유저,배송담당자), 인증서버(Auth)와 게이트웨이(Gateway)의 Jwt토큰 생성 및 검증 작업과 Security 설정 |
@@ -29,6 +29,7 @@
 - Auth Service
 - Delivery Service
 - Order Service
+- User Service
 - Redis Cache
 - PostgreSQL DB
 
@@ -71,6 +72,7 @@ docker-compose up --build
 |------------------------------------|-------------------|
 | Gateway 401 Unauthorized           |  Common 모듈에 Security 설정이 되어있는 것이 원인이었으며, spring-boot-starter-security 의존성이 들어가 있다면 기본 Spring Security 설정 상태에서 인증정보(JWT 토큰 등) 없이 보호된 엔드포인트 호출 시 401에러가 발생 - > Common 모듈과 Security 설정이 필요 없는 모듈의 의존성 제거로 해결 |
 | Eureka 서버 서비스 발견 실패          | Eureka 설정 파일에 service-url 주소 오기입되어 있었으며, 내부 도커 네트워크 서비스 이름으로 변경하여 해결 |
+| Redis 직렬화 문제                   |  Redis를 사용한 캐싱에서 객체의 직렬화 및 역직렬화 문제. Redis에는 Hashmap으로 저장이 되었으나 읽어올 때는 객체로 읽어오는 문제 발생. Serializer 설정을 통해 해결  |
 | commonModule globalException 처리    | 기본적으로 @SpringBootApplication이 있는 클래스와 그 하위 패키지만 컴포넌트 스캔됨.<br>의존성으로 받은 commonmodule의 GlobalExceptionHandler는 스캔되지 않아 작동하지 않음.<br>해결책으로 @ComponentScan이나 @Import를 사용해 필요한 컴포넌트를 스캔하도록 함.<br>@Import는 필요한 컴포넌트만 가져와 스캔 범위를 줄일 수 있음.|
 
 ## 📌 API Docs (선택사항)
