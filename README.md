@@ -13,7 +13,7 @@
 | 이름 | 역할 |
 |------|------|
 | 유남규 | 허브와 허브 경로 관리, 허브 경로 알고리즘, 업체 관리, 상품 관리, Docker + Eureka 로 MSA 구성 |
-| 팀원2 | 프론트엔드 개발 및 UI/UX |
+| 손민주 | 주문 관리, 슬랙 메시지 관리, Kafka 이벤트 처리 |
 | 김승수 | 배송관련 서비스 개발, 공통모듈 기여 |
 | 윤창근 | 사용자(유저,배송담당자), 인증서버(Auth)와 게이트웨이(Gateway)의 Jwt토큰 생성 및 검증 작업과 Security 설정 |
 
@@ -49,12 +49,14 @@ docker-compose up --build
 | Auth Service    | `/api/auth/signin` |
 | Order Service    | `/api/orders/**` |
 | Delivery Service  | `/api/deliveries/**`, `/api/delivery-routes/**` |
+| Message Service | `/api/slack/**` |
 
 ## 📌 ERD
 
-![ERD 이미지 링크](여기에_ERD_이미지_링크)
+![ERD 명세서](https://github.com/user-attachments/assets/6f6b057c-16b4-448e-ad57-7c07bf0e99ac)
 
-## 인프라 설계도(추후변경시 수정)
+
+## 인프라 설계도
 
 ![인프라설계도](https://github.com/user-attachments/assets/806ac7a2-b367-436d-93d4-29bfc7c95283)
 
@@ -75,9 +77,10 @@ docker-compose up --build
 | Redis 직렬화 문제                   |  Redis를 사용한 캐싱에서 객체의 직렬화 및 역직렬화 문제. Redis에는 Hashmap으로 저장이 되었으나 읽어올 때는 객체로 읽어오는 문제 발생. Serializer 설정을 통해 해결  |
 | commonModule globalException 처리    | 기본적으로 @SpringBootApplication이 있는 클래스와 그 하위 패키지만 컴포넌트 스캔됨.<br>의존성으로 받은 commonmodule의 GlobalExceptionHandler는 스캔되지 않아 작동하지 않음.<br>해결책으로 @ComponentScan이나 @Import를 사용해 필요한 컴포넌트를 스캔하도록 함.<br>@Import는 필요한 컴포넌트만 가져와 스캔 범위를 줄일 수 있음.|
 
-## 📌 API Docs (선택사항)
+## 📌 API Docs
 
-- [Swagger API 문서 링크](여기에_Swagger_문서_링크)
+- [Eureka 대시보드](http://localhost:8761)
+- [Swagger API 문서 링크](http://localhost:8080/swagger-ui.html)
 
 ---
 
