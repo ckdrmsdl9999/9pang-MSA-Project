@@ -52,7 +52,7 @@
 ### 실행 방법
 
 ```shell
-docker-compose up --build
+root 디렉토리에서 'docker-compose up --build' 명령어 실행
 ```
 
 ### 각 서비스 엔드포인트
