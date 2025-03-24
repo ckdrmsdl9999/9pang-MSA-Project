@@ -4,7 +4,9 @@ import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
+import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.model.User;
+import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
 import com._hateam.user.infrastructure.security.JwtUtil;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final DeliverUserRepository deliverUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -32,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto saveUser(UserSignUpReqDto userSignUpReqDto) {
         User savedUser =userRepository.save(UserSignUpReqDto.toEntity(userSignUpReqDto,passwordEncoder));
+        savedUser.setCreatedAt(LocalDateTime.now());
         return UserResponseDto.from(savedUser);
     }
 
@@ -121,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(Long userId, String userRole) {
+    public void deleteUser(String userMyId, Long userId, String userRole) {
         // 권한검증
         if(!userRole.equals("ADMIN")) {
             throw new CustomForbiddenException("관리자 권한이 필요합니다.");
@@ -130,7 +134,10 @@ public class UserServiceImpl implements UserService {
         // ADMIN 권한이 있을 때 실행할 코드
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
+        DeliverUser deliverUser= deliverUserRepository.findByUser_UserId( userId).orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
 
+        deliverUser.setDeletedBy(userMyId);//유저삭제시 연관된 배송담당자도 논리적 삭제처리
+        deliverUser.setDeletedAt(LocalDateTime.now());//유저삭제시 연관된 배송담당자도 논리적 삭제처리
         user.setDeletedAt(LocalDateTime.now());
         user.setDeletedBy(user.getUsername());
         userRepository.save(user);

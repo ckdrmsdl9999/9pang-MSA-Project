@@ -23,7 +23,7 @@ public interface UserService {
 
      UserResponseDto updateUser(UserUpdateReqDto userUpdateReqDto,String userMyId, Long userId, String userRole);
 
-     void deleteUser(Long userId, String userRole);
+     void deleteUser(String userMyId, Long userId, String userRole);
 
      Page<UserResponseDto> searchUser(String username, String userRole, String userId, String sortBy, String order, Pageable pageable);
 

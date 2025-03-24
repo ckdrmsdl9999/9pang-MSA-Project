@@ -82,7 +82,8 @@ public class UserController {
     @DeleteMapping("/{userId}")  // 회원 탈퇴(ADMIN)
     public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
-        userService.deleteUser(userId,userRole);
+        String userMyId = request.getHeader("x-user-id");
+        userService.deleteUser(userMyId, userId,userRole);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."));
     }
 
