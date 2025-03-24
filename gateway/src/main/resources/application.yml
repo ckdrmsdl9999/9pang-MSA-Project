@@ -34,8 +34,8 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
-        - id: slack-service
-          uri: lb://slack-service
+        - id: message-service
+          uri: lb://message-service
           predicates:
             - Path=/api/slack/**
       discovery:
