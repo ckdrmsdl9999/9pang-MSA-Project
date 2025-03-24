@@ -92,16 +92,6 @@ public class DeliverController {
     }
 
 
-//    // 배송 담당자 단일 조회(권한별 분리)
-//    @GetMapping("/rotate")
-//    public ResponseEntity<?> getRotationDeliverUser(HttpServletRequest request) {
-//        String userId = request.getHeader("x-user-id");
-//        String userRole = request.getHeader("x-user-role");
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(deliverUserService.getDeliverUserById(deliverId, userId, userRole)));
-//    }
-
-
     @GetMapping("/delivery")//업체 소속 배달담당자 조회 Deliverer중 COM
     public ResponseEntity<?> getCompanyDeliver() {
 

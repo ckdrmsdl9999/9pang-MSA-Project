@@ -335,12 +335,12 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
         User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
                 .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
 
-//        if(user.getUserRoles().equals("COMPANY_DELIVER")) { //소속허브가 존재하지 않을경우 예외발생(주석해제예정)
-//            ResponseDto<FeignHubDto> response = hubClient.getHub(user.getHubId());
-//            if (response.getData() == null) {
-//                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 허브가 존재하지 않습니다.");
-//            }
-//        }
+        if(user.getUserRoles().equals("DELIVER_COMPANY")) { //소속허브가 존재하지 않을경우 예외발생(주석해제예정)
+            ResponseDto<FeignHubDto> response = hubClient.getHub(user.getHubId());
+            if (response.getData() == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 허브가 존재하지 않습니다.");
+            }
+        }
 
         // 2) (deliverType, hubId)로 이미 등록된 DeliverUser들 중 가장 큰 rotationOrder 찾기
         DeliverType deliverType = deliverUserCreateReqDto.getDeliverType();
