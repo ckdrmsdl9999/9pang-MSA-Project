@@ -35,24 +35,6 @@ public class DeliverUserServiceImpl implements DeliverUserService {
     private final UserRepository userRepository;
     private final HubClient hubClient;
 
-//    @Override
-//    @Transactional//배송 담당자 생성
-//    public DeliverUserResponseDto createDeliverUser(DeliverUserCreateReqDto deliverUserCreateReqDto) {
-//        User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
-//                .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
-//
-//        DeliverUser deliverUser = DeliverUserCreateReqDto.toEntity(deliverUserCreateReqDto,user);
-//        DeliverUser savedDeliverUser = deliverUserRepository.save(deliverUser);
-//
-//
-//        // User 배송담당자 여부 업데이트
-//            user.setDeliver(true);
-//            userRepository.save(user);
-//
-//
-//        return DeliverUserResponseDto.from(savedDeliverUser);
-//    }
-
 @Override//권한별 담당자 검색
 @Transactional(readOnly = true)
 public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String userId, String userRole, String sortBy, String order, Pageable pageable) {
@@ -167,9 +149,9 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
     public DeliverUserResponseDto updateDeliverUser(UUID deliverId, DeliverUserUpdateReqDto updateDto, String userId, String userRole) {
         // 권한 검증
      //   System.out.println(userPrincipals.getRole()+"관리확인");
-        if (!userRole.equals("ADMIN")) {
-            throw new CustomForbiddenException("관리자 권한이 필요합니다!.");
-        }
+//        if (!userRole.equals("ADMIN")) {
+//            throw new CustomForbiddenException("관리자 권한이 필요합니다!.");
+//        }
 
         DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
                 .orElseThrow(() -> new CustomNotFoundException("수정하려는 배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
@@ -214,9 +196,9 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
     @Transactional
     public void deleteDeliverUser(UUID deliverId, String userId, String userRole) {
         // 권한 검증
-        if (userRole.equals("ADMIN")) {
-            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
-        }
+//        if (userRole.equals("ADMIN")) {
+//            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
+//        }
 
         DeliverUser deliverUser = deliverUserRepository.findByDeliverId(deliverId)
                 .orElseThrow(() -> new CustomNotFoundException("삭제하려는 배송담당자 정보를 찾을 수 없습니다. ID: " + deliverId));
@@ -335,7 +317,7 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
         User user = userRepository.findById(deliverUserCreateReqDto.getUserId())
                 .orElseThrow(() -> new CustomNotFoundException("등록하려는 사용자가 존재하지 않습니다. "));
 
-        if(user.getUserRoles().equals("DELIVER_COMPANY")) { //소속허브가 존재하지 않을경우 예외발생(주석해제예정)
+        if(user.getUserRoles().name().equals("DELIVER_COMPANY")) { //소속허브가 존재하지 않을경우 예외발생
             ResponseDto<FeignHubDto> response = hubClient.getHub(user.getHubId());
             if (response.getData() == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 허브가 존재하지 않습니다.");

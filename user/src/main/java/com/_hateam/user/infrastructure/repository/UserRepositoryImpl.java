@@ -36,12 +36,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Page<User> findByUsernameContainingAndDeletedAtIsNull(String username, Pageable pageable) {
-        return jpaUserRepository.findByUsernameContainingAndDeletedAtIsNull(username, pageable);
+    return jpaUserRepository.findByUsernameContainingAndDeletedAtIsNull(username, pageable);
     }
 
     @Override
     public List<User> findAllByUserRolesAndDeletedAtIsNull(UserRole userRole) {
-        return jpaUserRepository.findAllByUserRolesAndDeletedAtIsNull(userRole);
+    return jpaUserRepository.findAllByUserRolesAndDeletedAtIsNull(userRole);
     }
 
 }
