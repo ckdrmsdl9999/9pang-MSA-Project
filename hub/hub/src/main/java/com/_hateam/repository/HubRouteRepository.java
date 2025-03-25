@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface HubRouteRepository extends JpaRepository<HubRoute, UUID> {
-    HubRoute findBySourceHubAndDestinationHub(Hub sourceHub, Hub destinationHub);
+    HubRoute findBySourceHubAndDestinationHubAndDeletedAtIsNull(Hub sourceHub, Hub destinationHub);
 }

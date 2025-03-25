@@ -12,9 +12,9 @@ import java.util.UUID;
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
     Optional<Object> findByNameAndDeletedAtIsNull(String name);
 
-    Page<Company> findByHubId(UUID hubId, Pageable pageable);
+    Page<Company> findByHubIdAndDeletedAtIsNull(UUID hubId, Pageable pageable);
 
-    List<Company> findByHubId(UUID hubId);
+    List<Company> findByHubIdAndDeletedAtIsNull(UUID hubId);
 
-    Company findByIdAndHubId(UUID id, UUID hubId);
+    Company findByIdAndHubIdAndDeletedAtIsNull(UUID id, UUID hubId);
 }

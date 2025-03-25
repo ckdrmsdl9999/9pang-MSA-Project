@@ -1,4 +1,4 @@
-package com._hateam.auth.domain;
+package com._hateam.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
