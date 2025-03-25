@@ -31,7 +31,7 @@ root 디렉토리에서 'docker-compose up --build' 명령어 실행
 
 ### 각 서비스 엔드포인트
 
-![엔드 포인트](https://github.com/9haTeam/9pang/wiki/%EC%97%94%EB%93%9C%ED%8F%AC%EC%9D%B8%ED%8A%B8)
+[엔드 포인트](https://github.com/9haTeam/9pang/wiki/%EC%97%94%EB%93%9C%ED%8F%AC%EC%9D%B8%ED%8A%B8)
 
 ## 📌 ERD
 
@@ -55,7 +55,7 @@ root 디렉토리에서 'docker-compose up --build' 명령어 실행
 
 ## 📌 트러블 슈팅
 
-![트러블 슈팅](https://github.com/9haTeam/9pang/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
+[트러블 슈팅](https://github.com/9haTeam/9pang/wiki/%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
 
 ## 📌 API Docs
 
