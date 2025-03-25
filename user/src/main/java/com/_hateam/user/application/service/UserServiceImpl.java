@@ -8,6 +8,7 @@ import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
+import com._hateam.user.infrastructure.configuration.CustomException;
 import com._hateam.user.infrastructure.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,17 +43,19 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public AuthResponseDto authenticateUser(UserSignInReqDto signInReqDto) {//로그인
-
+        try {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        signInReqDto.getUsername(),
-                        signInReqDto.getPassword()
-                )
+            new UsernamePasswordAuthenticationToken(
+                    signInReqDto.getUsername(),
+                    signInReqDto.getPassword()
+            )
         );
-
+        }catch (Exception e) {
+        throw new CustomException("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
         // 토큰에 값 담기위해 값 조회
         User user = userRepository.findByUsername(signInReqDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다: " + signInReqDto.getUsername()));
+                .orElseThrow(() -> new CustomException("사용자가 존재하지 않습니다: " + signInReqDto.getUsername()));
 
         String accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getUserRoles().name());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
@@ -70,7 +73,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDto> getAllUsers(String userRole) {
         // 권한검증
         if(userRole.equals("COMPANY")) {
-            throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
+            throw new CustomException("해당 권한으로는 사용할 수 없습니다.");
         }
         List<User> users = userRepository.findAllByDeletedAtIsNull();
 
@@ -85,11 +88,11 @@ public class UserServiceImpl implements UserService {
         User user;
         if(userRole.equals("ADMIN")) {
         user =userRepository.findById(userId)
-                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+                .orElseThrow(() -> new CustomException("유저를 찾을 수 없습니다 " + userId));
         }
         else {
             user =userRepository.findById(Long.parseLong(myId))
-                    .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+                    .orElseThrow(() -> new CustomException("유저를 찾을 수 없습니다 " + userId));
         }
 
         return UserResponseDto.from(user);
@@ -105,7 +108,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException("사용자를 찾을 수 없습니다."));
 
         // 업데이트할 필드들만 설정
         if (userUpdateReqDto.getNickname() != null) {
@@ -130,7 +133,7 @@ public class UserServiceImpl implements UserService {
 
         // ADMIN 권한이 있을 때 실행할 코드
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException("사용자를 찾을 수 없습니다."));
 
         Optional<DeliverUser> optionalDeliverUser = deliverUserRepository.findByUser_UserId(userId);
         optionalDeliverUser.ifPresent(deliverUser -> {
@@ -166,10 +169,10 @@ public class UserServiceImpl implements UserService {
         } else {
 
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new CustomNotFoundException("사용자를 찾을 수 없습니다: " + username));
+                    .orElseThrow(() -> new CustomException("사용자를 찾을 수 없습니다: " + username));
             // 일반 사용자(COMPANY, HUB, DELIVERY)는 자신의 정보만 조회 가능
             if (!user.getUserId().equals(Long.parseLong(userId))) {
-                throw new CustomForbiddenException("본인의 아이디만 조회가능합니다.");
+                throw new CustomException("본인의 아이디만 조회가능합니다.");
             }
 
 
@@ -189,7 +192,7 @@ public class UserServiceImpl implements UserService {
 //            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
 //        }
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new CustomException("사용자를 찾을 수 없습니다: " + userId));
 
         user.setUserRoles(role);
         User updatedUser = userRepository.save(user);
@@ -218,7 +221,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public FeignUserResDto getUserByFeign(Long userId){//추후 권한에 따라
         User user =userRepository.findById(userId)
-                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + userId));
+                .orElseThrow(() -> new CustomException("유저를 찾을 수 없습니다 " + userId));
         return FeignUserResDto.from(user);
     }
 
@@ -226,7 +229,7 @@ public class UserServiceImpl implements UserService {
     public FeignVerifyResDto verifyUserFeign(String username){//추후 권한에 따라
 
         User user =userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다!! " + username));
+                .orElseThrow(() -> new CustomException("유저를 찾을 수 없습니다!! " + username));
 
         return FeignVerifyResDto.from(user);
     }
@@ -234,7 +237,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserByUsername(String username){
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomForbiddenException("유저를 찾을 수 없습니다 " + username));
+                .orElseThrow(() -> new CustomException("유저를 찾을 수 없습니다 " + username));
         return UserResponseDto.from(user);
     }
 
