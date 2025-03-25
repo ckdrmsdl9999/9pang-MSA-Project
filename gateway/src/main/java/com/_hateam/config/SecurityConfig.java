@@ -39,54 +39,6 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(contextRepository)
 
-                // 헤더 추가 필터 (로깅 추가)
-//                .addFilterAfter((exchange, chain) -> {
-//                    String path = exchange.getRequest().getURI().getPath();
-//                    log.info("===== 헤더 추가 필터 실행: {} =====", path);
-//
-//                    // 기존 헤더 로깅
-//                    log.info("기존 요청 헤더:");
-//                    exchange.getRequest().getHeaders().forEach((name, values) -> {
-//                        log.info("  {} = {}", name, values);
-//                    });
-//
-//                    return exchange.getPrincipal()
-//                            .cast(Authentication.class)
-//                            .flatMap(auth -> {
-//                                // 인증 객체에서 사용자 ID와 역할 추출
-//                                String userId = auth.getPrincipal().toString();
-//                                String role = auth.getAuthorities().stream()
-//                                        .findFirst()
-//                                        .map(GrantedAuthority::getAuthority)
-//                                        .orElse("");
-//
-//                                log.info("인증 정보 추출 완료 - userId: {}, role: {}", userId, role);
-//
-//                                // 요청 헤더에 사용자 ID와 역할 추가
-//                                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-//                                        .header("x-user-id", userId)
-//                                        .header("x-user-role", role)
-//                                        .build();
-//
-//                                // 수정된 헤더 로깅
-//                                log.info("수정된 요청 헤더:");
-//                                mutatedRequest.getHeaders().forEach((name, values) -> {
-//                                    log.info("  {} = {}", name, values);
-//                                });
-//
-//                                log.info("x-user-id 헤더 확인: {}", mutatedRequest.getHeaders().getFirst("x-user-id"));
-//                                log.info("x-user-role 헤더 확인: {}", mutatedRequest.getHeaders().getFirst("x-user-role"));
-//
-//                                // 수정된 요청으로 교체하고 필터 체인 계속 진행
-//                                return chain.filter(exchange.mutate()
-//                                        .request(mutatedRequest)
-//                                        .build());
-//                            })
-//                            .switchIfEmpty(Mono.defer(() -> {
-//                                log.warn("인증 정보가 없음 - 헤더를 추가하지 않고 계속 진행");
-//                                return chain.filter(exchange);
-//                            }));
-//                }, SecurityWebFiltersOrder.AUTHENTICATION)
 
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/api/auth/**").permitAll()
@@ -94,8 +46,9 @@ public class SecurityConfig {
                         .pathMatchers("/api/users/signin").permitAll()
                         .pathMatchers("/hubs/**").permitAll()
                         .pathMatchers("/companies/**").permitAll()
-                        .pathMatchers(HttpMethod.PUT,"/api/users/getusers").hasAuthority("ADMIN")
-                        .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority("ADMIN")
+                        .pathMatchers("/api/users/getusers" +
+                                "").hasAuthority("ADMIN")
+                        .pathMatchers("/api/users/roles/**").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.PUT,"/api/users/**").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.PUT,"/api/delivery-users/**").hasAuthority("ADMIN")
                         .pathMatchers(HttpMethod.POST,"/api/delivery-users/add").hasAuthority("ADMIN")

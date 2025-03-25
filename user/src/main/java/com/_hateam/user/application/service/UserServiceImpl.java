@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> getAllUsers(String userRole) {
         // 권한검증
-        if(!userRole.equals("COMPANY")) {
+        if(userRole.equals("COMPANY")) {
             throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
         }
         List<User> users = userRepository.findAllByDeletedAtIsNull();
@@ -126,18 +127,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(String userMyId, Long userId, String userRole) {
-        // 권한검증
-        if(!userRole.equals("ADMIN")) {
-            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
-        }
 
         // ADMIN 권한이 있을 때 실행할 코드
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
-        DeliverUser deliverUser= deliverUserRepository.findByUser_UserId( userId).orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
 
-        deliverUser.setDeletedBy(userMyId);//유저삭제시 연관된 배송담당자도 논리적 삭제처리
-        deliverUser.setDeletedAt(LocalDateTime.now());//유저삭제시 연관된 배송담당자도 논리적 삭제처리
+        Optional<DeliverUser> optionalDeliverUser = deliverUserRepository.findByUser_UserId(userId);
+        optionalDeliverUser.ifPresent(deliverUser -> {
+            deliverUser.setDeletedBy(userMyId);
+            deliverUser.setDeletedAt(LocalDateTime.now());
+        });
+
         user.setDeletedAt(LocalDateTime.now());
         user.setDeletedBy(user.getUsername());
         userRepository.save(user);
