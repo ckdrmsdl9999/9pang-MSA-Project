@@ -15,7 +15,7 @@
 | 유남규 | 허브와 허브 경로 관리, 허브 경로 알고리즘, 업체 관리, 상품 관리, Docker + Eureka 로 MSA 구성 |
 | 손민주 | 주문 관리, 슬랙 메시지 관리, Kafka 이벤트 처리, 공통 모듈 생성 |
 | 김승수 | 배송 관리, 배송경로 관리, Kafka 관리, 공통모듈 기여 |
-| 윤창근 | 사용자, 인증서버(Auth)-게이트웨이(Gateway)의 Jwt토큰 생성 및 검증, Security 설정 |
+| 윤창근 | 유저와 배송담당자 관리 인증서버(Auth)-게이트웨이(Gateway)의 Jwt토큰 생성 및 검증, Security 설정 |
 
 ## 📌 서비스 구성 및 실행 방법
 
@@ -25,7 +25,7 @@
 |------------------|---------------------------------------|----------------------|
 | Eureka Server    | 서비스 레지스트리 및 디스커버리               | 모든 서비스              |
 | API Gateway      | 모든 외부 요청을 라우팅 및 인증                | User Service, Company Service, Hub Service, Order Service 등 |
-| User Service     | 사용자 관리 (회원가입, 로그인 등)             | Auth Service, Redis Cache  |
+| User Service     | 사용자 관리 (회원가입, 로그인 등)             | Auth Service  |
 | Company Service  | 업체 정보 관리                             | 없음                     |
 | Hub Service      | 허브 및 경로 정보 관리                       | Redis Cache             |
 | Auth Service     | 인증 및 권한 관리                           | User Service            |
@@ -33,7 +33,7 @@
 | Order Service    | 주문 생성 및 상태 관리                      | 없음                     |
 | Redis Cache      | 데이터 캐싱                               | 없음                     |
 | PostgreSQL DB    | 영속적 데이터 저장                         | 없음                     |
-
+| Zipkin           | 분산추적, 흐름추적, 지연시간 분석          | Gateway Service, User Service |
 ### 실행 방법
 
 ```shell
@@ -44,7 +44,7 @@ root 디렉토리에서 'docker-compose up --build' 명령어 실행
 
 | 서비스 이름     | 엔드포인트 |
 |-----------------|------------|
-| User Service    | `/api/users/**`, `/api/delivery-users/**` |
+| User Service    |  `/api/users/**`, `/api/users/signup`, `/api/users/getuser`, `/api/users/roles/{userId}`, `/api/users/search`, `/api/users/getusers`,  `/api/delivery-users/**`, `/api/delivery-users/assign`, `/api/delivery-users/init-dummy-data`,  `/api/delivery-users/add`,  `/api/delivery-users/admin/serarch`|
 | Company Service | `/companies/**` |
 | Hub Service     | `/hubs/**` |
 | Auth Service    | `/api/auth/signin` |
