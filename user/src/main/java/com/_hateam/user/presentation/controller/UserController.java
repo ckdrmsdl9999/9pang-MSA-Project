@@ -41,12 +41,6 @@ public class UserController {
                 ResponseDto.success(userService.getUser(Long.parseLong(myId),myId,userRole)));
     }
 
-//    @GetMapping("/admin/{userId}")//관리자단일조회(ADMIN)
-//    public ResponseEntity<?> getAdminUser(@PathVariable Long userId, HttpServletRequest request) {
-//        String myId = request.getHeader("x-user-id");
-//        String userRole = request.getHeader("x-user-role");
-//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, userService.getUser(userId,myId,userRole)));
-//    }
 
 
     @PutMapping("/roles/{userId}") // 권한 수정(ADMIN)
@@ -82,7 +76,8 @@ public class UserController {
     @DeleteMapping("/{userId}")  // 회원 탈퇴(ADMIN)
     public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
         String userRole = request.getHeader("x-user-role");
-        userService.deleteUser(userId,userRole);
+        String userMyId = request.getHeader("x-user-id");
+        userService.deleteUser(userMyId, userId,userRole);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."));
     }
 
@@ -119,14 +114,5 @@ public class UserController {
                 ResponseDto.success(userService.getUserByUsername(username)));
     }
 
-    @GetMapping("/headers") //헤더값 테스트 API
-    public ResponseEntity<?> getDirectHeaders(HttpServletRequest request) {
-        String userId = request.getHeader("x-user-id");
-        String userRole = request.getHeader("x-user-role");
-        Map<String, Object> result = new HashMap<>();
-        result.put("userId", userId);
-        result.put("userRole", userRole);
 
-        return ResponseEntity.ok(ResponseDto.success(result));
-    }
 }

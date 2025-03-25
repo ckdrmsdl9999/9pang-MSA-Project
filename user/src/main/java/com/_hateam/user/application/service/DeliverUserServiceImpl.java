@@ -86,23 +86,23 @@ public Page<DeliverUserResponseDto> searchDeliverUsersByName(String name, String
     @Override
     @Transactional(readOnly = true)
     public List<DeliverUserResponseDto> getAllDeliverUsers(String userId, String userRole) {
-
         // 권한 검증
-        DeliverUser searchMan = deliverUserRepository.findByUser_UserId(Long.parseLong(userId)).orElseThrow(
-                () -> new CustomNotFoundException("배송담당자 정보를 찾을 수 없습니다. ID: " + Long.parseLong(userId)));
-        List<DeliverUser> deliverUsers = deliverUserRepository.findByDeletedAtIsNull();
+        DeliverUser searchMan;
+        List<DeliverUser> deliverUsers;
 
+        if(userRole.equals("ADMIN")) {
+            deliverUsers = deliverUserRepository.findByDeletedAtIsNull();
+        }
         //ADMIN 은 전부조회
-        if(userRole.equals("HUB")){
+        else if(userRole.equals("HUB")){
+            searchMan= deliverUserRepository.findByUser_UserId(Long.parseLong(userId)).orElseThrow(
+                    () -> new CustomNotFoundException("허브 관리자 정보를 찾을 수 없습니다. ID를 등록해주세요 " + Long.parseLong(userId)));
             UUID hubId = searchMan.getHubId(); // 관리자의 허브 ID
             deliverUsers = deliverUserRepository.findByHubIdAndDeletedAtIsNull(hubId);
 
         }
-        else if(userRole.equals("DELIVERY")){
-            deliverUsers = List.of(searchMan);
-        }
-        else if (userRole.equals("COMPANY")) {
-            throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다.");
+        else {
+            throw new CustomForbiddenException("배송담당자 정보에 접근할 권한이 없습니다. Delivery는 단일조회를 이용해주세요");
         }
 
         return deliverUsers.stream()

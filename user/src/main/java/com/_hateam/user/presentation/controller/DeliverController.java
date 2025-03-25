@@ -27,7 +27,6 @@ public class DeliverController {
     }
 
 
-
     // 검색(페이징추가, 권한별 분리)
     @GetMapping("/admin/search")
     public ResponseEntity<?> searchDeliverUsers(
@@ -65,7 +64,7 @@ public class DeliverController {
 
 
     // 배송담당자 수정(관리자만)
-    @PostMapping("/{deliverId}")
+    @PutMapping("/{deliverId}")
     public ResponseEntity<?> updateDeliverUser(
             @PathVariable UUID deliverId,
             @RequestBody DeliverUserUpdateReqDto updateDto,

@@ -4,7 +4,9 @@ import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
+import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.model.User;
+import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
 import com._hateam.user.infrastructure.security.JwtUtil;
 import jakarta.transaction.Transactional;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final DeliverUserRepository deliverUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto saveUser(UserSignUpReqDto userSignUpReqDto) {
         User savedUser =userRepository.save(UserSignUpReqDto.toEntity(userSignUpReqDto,passwordEncoder));
+        savedUser.setCreatedAt(LocalDateTime.now());
         return UserResponseDto.from(savedUser);
     }
 
@@ -64,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> getAllUsers(String userRole) {
         // 권한검증
-        if(!userRole.equals("COMPANY")) {
+        if(userRole.equals("COMPANY")) {
             throw new CustomForbiddenException("해당 권한으로는 사용할 수 없습니다.");
         }
         List<User> users = userRepository.findAllByDeletedAtIsNull();
@@ -121,15 +126,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(Long userId, String userRole) {
-        // 권한검증
-        if(!userRole.equals("ADMIN")) {
-            throw new CustomForbiddenException("관리자 권한이 필요합니다.");
-        }
+    public void deleteUser(String userMyId, Long userId, String userRole) {
 
         // ADMIN 권한이 있을 때 실행할 코드
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomForbiddenException("사용자를 찾을 수 없습니다."));
+
+        Optional<DeliverUser> optionalDeliverUser = deliverUserRepository.findByUser_UserId(userId);
+        optionalDeliverUser.ifPresent(deliverUser -> {
+            deliverUser.setDeletedBy(userMyId);
+            deliverUser.setDeletedAt(LocalDateTime.now());
+        });
 
         user.setDeletedAt(LocalDateTime.now());
         user.setDeletedBy(user.getUsername());
