@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "user-service", url = "${services.user.url}")
+@FeignClient(name = "user-service")
 public interface UserClient {
 
-    @GetMapping("/api/delivery-users/{deliverId}/slack")
-    ResponseDto<DeliverUserDto> getDeliverUserById(@PathVariable("deliverId") UUID deliverId);
+      @GetMapping("/api/delivery-users/{deliverId}/slack")
+      ResponseDto<DeliverUserDto> getDeliverUserById(@PathVariable("deliverId") UUID deliverId);
 
-    @GetMapping("/api/delivery-users/delivery")
-    ResponseDto<List<DeliverUserDto>> getCompanyDeliverers();
+      @GetMapping("/api/delivery-users/delivery")
+      ResponseDto<List<DeliverUserDto>> getCompanyDeliverers();
 }
