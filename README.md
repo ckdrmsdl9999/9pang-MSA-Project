@@ -15,9 +15,23 @@
 
 ## 📌 서비스 구성 및 실행 방법
 
-### 서비스 구성
 
-[서비스 구성](https://github.com/9haTeam/9pang/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B5%AC%EC%84%B1)
+### 📌 서비스 구성
+
+| 서비스 이름        | 기능                                    | 의존성                  |
+|------------------|---------------------------------------|----------------------|
+| Eureka Server    | 서비스 레지스트리 및 디스커버리               | 모든 서비스              |
+| API Gateway      | 모든 외부 요청을 라우팅 및 인증                | User Service, Company Service, Hub Service, Order Service 등 |
+| User Service     | 사용자 관리 (회원가입, 로그인 등)             | Auth Service  |
+| Company Service  | 업체 정보 관리                             | 없음                     |
+| Hub Service      | 허브 및 경로 정보 관리                       | Redis Cache             |
+| Auth Service     | 인증 및 권한 관리                           | User Service            |
+| Delivery Service | 배송 상태 및 경로 관리                      | 없음                     |
+| Order Service    | 주문 생성 및 상태 관리                      | Company Service, Hub Service, Delivery Service |
+| Message Service  | 슬랙 메시지 발송 및 관리, 배송 담당자 알림   | User Service, Hub Service |
+| Redis Cache      | 데이터 캐싱                               | 없음                     |
+| PostgreSQL DB    | 영속적 데이터 저장                         | 없음                     |
+| Zipkin           | 분산추적, 흐름추적, 지연시간 분석          | Gateway Service, User Service |
 
 ### 실행 방법
 
