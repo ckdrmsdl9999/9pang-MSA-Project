@@ -30,7 +30,8 @@
 | Hub Service      | 허브 및 경로 정보 관리                       | Redis Cache             |
 | Auth Service     | 인증 및 권한 관리                           | User Service            |
 | Delivery Service | 배송 상태 및 경로 관리                      | 없음                     |
-| Order Service    | 주문 생성 및 상태 관리                      | 없음                     |
+| Order Service    | 주문 생성 및 상태 관리                      | Company Service, Hub Service, Delivery Service |
+| Message Service  | 슬랙 메시지 발송 및 관리, 배송 담당자 알림   | User Service, Hub Service |
 | Redis Cache      | 데이터 캐싱                               | 없음                     |
 | PostgreSQL DB    | 영속적 데이터 저장                         | 없음                     |
 | Zipkin           | 분산추적, 흐름추적, 지연시간 분석          | Gateway Service, User Service |
@@ -48,9 +49,9 @@ root 디렉토리에서 'docker-compose up --build' 명령어 실행
 | Company Service | `/companies/**` |
 | Hub Service     | `/hubs/**` |
 | Auth Service    | `/api/auth/signin` |
-| Order Service    | `/api/orders/**` |
+| Order Service    | `/api/orders/**`, `/api/orders/{orderId}`, `api/orders/search`, `api/orders/search/reset` |
 | Delivery Service  | `/api/deliveries/**`, `/api/delivery-routes/**` |
-| Message Service | `/api/slack/**` |
+| Message Service | `/api/slack/**`, `/api/slack/messages`, `/api/slack/messages/delivery-route`, `/api/slack/messages/search`, `/api/slack/messages/{messageId}` |
 
 ## 📌 ERD
 
@@ -77,6 +78,7 @@ root 디렉토리에서 'docker-compose up --build' 명령어 실행
 | Eureka 서버 서비스 발견 실패          | Eureka 설정 파일에 service-url 주소 오기입되어 있었으며, 내부 도커 네트워크 서비스 이름으로 변경하여 해결 |
 | Redis 직렬화 문제                   |  Redis를 사용한 캐싱에서 객체의 직렬화 및 역직렬화 문제. Redis에는 Hashmap으로 저장이 되었으나 읽어올 때는 객체로 읽어오는 문제 발생. Serializer 설정을 통해 해결  |
 | commonModule globalException 처리    | 기본적으로 @SpringBootApplication이 있는 클래스와 그 하위 패키지만 컴포넌트 스캔됨.<br>의존성으로 받은 commonmodule의 GlobalExceptionHandler는 스캔되지 않아 작동하지 않음.<br>해결책으로 @ComponentScan이나 @Import를 사용해 필요한 컴포넌트를 스캔하도록 함.<br>@Import는 필요한 컴포넌트만 가져와 스캔 범위를 줄일 수 있음.|
+| Order 서비스와 Message 서비스가 Eureka에 등록되지 않음 | FeignClient에서 하드코딩된 URL 설정(@FeignClient(name = "user-service", url = "${services.user.url}"))이 있었으나 services.user.url 환경 변수가 설정되지 않아 애플리케이션 시작 실패. Feign 클라이언트에서 URL 속성을 제거하고 서비스 이름만 사용(@FeignClient(name = "user-service"))하도록 변경하여 Eureka의 서비스 디스커버리 기능을 활용하는 방식으로 해결 |
 
 ## 📌 API Docs
 
