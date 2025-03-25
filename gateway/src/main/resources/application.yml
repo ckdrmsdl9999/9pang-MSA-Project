@@ -25,17 +25,17 @@ spring:
         - id: hubs-service
           uri: lb://hubs-service
           predicates:
-            - Path=/hubs/**
+            - Path=/hubs/**,/hub-routes/**
         - id: company-service
           uri: lb://company-service
           predicates:
-            - Path=/companies
+            - Path=/companies/**,/products/**
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
-        - id: slack-service
-          uri: lb://slack-service
+        - id: message-service
+          uri: lb://message-service
           predicates:
             - Path=/api/slack/**
       discovery:

@@ -1,4 +1,5 @@
 package com._hateam.config;
+
 import com._hateam.dto.HubResponseDto;
 import com._hateam.entity.Hub;
 import com._hateam.entity.HubRoute;
@@ -25,20 +26,17 @@ public class HubInitializer {
 
     private final HubRepository hubRepository;
     private final HubRouteRepository hubRouteRepository;
-//    private final GeminiClient geminiClient; // Feign Client 주입
-    private final RedisTemplate<String, Object> redisTemplate; // RedisTemplate 주입
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @PostConstruct
+    @Order(1)
     @Transactional
     public void initializeHubs() {
-//        // 허브가 이미 존재하면 초기화를 건너뛰도록 할 수도 있음
-//        if (hubRepository.count() > 0) return;
-
-        // 정적 허브 데이터 목록 (이름은 HubGraph에 정의된 노드와 일치하도록)
+        // 정적 허브 데이터 목록
         List<HubResponseDto> hubDataList = Arrays.asList(
                 new HubResponseDto("서울", "서울특별시 송파구 송파대로 55", "37.4562557", "126.7052062"),
-                new HubResponseDto("경기 북부", "경기도 고양시 덕양구 권율대로 570", "37.632348", "126.852348"),
-                new HubResponseDto("경기 남부", "경기도 이천시 덕평로 257-21", "37.4562557", "126.7052062"),
+                new HubResponseDto("경기북부", "경기도 고양시 덕양구 권율대로 570", "37.632348", "126.852348"),
+                new HubResponseDto("경기남부", "경기도 이천시 덕평로 257-21", "37.4562557", "126.7052062"),
                 new HubResponseDto("부산", "부산 동구 중앙대로 206", "35.1141634", "129.0345914"),
                 new HubResponseDto("대구", "대구 북구 태평로 161", "35.8828351", "128.5996849"),
                 new HubResponseDto("인천", "인천 남동구 정각로 29", "37.4475431", "126.7052062"),
@@ -47,32 +45,31 @@ public class HubInitializer {
                 new HubResponseDto("울산", "울산 남구 중앙로 201", "35.538564", "129.311359"),
                 new HubResponseDto("세종", "세종특별자치시 한누리대로 2130", "36.4801124", "127.2890587"),
                 new HubResponseDto("강원도", "강원특별자치도 춘천시 중앙로 1", "37.8812616", "127.7291884"),
-                new HubResponseDto("충청 북도", "충북 청주시 상당구 상당로 82", "36.6353242", "127.4897855"),
-                new HubResponseDto("충청 남도", "충남 홍성군 홍북읍 충남대로 21", "36.6025547", "126.6667362"),
-                new HubResponseDto("전라 북도", "전북특별자치도 전주시 완산구 효자로 225", "35.8203627", "127.1068278"),
-                new HubResponseDto("전라 남도", "전남 무안군 삼향읍 오룡길 1", "34.8492021", "126.4715102"),
-                new HubResponseDto("경상 북도", "경북 안동시 풍천면 도청대로 455", "36.578652", "128.425883"),
-                new HubResponseDto("경상 남도", "경남 창원시 의창구 중앙대로 300", "35.2343864", "128.6925514")
+                new HubResponseDto("충청북도", "충북 청주시 상당구 상당로 82", "36.6353242", "127.4897855"),
+                new HubResponseDto("충청남도", "충남 홍성군 홍북읍 충남대로 21", "36.6025547", "126.6667362"),
+                new HubResponseDto("전라북도", "전북특별자치도 전주시 완산구 효자로 225", "35.8203627", "127.1068278"),
+                new HubResponseDto("전라남도", "전남 무안군 삼향읍 오룡길 1", "34.8492021", "126.4715102"),
+                new HubResponseDto("경상북도", "경북 안동시 풍천면 도청대로 455", "36.578652", "128.425883"),
+                new HubResponseDto("경상남도", "경남 창원시 의창구 중앙대로 300", "35.2343864", "128.6925514")
         );
 
-        // 허브 저장 및 이름 기준 맵 구성
+        // 허브 저장 및 Redis 캐싱
         Map<String, Hub> hubMap = new HashMap<>();
         for (HubResponseDto data : hubDataList) {
             Hub hub = saveHub(data.getName(), data.getAddress(), data.getLatitude(), data.getLongitude());
             hubMap.put(data.getName(), hub);
-            log.info("Saved Hub: {}", hub);
+            log.info("Saved Hub: {}", hub.getName());
         }
 
-        // HubGraph 객체를 생성하여 허브 연결 구조(간선 정보)를 가져옴
+        // HubGraph 객체 생성 및 경로 계산기 초기화
         HubGraph hubGraph = new HubGraph();
         Map<String, List<String>> graphStructure = hubGraph.getGraph();
         GraphPathFinder pathFinder = new GraphPathFinder(hubGraph, hubMap);
 
-        // HubGraph에 정의된 연결 정보를 기반으로, DB에 HubRoute 엔티티를 저장 (중복 방지를 위해, 양방향 간선은 한 번만 저장)
+        // 직접 연결된 허브 경로(간선) DB 및 Redis 저장 (중복 방지를 위해 사전순 비교)
         Collator collator = Collator.getInstance(Locale.KOREAN);
         for (String sourceName : graphStructure.keySet()) {
             for (String neighbor : graphStructure.get(sourceName)) {
-                // sourceName이 neighbor보다 사전순으로 앞서면 HubRoute 엔티티를 저장(중복 방지)
                 if (collator.compare(sourceName, neighbor) < 0) {
                     Hub source = hubMap.get(sourceName);
                     Hub dest = hubMap.get(neighbor);
@@ -83,8 +80,18 @@ public class HubInitializer {
                             double lat2 = Double.parseDouble(dest.getLatitude());
                             double lon2 = Double.parseDouble(dest.getLongitude());
                             double distance = pathFinder.haversine(lat1, lon1, lat2, lon2);
-                            saveHubRoute(source, dest, distance);
-                            log.info("Saved HubRoute: {} -> {} with distance {} km", sourceName, neighbor, distance);
+
+                            // 직접 연결인 경우, 모든 정보를 동일한 값으로 초기화
+                            Double penaltyDistance = 0.0;
+                            List<Double> nodeDistances = Collections.singletonList(distance);
+                            List<String> route = Arrays.asList(source.getName(), dest.getName());
+                            Double actualDistance = distance;
+                            Double totalCost = distance;
+                            List<Double> cumulativeDistances = Collections.singletonList(distance);
+
+                            // 모든 정보를 저장하는 메서드 호출
+                            saveHubRoute(source, dest, distance, penaltyDistance, nodeDistances, route, actualDistance, totalCost, cumulativeDistances);
+                            log.info("Saved direct HubRoute: {} -> {} with distance {} km", sourceName, neighbor, distance);
                         } catch (NumberFormatException e) {
                             log.warn("Invalid coordinate format for hub route {} -> {}", sourceName, neighbor);
                         }
@@ -94,26 +101,26 @@ public class HubInitializer {
         }
 
 
-
-        // 각 노드 쌍에 대해, 수정된 다익스트라 알고리즘을 사용하여 최단 경로 비용 계산 후 Redis에 저장
-        // DB에 HubRoute 엔티티를 저장 (중복 방지를 위해, 양방향 간선은 한 번만 저장)
+        // 모든 허브 쌍에 대해 최단 경로 계산 후 DB와 Redis에 저장
         List<String> hubNames = new ArrayList<>(hubMap.keySet());
         for (String start : hubNames) {
             for (String end : hubNames) {
                 if (!start.equals(end)) {
                     GraphPathFinder.PathResult result = pathFinder.findMinimumCostPath(start, end);
                     if (result != null) {
-                        // 최종 결과: 총 비용과 경로 리스트를 함께 저장 (예: JSON 형식의 Map으로 저장)
-                        Map<String, Object> routeResult = new HashMap<>();
-                        routeResult.put("실제 거리", result.getActualDistance());
-                        routeResult.put("노드간 개별 거리",result.getSegmentDistances());
-                        routeResult.put("누적 거리",result.getNodeDistances());
-                        routeResult.put("패널티 거리", result.getPenalty());
-                        routeResult.put("총 비용", result.getTotalCost());
-                        routeResult.put("경로", result.getPath());
-                        String key = "route:" + start + ":" + end;
-                        redisTemplate.opsForValue().set(key, routeResult);
-                        log.info("Route from {} to {}: {} km, Path: {}", start, end, result.getTotalCost(), result.getPath());
+                        saveHubRoute(
+                                hubMap.get(start),
+                                hubMap.get(end),
+                                result.getActualDistance(),    // distance
+                                result.getPenalty(),           // penaltyDistance
+                                result.getSegmentDistances(),  // nodeDistances
+                                result.getPath(),              // route (경로 리스트)
+                                result.getActualDistance(),    // actualDistance
+                                result.getTotalCost(),         // totalCost
+                                result.getNodeDistances()      // cumulativeDistances
+                        );
+                        log.info("Computed and saved route from {} to {}: Total Cost: {} km, Path: {}",
+                                start, end, result.getTotalCost(), result.getPath());
                     } else {
                         log.warn("No path found from {} to {}", start, end);
                     }
@@ -121,7 +128,7 @@ public class HubInitializer {
             }
         }
 
-        // 직접 연결된 간선의 기본 Haversine 거리를 Redis에 저장 (캐시용)
+        // 직접 연결된 간선의 기본 Haversine 거리를 Redis에 별도로 캐시 (필요 시 사용)
         Map<String, Double> directEdges = new HashMap<>();
         for (String sourceName : graphStructure.keySet()) {
             for (String neighbor : graphStructure.get(sourceName)) {
@@ -146,7 +153,6 @@ public class HubInitializer {
         log.info("Direct hub graph saved to Redis.");
     }
 
-
     @CachePut(value = "hub", key = "#result.id")
     public Hub saveHub(String name, String address, String latitude, String longitude) {
         Hub hub = Hub.builder()
@@ -155,19 +161,80 @@ public class HubInitializer {
                 .latitude(latitude)
                 .longitude(longitude)
                 .build();
-        return hubRepository.save(hub);
+        Hub savedHub = hubRepository.save(hub);
+        // Redis에 hub의 전체 정보를 캐시
+        String hubKey = "hub:" + savedHub.getId();
+        Map<String, Object> hubData = new HashMap<>();
+        hubData.put("id", savedHub.getId());
+        hubData.put("name", savedHub.getName());
+        hubData.put("address", savedHub.getAddress());
+        hubData.put("latitude", savedHub.getLatitude());
+        hubData.put("longitude", savedHub.getLongitude());
+        redisTemplate.opsForHash().putAll(hubKey, hubData);
+        return savedHub;
     }
 
+    // 직접 연결된 허브 경로를 위한 오버로딩 메서드 (최소 정보)
+    public void saveHubRoute(Hub source, Hub dest, double distance) {
+        // 다른 필드는 null 또는 기본값으로 처리
+        saveHubRoute(source, dest, distance, null, null, null, null, null, null);
+    }
 
-    private void saveHubRoute(Hub source, Hub dest, double distance) {
-        // estimatedTimeMinutes는 여기서는 기본값 0으로 설정 (필요에 따라 계산 가능)
-        HubRoute route = HubRoute.builder()
+    // 전체 허브 경로 정보를 DB와 Redis에 저장하는 메서드
+    public void saveHubRoute(Hub source, Hub dest, double distance,
+                             Double penaltyDistance, List<Double> nodeDistances,
+                             List<String> route, Double actualDistance,
+                             Double totalCost, List<Double> cumulativeDistances) {
+
+        HubRoute hubRoute = HubRoute.builder()
                 .sourceHub(source)
                 .destinationHub(dest)
-                .distanceKm((long) Math.round(distance))
+                .distanceKm(Math.round(distance))
                 .estimatedTimeMinutes(0)
+                .penaltyDistance(penaltyDistance)
+                .nodeDistances(nodeDistances)
+                .route(route)
+                .actualDistance(actualDistance)
+                .totalCost(totalCost)
+                .cumulativeDistances(cumulativeDistances)
                 .build();
-        hubRouteRepository.save(route);
-    }
 
+        HubRoute savedRoute = hubRouteRepository.save(hubRoute);
+
+        // Redis에 저장할 키 구성 (예: hubRoute:서울:부산)
+        String routeKey = "hubRoute:" + source.getName() + ":" + dest.getName();
+        redisTemplate.opsForHash().putAll(routeKey, convertHubRouteToMap(savedRoute));
+    }
+    private Map<String, Object> convertHubRouteToMap(HubRoute hubRoute) {
+        Map<String, Object> routeData = new HashMap<>();
+        routeData.put("id", hubRoute.getId().toString());
+
+        // sourceHub와 destinationHub를 Redis에 저장하기 위해 serializable한 형태로 변환
+        Map<String, Object> sourceHubData = new HashMap<>();
+        sourceHubData.put("id", hubRoute.getSourceHub().getId().toString());
+        sourceHubData.put("name", hubRoute.getSourceHub().getName());
+        sourceHubData.put("address", hubRoute.getSourceHub().getAddress());
+        sourceHubData.put("latitude", hubRoute.getSourceHub().getLatitude());
+        sourceHubData.put("longitude", hubRoute.getSourceHub().getLongitude());
+        routeData.put("sourceHub", sourceHubData);
+
+        Map<String, Object> destHubData = new HashMap<>();
+        destHubData.put("id", hubRoute.getDestinationHub().getId().toString());
+        destHubData.put("name", hubRoute.getDestinationHub().getName());
+        destHubData.put("address", hubRoute.getDestinationHub().getAddress());
+        destHubData.put("latitude", hubRoute.getDestinationHub().getLatitude());
+        destHubData.put("longitude", hubRoute.getDestinationHub().getLongitude());
+        routeData.put("destinationHub", destHubData);
+
+        routeData.put("distanceKm", hubRoute.getDistanceKm());
+        routeData.put("estimatedTimeMinutes", hubRoute.getEstimatedTimeMinutes());
+        routeData.put("penaltyDistance", hubRoute.getPenaltyDistance());
+        routeData.put("nodeDistances", hubRoute.getNodeDistances());
+        routeData.put("route", hubRoute.getRoute());
+        routeData.put("actualDistance", hubRoute.getActualDistance());
+        routeData.put("totalCost", hubRoute.getTotalCost());
+        routeData.put("cumulativeDistances", hubRoute.getCumulativeDistances());
+
+        return routeData;
+    }
 }

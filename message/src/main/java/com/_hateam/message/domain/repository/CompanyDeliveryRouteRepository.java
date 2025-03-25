@@ -1,4 +1,3 @@
-// message/src/main/java/com/_hateam/message/domain/repository/CompanyDeliveryRouteRepository.java
 package com._hateam.message.domain.repository;
 
 import com._hateam.message.domain.model.CompanyDeliveryRoute;

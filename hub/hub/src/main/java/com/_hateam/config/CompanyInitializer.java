@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Component
@@ -36,14 +36,19 @@ public class CompanyInitializer {
         if (allHubs.isEmpty()) {
             throw new IllegalStateException("No hubs available in DB");
         }
-        Random random = new Random();
-        return allHubs.get(random.nextInt(allHubs.size())).getId();
+        // ThreadLocalRandom을 사용하여 랜덤 인덱스 선택
+        return allHubs.get(ThreadLocalRandom.current().nextInt(allHubs.size())).getId();
     }
 
     @PostConstruct
     @Order(2)
     @Transactional
     public void initTestData() {
+        // 허브가 없으면 테스트 데이터를 초기화하지 않고 경고 로그를 남김
+        if (hubRepository.count() == 0) {
+            log.warn("No hubs available in DB, skipping test data initialization");
+            return;
+        }
 
         // 각 허브에 소속된 회사 생성
         Company company1 = Company.builder()

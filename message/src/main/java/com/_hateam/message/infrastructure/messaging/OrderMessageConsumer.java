@@ -1,4 +1,3 @@
-// message/src/main/java/com/_hateam/message/infrastructure/messaging/OrderMessageConsumer.java
 package com._hateam.message.infrastructure.messaging;
 
 import com._hateam.common.constant.KafkaTopics;
