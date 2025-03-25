@@ -1,0 +1,6 @@
+rootProject.name = 'auth'
+//includeBuild('../common') {
+//    dependencySubstitution {
+//        substitute(module('com.9hateam:common')).using(project(':'))
+//    }
+//}
