@@ -21,33 +21,18 @@
 
 ### 서비스 구성
 
-- Eureka Server
-  - 기능: 서비스 레지스트리 및 디스커버리
-  - 의존성: 모든 서비스
-- API Gateway
-  - 기능: 모든 외부 요청을 라우팅 및 인증
-  - 의존성: User Service, Company Service, Hub Service, Order Service 등
-- User Service
-  - 기능: 사용자 관리 (회원가입, 로그인 등)
-  - 의존성: Auth Service, Redis Cache 
-- Company Service
-  - 기능: 업체 정보 관리 
-- Hub Service
-  - 기능: 허브 및 경로 정보 관리
-  - 의존성: Redis Cache
-- Auth Service
-  - 기능: 인증 및 권한 관리
-  - 의존성: User Service
-- Delivery Service
-  - 기능: 배송 상태 및 경로 관리
-- Order Service
-  - 기능: 주문 생성 및 상태 관리
-- User Service
-  - 기능: 유저 정보 관리
-- Redis Cache
-  - 기능: 데이터 캐싱
-- PostgreSQL DB
-  - 기능: 영속적 데이터 저장
+| 서비스 이름        | 기능                                    | 의존성                  |
+|------------------|---------------------------------------|----------------------|
+| Eureka Server    | 서비스 레지스트리 및 디스커버리               | 모든 서비스              |
+| API Gateway      | 모든 외부 요청을 라우팅 및 인증                | User Service, Company Service, Hub Service, Order Service 등 |
+| User Service     | 사용자 관리 (회원가입, 로그인 등)             | Auth Service, Redis Cache  |
+| Company Service  | 업체 정보 관리                             | 없음                     |
+| Hub Service      | 허브 및 경로 정보 관리                       | Redis Cache             |
+| Auth Service     | 인증 및 권한 관리                           | User Service            |
+| Delivery Service | 배송 상태 및 경로 관리                      | 없음                     |
+| Order Service    | 주문 생성 및 상태 관리                      | 없음                     |
+| Redis Cache      | 데이터 캐싱                               | 없음                     |
+| PostgreSQL DB    | 영속적 데이터 저장                         | 없음                     |
 
 ### 실행 방법
 
