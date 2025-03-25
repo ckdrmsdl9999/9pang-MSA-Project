@@ -1,14 +1,12 @@
 package com._hateam.user.application.service;
 
-import com._hateam.common.exception.CustomForbiddenException;
-import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.UserRole;
 import com._hateam.user.domain.model.DeliverUser;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
-import com._hateam.user.infrastructure.configuration.CustomException;
+import com._hateam.user.application.exception.CustomException;
 import com._hateam.user.infrastructure.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

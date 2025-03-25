@@ -1,25 +1,22 @@
 package com._hateam.user.application.service;
 
 import com._hateam.common.dto.ResponseDto;
-import com._hateam.common.exception.CustomForbiddenException;
 import com._hateam.common.exception.CustomNotFoundException;
 import com._hateam.user.application.dto.*;
 import com._hateam.user.domain.enums.DeliverType;
 import com._hateam.user.domain.enums.Status;
 import com._hateam.user.domain.model.DeliverAssignPointer;
 import com._hateam.user.domain.model.DeliverUser;
-import com._hateam.user.infrastructure.configuration.CustomException;
+import com._hateam.user.application.exception.CustomException;
 import com._hateam.user.infrastructure.feign.HubClient;
 import com._hateam.user.infrastructure.repository.DeliverAssignPointerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com._hateam.user.domain.model.User;
 import com._hateam.user.domain.repository.DeliverUserRepository;
 import com._hateam.user.domain.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

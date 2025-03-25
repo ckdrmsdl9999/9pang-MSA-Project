@@ -1,4 +1,4 @@
-package com._hateam.user.infrastructure.configuration;
+package com._hateam.user.application.exception;
 
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class  GlobalExceptionHandler {
+public class CustomExceptionHandler {
 
 
 

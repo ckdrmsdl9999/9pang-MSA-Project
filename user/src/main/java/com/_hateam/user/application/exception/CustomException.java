@@ -1,4 +1,4 @@
-package com._hateam.user.infrastructure.configuration;
+package com._hateam.user.application.exception;
 
 public class CustomException extends RuntimeException{
     public CustomException(String message){
