@@ -89,6 +89,8 @@ public class SecurityConfig {
 //                }, SecurityWebFiltersOrder.AUTHENTICATION)
 
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**", "/webjars/**").permitAll()
+                        
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/users/signup").permitAll()
                         .pathMatchers("/api/users/signin").permitAll()

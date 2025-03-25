@@ -70,6 +70,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-common:2.4.0'
+
 // queryDsl
 	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
 // Querydsl을 사용하여 JPA 기반의 타입 안전한 쿼리 기능을 제공합니다.
