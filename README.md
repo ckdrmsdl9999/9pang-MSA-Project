@@ -21,7 +21,7 @@
 
 ### 서비스 구성
 
-![서비스 구성](https://github.com/9haTeam/9pang/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B5%AC%EC%84%B1)
+https://github.com/9haTeam/9pang/wiki/%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B5%AC%EC%84%B1
 
 ### 실행 방법
 
