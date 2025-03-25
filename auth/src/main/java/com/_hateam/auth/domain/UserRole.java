@@ -1,8 +1,15 @@
 package com._hateam.auth.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum UserRole {
-    ADMIN, //마스터 관리자
-    HUB,//허브 담당자
-    DELIVERY,//배송 담당자
-    COMPANY //업체 관리자
+    ADMIN("ADMIN"), //마스터 관리자
+    HUB("HUB"),//허브 담당자
+    DELIVERY("DELIVERY"),//배송 담당자
+    COMPANY("COMPANY"); //업체 관리자
+
+    private final String role;
 }

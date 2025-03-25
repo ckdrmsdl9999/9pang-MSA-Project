@@ -9,8 +9,4 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
-    Optional<Object> findByNameAndDeletedAtIsNull(String name);
-
-    Page<Company> findByHubId(UUID hubId, Pageable pageable);
-
 }

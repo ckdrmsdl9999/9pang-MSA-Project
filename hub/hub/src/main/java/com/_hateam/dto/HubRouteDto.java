@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -28,6 +29,14 @@ public class HubRouteDto {
     private Long distanceKm;
     private Integer estimatedTimeMinutes;
 
+    // Redis에 저장되는 정보 추가
+    private Double penaltyDistance; // 패널티 거리
+    private List<Double> nodeDistances; // 노드간 개별 거리
+    private List<String> route; // 경로
+    private Double actualDistance; // 실제 거리
+    private Double totalCost; // 총 비용
+    private List<Double> cumulativeDistances; // 누적 거리
+
     // HubRoute 엔티티를 DTO로 변환하는 정적 팩토리 메소드
     public static HubRouteDto fromEntity(HubRoute hubRoute) {
         return HubRouteDto.builder()
@@ -36,6 +45,13 @@ public class HubRouteDto {
                 .destinationHub(HubDto.hubToHubDto(hubRoute.getDestinationHub()))
                 .distanceKm(hubRoute.getDistanceKm())
                 .estimatedTimeMinutes(hubRoute.getEstimatedTimeMinutes())
+                // Redis 저장 정보 추가
+                .penaltyDistance(hubRoute.getPenaltyDistance())
+                .nodeDistances(hubRoute.getNodeDistances())
+                .route(hubRoute.getRoute())
+                .actualDistance(hubRoute.getActualDistance())
+                .totalCost(hubRoute.getTotalCost())
+                .cumulativeDistances(hubRoute.getCumulativeDistances())
                 .build();
     }
 }

@@ -44,16 +44,38 @@ public class SecurityConfig {
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/users/signup").permitAll()
                         .pathMatchers("/api/users/signin").permitAll()
-                        .pathMatchers("/hubs/**").permitAll()
+                        .pathMatchers("/api/users/getusers").hasAuthority(UserRole.ADMIN.getRole()) 
+                        .pathMatchers("/api/users/roles/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.PUT,"/api/users/**").hasAuthority(UserRole.ADMIN.getRole())                                  
+                        .pathMatchers(HttpMethod.PUT,"/api/delivery-users/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.POST,"/api/delivery-users/add").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.DELETE,"/api/delivery-users/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.DELETE,"/api/users/**").hasAuthority(UserRole.ADMIN.getRole())       
+                                   
+                        .pathMatchers("/redis/**").hasAuthority(UserRole.ADMIN.getRole())
+
+                        .pathMatchers(HttpMethod.POST,"/hubs").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.PATCH,"/hubs/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.DELETE,"/hubs/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.GET,"/hubs/**").permitAll()
+
+                        .pathMatchers(HttpMethod.POST,"/hub-routes").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.PATCH,"/hub-routes/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.DELETE,"/hub-routes/**").hasAuthority(UserRole.ADMIN.getRole())
+                        .pathMatchers(HttpMethod.GET,"/hub-routes/**").permitAll()
+
+                        .pathMatchers(HttpMethod.POST,"/companies").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.HUB.getRole())
+                        .pathMatchers(HttpMethod.PATCH,"/companies/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.HUB.getRole())
+                        .pathMatchers(HttpMethod.DELETE,"/companies/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.HUB.getRole())
+                        .pathMatchers(HttpMethod.GET,"/hub-routes/**").permitAll()
+
+                        .pathMatchers("/products").permitAll()
                         .pathMatchers("/companies/**").permitAll()
-                        .pathMatchers("/api/users/getusers" +
-                                "").hasAuthority("ADMIN")
-                        .pathMatchers("/api/users/roles/**").hasAuthority("ADMIN")
-                        .pathMatchers(HttpMethod.PUT,"/api/users/**").hasAuthority("ADMIN")
-                        .pathMatchers(HttpMethod.PUT,"/api/delivery-users/**").hasAuthority("ADMIN")
-                        .pathMatchers(HttpMethod.POST,"/api/delivery-users/add").hasAuthority("ADMIN")
-                        .pathMatchers(HttpMethod.DELETE,"/api/delivery-users/**").hasAuthority("ADMIN")
-                        .pathMatchers(HttpMethod.DELETE,"/api/users/**").hasAuthority("ADMIN")
+
+                        .pathMatchers("/api/orders/**").permitAll()
+                        .pathMatchers("/api/slack/**").permitAll()
+                        .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority(UserRole.ADMIN.getRole())
+
                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling

@@ -24,7 +24,7 @@ public class Order extends Timestamped {
     @Column(name = "order_id")
     private UUID orderId;
 
-    @Column(name = "deliver_id", nullable = false)
+    @Column(name = "deliver_id")
     private UUID deliverId;
 
     @Column(name = "hub_id", nullable = false)

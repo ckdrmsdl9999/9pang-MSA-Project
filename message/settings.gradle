@@ -1,1 +1,13 @@
 rootProject.name = 'message'
+
+includeBuild('../common') {
+    dependencySubstitution {
+        substitute(module('com.9hateam:common')).using(project(':'))
+    }
+}
+
+includeBuild('../common') {
+    dependencySubstitution {
+        substitute(module('com.9hateam:common')).using(project(':'))
+    }
+}

@@ -77,14 +77,14 @@ public class CompanyService {
                 sortBy.equals("updatedAt") ? "updatedAt" : "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort);
         // 해당 hubId를 가진 회사 목록을 페이지 단위로 조회
-        List<Company> companyList = companyRepository.findByHubId(hubId, pageable).getContent();
+        List<Company> companyList = companyRepository.findByHubIdAndDeletedAtIsNull(hubId, pageable).getContent();
         return companyList.stream()
                 .map(CompanyDto::companyToCompanyDto)
                 .collect(Collectors.toList());
     }
 
     public CompanyDto getCompanyByCompanyIdAndHubId(UUID companyId, UUID hubId) {
-        Company company = companyRepository.findByIdAndHubId(companyId, hubId);
+        Company company = companyRepository.findByIdAndHubIdAndDeletedAtIsNull(companyId, hubId);
         if (company == null) {
             throw new EntityNotFoundException();
         }
