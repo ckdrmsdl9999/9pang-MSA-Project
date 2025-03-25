@@ -119,6 +119,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     depends_on:
+      - hubs-service
       - company-db
       - eureka-server
     networks:

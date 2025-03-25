@@ -107,11 +107,9 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.POST,"/companies").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.HUB.getRole())
                         .pathMatchers(HttpMethod.PATCH,"/companies/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.HUB.getRole())
                         .pathMatchers(HttpMethod.DELETE,"/companies/**").hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.HUB.getRole())
-                        .pathMatchers(HttpMethod.GET,"/hub-routes/**").permitAll()
+                        .pathMatchers(HttpMethod.GET,"/companies/**").permitAll()
 
-                        .pathMatchers("/products").permitAll()
-
-                        .pathMatchers("/companies/**").permitAll()
+                        .pathMatchers("/products/**").permitAll()
                         .pathMatchers("/api/orders/**").permitAll()
                         .pathMatchers("/api/slack/**").permitAll()
                         .pathMatchers(HttpMethod.PUT,"/api/users/roles/**").hasAuthority(UserRole.ADMIN.getRole())

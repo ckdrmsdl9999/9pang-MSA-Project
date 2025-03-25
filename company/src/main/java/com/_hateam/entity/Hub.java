@@ -4,6 +4,7 @@ import com._hateam.common.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "p_hub")
-public class Hub extends Timestamped {
+public class Hub extends Timestamped implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
