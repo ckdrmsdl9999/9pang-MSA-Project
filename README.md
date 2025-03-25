@@ -50,7 +50,7 @@ root 디렉토리에서 'docker-compose up --build' 명령어 실행
 | Hub Service     | `/hubs`,`/hubs/{id}` ,`/hubs/companies/{id}` ,`/hubs/products/{id}` ,`/hub-routes` ,`/hub-routes/{id}` ,`/hub-routes/cache` |
 | Auth Service    | `/api/auth/signin` |
 | Order Service    | `/api/orders/**`, `/api/orders/{orderId}`, `api/orders/search`, `api/orders/search/reset` |
-| Delivery Service  | `/api/deliveries/**`, `/api/delivery-routes/**` |
+| Delivery Service  | `/api/deliveries`, `/api/deliveries/search`, `/api/deliveries/{deliveryId}`, `/api/delivery-routes`, `/api/delivery-routes/{deliveryRouteId}`,  |
 | Message Service | `/api/slack/**`, `/api/slack/messages`, `/api/slack/messages/delivery-route`, `/api/slack/messages/search`, `/api/slack/messages/{messageId}` |
 
 ## 📌 ERD
