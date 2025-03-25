@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/hubs/routes")
+@RequestMapping("/hub-routes")
 @RequiredArgsConstructor
 public class HubRouteController {
 

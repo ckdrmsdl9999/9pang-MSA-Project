@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/companies/products")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
 

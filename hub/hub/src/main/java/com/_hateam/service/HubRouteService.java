@@ -164,7 +164,7 @@ public class HubRouteService {
                 .orElseThrow(() -> new EntityNotFoundException("도착지 허브를 찾을 수 없습니다. 이름: " + cleanDestination));
 
         // 경로 조회
-        HubRoute hubRoute = hubRouteRepository.findBySourceHubAndDestinationHub(sourceHub, destinationHub);
+        HubRoute hubRoute = hubRouteRepository.findBySourceHubAndDestinationHubAndDeletedAtIsNull(sourceHub, destinationHub);
         if (hubRoute != null) {
             return HubRouteDto.fromEntity(hubRoute);
         }

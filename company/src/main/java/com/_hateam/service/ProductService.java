@@ -66,7 +66,7 @@ public class ProductService {
 
     public List<ProductDto> getProductsByHubId(UUID hubId) {
         // 기존 로직 그대로 유지 (회사의 소속 허브에 따라 제품을 조회)
-        List<Company> companies = companyRepository.findByHubId(hubId);
+        List<Company> companies = companyRepository.findByHubIdAndDeletedAtIsNull(hubId);
         if (companies == null || companies.isEmpty()) {
             return new ArrayList<>();
         }
