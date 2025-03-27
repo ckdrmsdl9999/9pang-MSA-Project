@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         return null;
     }
 
-    // ✅ 검증 없이 payload만 Base64 decode해서 파싱
+    // 검증 없이 payload만 Base64 decode해서 파싱
     private Claims parseClaimsWithoutValidation(String token) {
         try {
             String[] parts = token.split("\\.");
